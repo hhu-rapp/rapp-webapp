@@ -1,0 +1,188 @@
+:root{
+    --hhu-color: #0069b4;
+    --hhu-color-hover: #00558f;
+}
+
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+header{
+    background-color: var(--hhu-color);
+    z-index: 1;
+}
+
+hr{
+    height: 3px;
+    background-color: var(--hhu-color);
+    border: none;
+}
+
+main {
+    display: flex;
+    flex: 1 0 auto;
+}
+
+main section {
+    padding-left: 300px;
+}
+
+@media only screen and (max-width : 992px) {
+    main section{
+        padding-left: 0;
+    }
+}
+
+.btn, .btn-floating {
+    background-color: var(--hhu-color);
+}
+
+.btn:hover, .btn-floating:hover{
+    background-color: var(--hhu-color-hover);
+}
+
+.btn-export, .btn-filter, .btn-predict {
+    margin-top: 20px;
+}
+
+.card {
+    flex: 1;
+    margin-top: 20px;
+}
+
+.col-same-height{
+    flex: 1;
+}
+
+.flex {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+}
+
+.page-footer{
+    padding-top: 0px;
+}
+
+.page-footer>.row {
+    margin-bottom: 0px;
+}
+
+.row.flex {
+    margin-bottom: 0px;
+}
+
+.row-flex {
+    display: flex;
+}
+
+.sidenav.sidenav-fixed {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    height: calc(100% - 120px);
+    top: 120px;
+    z-index: 0;
+}
+
+.tabs .indicator {
+    background-color: transparent;
+}
+
+.tabs.flex{
+    flex-direction: column;
+}
+
+.tabs .tab {
+    display: block;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.tabs .tab a {
+    border-radius: 5px;
+    color: black;
+    font-size: 30px;
+    text-transform: none;
+}
+
+.tabs .tab a.active, .tabs .tab a:focus.active {
+    background-color: var(--hhu-color);
+    color: white;
+}
+
+.tabs .tab a:hover {
+    background-color: var(--hhu-color-hover);
+    color: white;
+}
+
+.login-title-split{
+    margin-bottom: 0px;
+    flex: 1;
+}
+
+.login-greeting{
+    font-size: 40px;
+    margin-top: 80px;
+    margin-bottom: 80px;
+}
+
+#data-tab .row, #prediction-tab .row{
+    display: flex;
+}
+
+#data-tab .col, #statistics-tab .col, #prediction-tab .col{
+    display: flex;
+    flex-direction: column;
+}
+
+#statistics-tab .row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#title-logo{
+    font-size: 100px;
+    margin-top: 0px;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 1);
+}
+
+#login-btn{
+    border-radius: 5px;
+    display: block;
+    font-size: xx-large;
+    height: 50px;
+    margin-top: 40px;
+    text-transform: unset;
+    width: 100%;
+}
+
+#login-half-site{
+    flex: 1 0 auto;
+}
+
+#login-logo{
+    padding-top: 40px;
+}
+
+#sidenav-logo {
+    padding-top: 20px;
+}
+
+#slide-out{
+    padding-bottom: 0;
+}
+
+#title-half-site {
+    flex: 1 0 auto;
+}
+
+#title-text{
+    font-size: xx-large;
+    font-weight: 700;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="flex">
+    <div class="login-title-split flex">
+        <div class="row flex">
+            <div class="col s12 l6 white" id="login-half-site">
+                <div class="container">
+                    <div id="login-logo">
+                        <img src="{{ url_for('static', filename='images/hhu_logo_proxy.png') }}" 
+                                alt="Logo der Heinrich-Heine-Universität Düsseldorf"
+                                class="responsive-img">
+                    </div>
+                    <hr>
+                    <div class="login-greeting">
+                        <p class="center">
+                            <b>Welcome Back!</b>
+                        </p>
+                        <p class="center grey-text text-darken-2">
+                            Please enter your details:
+                        </p>
+                    </div>
+                    <div id="login-input">
+                        <form action="">
+                            <div class="row">
+                                <div class="col s12">
+                                    <input placeholder="E-Mail" type="email" class="validate" id="email-input">
+                                    <input placeholder="Password" type="password" class="validate" id="password-input">
+                                </div>
+                                <div class="col s12">
+                                    <a href="" class="right">Forgot Password?</a>
+                                </div>
+                                <div class="col s12">
+                                    <button class="btn" id="login-btn" type="submit" name="action">
+                                        Log In
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col s12 l6 valign-wrapper" id="title-half-site">
+                <div class="container">
+                    <p class="indigo-text text-darken-4 center" id="title-text">
+                        A Socially Responsible Approach to the
+                        Introduction of Student Performance
+                        Prediction at a German Higher Education
+                        Institution
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer class="page-footer transparent">
+    <div class="row">
+        <div class="col s12 l6 white" id="login-footer">
+            <hr>
+            <div class="row">
+                <div class="col s6">
+                    <a href="">Datenschutz</a>
+                </div>
+                <div class="col s6">
+                    <a href="" class="right">Impressum</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+{% endblock %}

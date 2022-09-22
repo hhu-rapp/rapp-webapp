@@ -1,0 +1,27 @@
+# compiled
+*.pyc
+__pycache__/
+
+# distribution
+dist/
+build/
+*.egg-info/
+
+# environment
+.env
+.flaskenv
+
+# flask
+instance/
+
+# mypy
+.mypy_cache/
+
+# unit tests
+.pytest_cache/
+
+# venv
+venv/
+
+# visual studio
+.vscode/

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/materialize.css') }}"  media="screen,projection"/>
+        <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"  media="screen,projection"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    </head>
+    <body class="grey lighten-2">
+        <header class="z-depth-2">
+            <div class="container">
+                <div class="center">
+                    <h1 class="white-text" id="title-logo">RAPP</h1>
+                </div>
+            </div>
+        </header>
+        {% block content %}
+        {% endblock %}
+        <script type="text/javascript" src="{{ url_for('static', filename='js/materialize.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>        
+    </body>
+</html>

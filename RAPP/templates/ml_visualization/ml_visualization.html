@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div  id="slide-out" class="sidenav sidenav-fixed">
+    <div class="container">
+        <img src="{{ url_for('static', filename='images/hhu_logo_proxy.png') }}" 
+            alt="Logo der Heinrich-Heine-Universität Düsseldorf"
+            class="responsive-img"
+            id="sidenav-logo">
+        <hr>
+    </div>
+    <ul class="tabs flex">
+        <li class="tab"><a href="#data-tab" class="active">Data</a></li>
+        <li class="tab"><a href="#statistics-tab">Statistics</a></li>
+        <li class="tab"><a href="#prediction-tab">Prediction</a></li>
+    </ul>
+    <div class="sidenav-footer">
+        <div class="container">
+            <hr>
+        </div>
+        <div class="row">
+            <div class="col s6">
+                <a href="">Datenschutz</a>
+            </div>
+            <div class="col s6">
+                <a href="" class="right">Impressum</a>
+            </div>
+        </div>
+    </div>
+</div>
+<main>
+    <section class="content flex" id="data-tab">
+        <div class="container">
+            <div class="row">
+                <div class="col s6">
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title">Loaded Data</span>
+                            <p>Name: File.db</p>
+                        </div>
+                        <div class="card-action">
+                            <a class="btn">upload-icon</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col s6">
+                    <div class="card">
+                        <div class="card-content">
+                            <ul>
+                                <li>Number Of Samples: XYZ</li>
+                                <li>Number Of Features: XYZ</li>
+                                <li>Missing Values: XYZ</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <div class="card">
+                        <div class="card-content">
+                            <table class="highlight">
+                                <thead>
+                                    <tr>
+                                        <th>Feature 1</th>
+                                        <th>Feature 2</th>
+                                        <th>Feature 3</th>
+                                        <th>Feature 4</th>
+                                    </tr>
+                                </thead>
+                        
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="content flex" id="statistics-tab">
+        <div class="container">
+            <div class="row">
+                <div class="col s2 offset-s8">
+                    <a href="" class="btn btn-export">Export</a>
+                </div>
+                <div class="col s2">
+                    <a href="" class="btn btn-filter">Filter</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s6">
+                    <div class="card">
+                        <div class="card-content">
+                            <img src="{{ url_for('static', filename='images/statistics_proxy_1.png') }}" 
+                                alt=""
+                                class="responsive-img">
+                        </div>
+                    </div>
+                </div>
+                <div class="col s6">
+                    <div class="card">
+                        <div class="card-content">
+                            <img src="{{ url_for('static', filename='images/statistics_proxy_2.png') }}" 
+                                alt=""
+                                class="responsive-img">
+                        </div>
+                    </div>
+                </div>
+                <div class="col s6">
+                    <div class="card">
+                        <div class="card-content">
+                            <img src="{{ url_for('static', filename='images/statistics_proxy_3.png') }}" 
+                                alt=""
+                                class="responsive-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s1 offset-s11">
+                    <a class="btn-floating btn-large">add</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="prediction-tab" class="content flex">
+        <div class="container">
+            <div class="row">
+                <div class="col s6">
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title">Loaded Models</span>
+                            <p>Name: RF, DT, SVM</p>
+                            <p>Targets: Dropout, Final Grade</p>
+                        </div>
+                        <div class="card-action">
+                            <a class="btn">upload-icon</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col s6">
+                    <div class="row">
+                        <div class="col s4 offset-s2">
+                            <div class="btn btn-predict">Predict</div>
+                        </div>
+                        <div class="col s4">
+                            <div class="btn btn-export">Export</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col s12">
+                            <div class="card">
+                                <div class="card-content">
+                                    <ul>
+                                        <li>Number Of Samples: XYZ</li>
+                                        <li>Number Of Features: XYZ</li>
+                                        <li>Missing Values: XYZ</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <div class="card">
+                        <div class="card-content">
+                            <table class="highlight">
+                                <thead>
+                                    <tr>
+                                        <th>Features</th>
+                                        <th>Features</th>
+                                        <th>Probability</th>
+                                        <th>Prediction</th>
+                                    </tr>
+                                </thead>
+                        
+                                <tbody>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+{% endblock %}
