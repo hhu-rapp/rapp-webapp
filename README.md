@@ -65,9 +65,18 @@ Depending on what you are making, it can be a good idea to include screenshots o
 
 ## Installation
 1. Clone the repo
-    ```
-    git clone https://gitlab.cs.uni-duesseldorf.de/dbs/research/project/rapp/rapp-user-frontend.git
-    ```
+
+    Please choose one of following:
+
+    - Clone with SSH:
+        ```
+        git clone git@gitlab.cs.uni-duesseldorf.de:dbs/research/project/rapp/rapp-user-frontend.git
+        ```
+
+    - Clone with https:
+        ```
+        git clone https://gitlab.cs.uni-duesseldorf.de/dbs/research/project/rapp/rapp-user-frontend.git
+        ```
 2. Create a virtual environment
     ```
     cd rapp-user-frontend
