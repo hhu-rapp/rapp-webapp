@@ -68,7 +68,7 @@ Depending on what you are making, it can be a good idea to include screenshots o
     ```
     git clone https://gitlab.cs.uni-duesseldorf.de/dbs/research/project/rapp/rapp-user-frontend.git
     ```
-2. Create a virtual environment.
+2. Create a virtual environment
     ```
     cd rapp-user-frontend
     python -m venv .venv
@@ -84,7 +84,7 @@ Depending on what you are making, it can be a good idea to include screenshots o
     ```
     source .venv/bin/activate
     ```
-4. Install python dependencies.
+4. Install python dependencies
     ```
     pip install -r requirements.txt
     ```
