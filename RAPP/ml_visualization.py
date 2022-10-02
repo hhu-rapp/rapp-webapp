@@ -6,4 +6,4 @@ bp = Blueprint('ml_visualization', __name__)
 
 @bp.route('/')
 def home():
-    return render_template('ml_visualization/ml_visualization.html')
+    return render_template('ml_visualization/index.html')
