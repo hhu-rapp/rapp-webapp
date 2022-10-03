@@ -122,6 +122,10 @@ main section {
     color: white;
 }
 
+.tabs .tab a:focus{
+    background-color: white;
+}
+
 .tabs .tab a:hover {
     background-color: var(--hhu-color-hover);
     color: white;
