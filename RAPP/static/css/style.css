@@ -146,6 +146,10 @@ main section {
     display: flex;
 }
 
+#prediction-tab .row {
+    margin-bottom: 0;
+}
+
 #data-tab .col, #statistics-tab .col, #prediction-tab .col{
     display: flex;
     flex-direction: column;
