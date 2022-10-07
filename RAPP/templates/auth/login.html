@@ -21,19 +21,18 @@
                         </p>
                     </div>
                     <div id="login-input">
-                        <form action="">
+                        <form action="" method="POST">
+                            {{ form.csrf_token }}
                             <div class="row">
                                 <div class="col s8 offset-s2">
-                                    <input placeholder="E-Mail" type="email" class="validate" id="email-input">
-                                    <input placeholder="Password" type="password" class="validate" id="password-input">
+                                    {{ form.email.label }} {{ form.email() }}
+                                    {{ form.password.label }} {{ form.password() }}
                                 </div>
                                 <div class="col s8 offset-s2">
                                     <a href="" class="right">Forgot Password?</a>
                                 </div>
                                 <div class="col s8 offset-s2">
-                                    <button class="btn" id="login-btn" type="submit" name="action">
-                                        Log In
-                                    </button>
+                                    {{ form.submit(id="login-btn") }}
                                 </div>
                             </div>
                         </form>
