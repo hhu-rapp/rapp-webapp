@@ -35,11 +35,11 @@ main section {
     }
 }
 
-.btn, .btn-floating {
+.btn, .btn-floating, #login-btn {
     background-color: var(--hhu-color);
 }
 
-.btn:hover, .btn-floating:hover{
+.btn:hover, .btn-floating:hover, #login-btn:hover{
     background-color: var(--hhu-color-hover);
 }
 
@@ -183,6 +183,11 @@ main section {
 
 #login-logo{
     padding-top: 40px;
+}
+
+#login-btn{
+    border-style: none;
+    color: white;
 }
 
 #sidenav-logo {
