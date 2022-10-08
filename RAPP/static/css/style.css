@@ -11,6 +11,8 @@ body {
 
 header{
     background-color: var(--hhu-color);
+    position: fixed;
+    width: 100%;
     z-index: 1;
 }
 
@@ -27,6 +29,7 @@ i.btn-add {
 main {
     display: flex;
     flex: 1 0 auto;
+    padding-top: 120px;
 }
 
 main section {
