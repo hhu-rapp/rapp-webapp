@@ -51,6 +51,12 @@ main section {
     margin-top: 20px;
 }
 
+.btn-export, .btn-filter, .btn-predict, .btn-upload {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
 .card {
     flex: 1;
     margin-top: 20px;
