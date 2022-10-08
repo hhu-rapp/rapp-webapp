@@ -20,6 +20,10 @@ hr{
     border: none;
 }
 
+i.btn-add {
+    font-size: 2.5rem;
+}
+
 main {
     display: flex;
     flex: 1 0 auto;
