@@ -20,6 +20,10 @@ hr{
     border: none;
 }
 
+i.btn-add {
+    font-size: 2.5rem;
+}
+
 main {
     display: flex;
     flex: 1 0 auto;
@@ -45,6 +49,12 @@ main section {
 
 .btn-export, .btn-filter, .btn-predict {
     margin-top: 20px;
+}
+
+.btn-export, .btn-filter, .btn-predict, .btn-upload {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .card {

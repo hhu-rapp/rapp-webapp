@@ -10,9 +10,24 @@
         <hr>
     </div>
     <ul class="tabs flex">
-        <li class="tab"><a href="#data-tab" class="active">Data</a></li>
-        <li class="tab"><a href="#statistics-tab">Statistics</a></li>
-        <li class="tab"><a href="#prediction-tab">Prediction</a></li>
+        <li class="tab">
+            <a href="#data-tab" class="active">
+                <i class="material-icons left small">storage</i>
+                <span class="left">Data</span>
+            </a>
+        </li>
+        <li class="tab">
+            <a href="#statistics-tab">
+                <i class="material-icons left small">assessment</i>
+                <span class="left">Statistics</span>
+            </a>
+        </li>
+        <li class="tab">
+            <a href="#prediction-tab">
+                <i class="material-icons left small">trending_up</i>
+                <span class="left">Prediction</span>
+            </a>
+        </li>
     </ul>
     <div class="sidenav-footer row">
         <div class="col s12">
@@ -31,7 +46,10 @@
                             <p>Name: File.db</p>
                         </div>
                         <div class="card-action">
-                            <a class="btn">upload-icon</a>
+                            <a class="btn btn-upload">
+                                <i class="material-icons left">file_upload</i>
+                                <span>Upload</span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -92,10 +110,16 @@
         <div class="container">
             <div class="row">
                 <div class="col s2 offset-s8">
-                    <a href="" class="btn btn-export">Export</a>
+                    <a href="" class="btn btn-export">
+                        <i class="material-icons left">file_download</i>
+                        <span>Export</span>
+                    </a>
                 </div>
                 <div class="col s2">
-                    <a href="" class="btn btn-filter">Filter</a>
+                    <a href="" class="btn btn-filter">
+                        <i class="material-icons left">edit</i>
+                        <span>Filter</span>
+                    </a>
                 </div>
             </div>
             <div class="row img-grid">
@@ -129,7 +153,9 @@
             </div>
             <div class="row">
                 <div class="col s1 offset-s11">
-                    <a class="btn-floating btn-large">add</a>
+                    <a class="btn-floating btn-large">
+                        <i class="material-icons btn-add">add</i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -146,17 +172,26 @@
                             <p>Targets: Dropout, Final Grade</p>
                         </div>
                         <div class="card-action">
-                            <a class="btn">upload-icon</a>
+                            <a class="btn btn-upload">
+                                <i class="material-icons left">file_upload</i>
+                                <span>Upload</span>
+                            </a>
                         </div>
                     </div>
                 </div>
                 <div class="col s6">
                     <div class="row">
                         <div class="col s4 offset-s2">
-                            <div class="btn btn-predict">Predict</div>
+                            <a class="btn btn-predict">
+                                <i class="material-icons left">trending_up</i>
+                                <span>Predict</span>
+                            </a>
                         </div>
                         <div class="col s4">
-                            <div class="btn btn-export">Export</div>
+                            <a class="btn btn-export">
+                                <i class="material-icons left">file_download</i>
+                                <span>Export</span>
+                            </a>
                         </div>
                     </div>
                     <div class="row">
