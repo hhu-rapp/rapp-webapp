@@ -97,6 +97,23 @@ Depending on what you are making, it can be a good idea to include screenshots o
     ```
     pip install -r requirements.txt
     ```
+5. Initialize database
+
+    Open flask shell:
+    ```
+    flask --app RAPP shell
+    ```
+
+    Within the shell execute the following commands to initialize the database:
+    ```
+    from RAPP import db
+    db.create_all()
+    ```
+
+    To exit the shell use:
+    ```
+    exit()
+    ```
 
 ## Usage
 1. Start local server (development only)
