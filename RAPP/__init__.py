@@ -16,6 +16,8 @@ def create_app() -> Flask:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 
     db.init_app(app)
+
+    login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
 
     from . import ml_visualization
