@@ -60,6 +60,15 @@ main section {
     text-overflow: ellipsis;
 }
 
+.btn-tab {
+    width: 100%;
+}
+
+.btn-tab-container {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
 .card {
     flex: 1;
     margin-top: 20px;

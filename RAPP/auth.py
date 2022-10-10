@@ -3,7 +3,9 @@ from flask import render_template
 from flask import redirect
 from flask import url_for
 from flask_login import current_user
+from flask_login import login_required
 from flask_login import login_user
+from flask_login import logout_user
 
 from .import db
 from .forms import LoginForm, RegisterForm
@@ -32,6 +34,13 @@ def login():
 
         return redirect(url_for('ml_visualization.home'))
     return render_template('auth/login.html', form=form, email=email)
+
+
+@bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('auth.login'))
 
 
 @bp.route('/register', methods=['GET', 'POST'])
