@@ -6,7 +6,11 @@ from wtforms import PasswordField
 from wtforms import SubmitField
 from wtforms.validators import DataRequired
 from wtforms.validators import Email
+from wtforms.validators import EqualTo
 from wtforms.validators import Length
+from wtforms.validators import ValidationError
+
+from .models import User
 
 
 class LoginForm(FlaskForm):
@@ -19,8 +23,42 @@ class LoginForm(FlaskForm):
 
     password: PasswordField = PasswordField(
         '',
-        validators=[DataRequired(), Length(min=7)],
+        validators=[DataRequired()],
         render_kw={'placeholder': 'Password'}
     )
 
     submit = SubmitField('Log In')
+
+
+class RegisterForm(FlaskForm):
+    """Register form"""
+    email = EmailField(
+        'Email',
+        validators=[DataRequired(), Email()],
+        render_kw={'placeholder': 'E-Mail'}
+    )
+
+    password = PasswordField(
+        'Password',
+        validators=[DataRequired(), Length(min=5)],
+        render_kw={'placeholder': 'Password'}
+    )
+
+    password2 = PasswordField(
+        'Repeat Password',
+        validators=[
+            DataRequired(),
+            EqualTo(
+                'password',
+                'Password and Repeated Password must be equal.'
+            )
+        ],
+        render_kw={'placeholder': 'Repeat Password'}
+    )
+
+    submit = SubmitField('Register')
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+        if user is not None:
+            raise ValidationError('Provided Email already exists.')

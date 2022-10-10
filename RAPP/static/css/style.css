@@ -42,11 +42,11 @@ main section {
     }
 }
 
-.btn, .btn-floating, #login-btn {
+.btn, .btn-floating, .btn-default {
     background-color: var(--hhu-color);
 }
 
-.btn:hover, .btn-floating:hover, #login-btn:hover{
+.btn:hover, .btn-floating:hover, .btn-default:hover{
     background-color: var(--hhu-color-hover);
 }
 
@@ -73,6 +73,22 @@ main section {
     display: flex;
     flex: 1;
     flex-wrap: wrap;
+}
+
+.form-error {
+    color: red;
+}
+
+.btn-default {
+    border-radius: 5px;
+    border-style: none;
+    color: white;
+    display: block;
+    font-size: xx-large;
+    height: 50px;
+    margin-top: 40px;
+    text-transform: unset;
+    width: 100%;
 }
 
 .img-grid .col.s6{
@@ -180,15 +196,6 @@ main section {
     text-shadow: 2px 2px 2px rgba(0, 0, 0, 1);
 }
 
-#login-btn{
-    border-radius: 5px;
-    display: block;
-    font-size: xx-large;
-    height: 50px;
-    margin-top: 40px;
-    text-transform: unset;
-    width: 100%;
-}
 
 #login-half-site{
     flex: 1 0 auto;
@@ -196,11 +203,6 @@ main section {
 
 #login-logo{
     padding-top: 40px;
-}
-
-#login-btn{
-    border-style: none;
-    color: white;
 }
 
 #sidenav-logo {
