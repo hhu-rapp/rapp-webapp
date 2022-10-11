@@ -32,16 +32,6 @@ main {
     padding-top: 120px;
 }
 
-main section {
-    padding-left: 300px;
-}
-
-@media only screen and (max-width : 992px) {
-    main section{
-        padding-left: 0;
-    }
-}
-
 .btn, .btn-floating, .btn-default {
     background-color: var(--hhu-color);
 }
@@ -61,6 +51,8 @@ main section {
 }
 
 .btn-tab {
+    margin-top: 5px;
+    margin-bottom: 5px;
     width: 100%;
 }
 
@@ -125,13 +117,11 @@ main section {
     display: flex;
 }
 
-.sidenav.sidenav-fixed {
+.sidenav {
     display: flex;
     flex: 1 0 auto;
     flex-direction: column;
-    height: calc(100% - 120px);
-    top: 120px;
-    z-index: 0;
+    height: 100%;
 }
 
 .tabs .indicator {
@@ -167,6 +157,11 @@ main section {
 .tabs .tab a:hover {
     background-color: var(--hhu-color-hover);
     color: white;
+}
+
+.tab-close {
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
 .login-title-split{

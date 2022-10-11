@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div  id="slide-out" class="sidenav sidenav-fixed">
+<div  id="slide-out" class="sidenav">
     <div class="container">
         <img src="{{ url_for('static', filename='images/hhu_logo_proxy.png') }}" 
             alt="Logo der Heinrich-Heine-Universität Düsseldorf"
@@ -10,6 +10,7 @@
         <hr>
     </div>
     <ul class="tabs flex">
+
         <li class="tab">
             <a href="#data-tab" class="active">
                 <i class="material-icons left small">storage</i>
@@ -28,6 +29,7 @@
                 <span class="left">Prediction</span>
             </a>
         </li>
+        <li class="tab-close"><a class="sidenav-close center" href="#!">Click here to close</a></li>
     </ul>
     <a href="{{ url_for('auth.logout') }}" class="btn-tab-container">
         <button class="btn btn-tab right">
