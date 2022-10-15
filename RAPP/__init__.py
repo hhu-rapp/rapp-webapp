@@ -14,6 +14,7 @@ def create_app() -> Flask:
     # DO NOT USE IN PRODUCTION!
     app.config['SECRET_KEY'] = 'dev'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+    app.config['UPLOAD_PATH'] = 'uploads'
 
     db.init_app(app)
 

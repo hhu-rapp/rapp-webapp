@@ -1,5 +1,8 @@
 """Form object declaration."""
 
+from flask_wtf.file import FileField
+from flask_wtf.file import FileAllowed
+from flask_wtf.file import FileRequired
 from flask_wtf import FlaskForm
 from wtforms import EmailField
 from wtforms import PasswordField
@@ -11,6 +14,26 @@ from wtforms.validators import Length
 from wtforms.validators import ValidationError
 
 from .models import User
+
+
+class DatabaseUploadForm(FlaskForm):
+    """Database upload form."""
+
+    ALLOWED_EXTENSIONS: list[str] = ['sqlite', 'sqlite3', 'db', 'db3', 's3db',
+                                     'sl3']
+
+    file_db: FileField = FileField(
+        'DatabaseFile',
+        validators=[FileRequired(), FileAllowed(ALLOWED_EXTENSIONS)]
+    )
+
+    submit = SubmitField('Log In')
+
+    def validate_file_db(self, file):
+        """Validate file_db input regarding sqlite format."""
+
+        # TODO
+        pass
 
 
 class LoginForm(FlaskForm):

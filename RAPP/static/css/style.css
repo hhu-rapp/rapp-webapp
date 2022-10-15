@@ -40,11 +40,8 @@ main {
     background-color: var(--hhu-color-hover);
 }
 
-.btn-export, .btn-filter, .btn-predict {
-    margin-top: 20px;
-}
-
 .btn-export, .btn-filter, .btn-predict, .btn-upload {
+    margin-top: 20px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
