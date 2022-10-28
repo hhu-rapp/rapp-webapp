@@ -1,12 +1,25 @@
 :root{
     --hhu-color: #0069b4;
     --hhu-color-hover: #00558f;
+    --text-primary: #003863;
+    --text-secondary: #3d3d43;
 }
 
 body {
     display: flex;
     min-height: 100vh;
     flex-direction: column;
+}
+
+dt {
+    color: var(--text-primary);
+    display: inline;
+    font-weight: bold;
+}
+
+dd {
+    color: var(--text-secondary);
+    display: inline;
 }
 
 header{
@@ -47,6 +60,11 @@ main {
     text-overflow: ellipsis;
 }
 
+.btn-upload {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
 .btn-tab {
     margin-top: 5px;
     margin-bottom: 5px;
@@ -63,8 +81,17 @@ main {
     margin-top: 20px;
 }
 
+.card .card-title {
+    color: var(--text-primary);
+    font-weight: bold;
+}
+
 .col-same-height{
     flex: 1;
+}
+
+.dropdown-content li > span {
+    color: var(--text-primary);
 }
 
 .flex {
@@ -91,6 +118,20 @@ main {
 
 .img-grid .col.s6{
     margin-left: 0;
+}
+
+.key-value-list {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.metastat {
+    color: var(--text-primary);
+    font-weight: bold;
+}
+
+.metastat-value {
+    color: var(--text-secondary);
 }
 
 .page-footer{
@@ -170,6 +211,11 @@ main {
     font-size: 40px;
     margin-top: 80px;
     margin-bottom: 80px;
+}
+
+#btn-query-select {
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
 #data-tab .row, #prediction-tab .row{

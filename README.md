@@ -114,6 +114,13 @@ Depending on what you are making, it can be a good idea to include screenshots o
     ```
     exit()
     ```
+6. Provide queries and models
+
+    This is temporary solution and should be changed in the future.
+    Place the trained models and sql query provided by ??? into the models folder.
+    Please maintain the given folder structure and filenames.
+
+    E.g. models\cs_first_term_grades_and_ectp\3_dropout\query.sql and models\cs_first_term_grades_and_ectp\3_dropout\dtclf.joblib
 
 ## Usage
 1. Start local server (development only)
