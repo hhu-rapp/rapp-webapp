@@ -12,9 +12,11 @@ def create_app() -> Flask:
     app = Flask(__name__)
 
     # DO NOT USE IN PRODUCTION!
+    app.config['MODELS_PATH'] = 'models'
     app.config['SECRET_KEY'] = 'dev'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
     app.config['UPLOAD_PATH'] = 'uploads'
+    app.config['ML_DB_TYPE'] = 'sqlite'
 
     db.init_app(app)
 
