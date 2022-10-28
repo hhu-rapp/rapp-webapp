@@ -49,39 +49,91 @@
             <div class="row">
                 <div class="col s6">
                     <div class="card">
-                        <form method="post" enctype="multipart/form-data">
-                            {{ form_db.csrf_token }}
-                            <div class="card-content">
-                                <span class="card-title">Loaded Data</span>
-                                <p>
-                                    {% if form_db.file_db.data.filename %}
-                                        {{ form_db.file_db.data.filename }}
-                                    {% else %}
-                                        No database selected.
-                                    {% endif %}
-                                </p>
+                        <div class="card-content">
+                            <span class="card-title">Loaded Data</span>
+                            <div class="key-value-list">
+                                <div class="key-value-pair">
+                                    <dt>Database: </dt>
+                                    <dd>
+                                        {% if ml_db_filename %}
+                                            {{ ml_db_filename }}
+                                        {% else %}
+                                            No database selected.
+                                        {% endif %}
+                                    </dd>
+                                </div>
+                                <div class="key-value-pair">
+                                    <dt>Query: </dt>
+                                    <dd>
+                                        {% if query_name %}
+                                            {{ query_name }}
+                                        {% else %}
+                                            No query selected.
+                                        {% endif %}
+                                    </dd>
+                                </div>
                             </div>
-                            <div class="card-action">
-                                {{ form_db.file_db() }}
-                                {% for error in form_db.file_db.errors %}
+                            {% if ml_db_filename %}
+                            <form method="post" enctype="multipart/form-data">
+                                {{ form_query.csrf_token }}
+                                <div class="row">
+                                    <div class="col s8">
+                                        <div class="input-field">
+                                            {{ form_query.query() }}
+                                            {{ form_query.query.label }}
+                                        </div>
+                                    </div>
+                                    <div class="col s4">
+                                        {{ form_query.submit(class="btn btn-small", id="btn-query-select") }}
+                                    </div>
+                                </div>
+                                {% for error in form_query.query.errors %}
                                     <span class="form-error">{{ error }}</span>
                                 {% endfor %}
-                                <br>
-                                <button type="submit" class="btn btn-upload">
-                                    <i class="material-icons left">file_upload</i>
-                                    <span>Upload</span>
-                                </button>
-                            </div>
-                        </form>
+                            </form>
+                        {% endif %}
+                        </div>
+                        <div class="card-action">
+                            <form method="post" enctype="multipart/form-data">
+                                {{ form_db.csrf_token }}
+                                <label for="ml_db_file">Select Dataset</label>
+                                <div class="input-field">
+                                    <div class="row">
+                                        <div class="col s8">
+                                            {{ form_db.ml_db_file() }}
+                                        </div>
+                                        <div class="col s4">
+                                            <button class="btn btn-upload" type="submit">
+                                                <i class="material-icons left">file_upload</i>
+                                                <span>Upload</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% for error in form_db.ml_db_file.errors %}
+                                    <span class="form-error">{{ error }}</span>
+                                {% endfor %}
+                            </form>
+                        </div>
                     </div>
                 </div>
                 <div class="col s6">
                     <div class="card">
                         <div class="card-content">
+                            <span class="card-title">Overview</span>
                             <ul>
-                                <li>Number Of Samples: XYZ</li>
-                                <li>Number Of Features: XYZ</li>
-                                <li>Missing Values: XYZ</li>
+                                <li>
+                                    <span class="metastat">Number Of Samples: </span>
+                                    <span class="metastat-value">{{ metastats.num_samples }}</span>
+                                </li>
+                                <li>
+                                    <span class="metastat">Number Of Features: </span>
+                                    <span class="metastat-value"> {{ metastats.num_feats }}</span>
+                                </li>
+                                <li>
+                                    <span class="metastat">Missing Values: </span>
+                                    <span class="metastat-value">{{ metastats.num_miss_vals }}</span>
+                                </li>
                             </ul>
                         </div>
                     </div>
