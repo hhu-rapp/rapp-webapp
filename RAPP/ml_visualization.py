@@ -20,7 +20,7 @@ bp = Blueprint('ml_visualization', __name__)
 
 @dataclass
 class MetastatsQuery:
-    """ Query Metastats
+    """ A class containing metastats for query results
 
     Attributes
     ----------
