@@ -19,8 +19,8 @@ bp = Blueprint('ml_visualization', __name__)
 
 
 @dataclass
-class MetastatsQuery:
-    """ A class containing metastats for query results
+class QueryMetastats:
+    """ A class containing metastats for query results.
 
     Attributes
     ----------
@@ -34,6 +34,70 @@ class MetastatsQuery:
     num_samples: int
     num_feats: int
     num_miss_vals: int
+
+
+class Query:
+    """ A class handling queries.
+
+    Attributes
+    ----------
+    fp: str
+        The relative filepath to the file the sql query can be found in.
+    metastats: QueryMetastats | None
+        The metastats for query results.
+    name: str
+        The name of the query.
+    results: pandas.Dataframe | None
+        A pandas dataframe containing the query results.
+    _query: str
+        The query in use.
+    """
+
+    def __init__(self, name: str) -> None:
+        self.results: pd.DataFrame | None = None
+        self.name: str = name
+        self._query: str = self._get_query()
+
+    def __repr__(self) -> str:
+        return f"Query({self.name})"
+
+    def _get_query(self) -> str:
+        """Read query from file."""
+        with open(self.get_fp()) as file:
+            return file.read()
+
+    def execute_query(self, db_uri: str) -> None:
+        """Execute query on given database.
+
+        Parameters
+        ----------
+        db_uri : str
+            The URI of the database the query will be executed on.
+        """
+        engine = db.create_engine(db_uri)
+        with engine.connect() as conn:
+            # TODO: check for valid query?
+            query = db.text(self._query)
+            self.results = pd.DataFrame(conn.execute(query).fetchall())
+
+    def get_fp(self) -> str:
+        """Return relative filepath to file containing sql query."""
+        return path.join(
+            current_app.config['MODELS_PATH'],
+            self.name,
+            current_app.config['QUERY_FILENAME']
+        )
+
+    def get_metastats(self) -> QueryMetastats | None:
+        """Return metastats for query results."""
+        if self.results is None:
+            return None
+
+        return QueryMetastats(
+            num_samples=len(self.results),
+            num_feats=len(self.results.columns),
+            num_miss_vals=self.results.isna().sum().sum()
+        )
 
 
 def create_ml_db_filepath(filename: str) -> str:
@@ -76,30 +140,6 @@ def get_query_options() -> list[tuple[str, str]]:
     return query_options
 
 
-def run_query(db_uri: str, query_fp: str) -> list[db.engine.Row]:
-    """Execute sql query from file found at given filepath.
-
-    Parameters
-    ----------
-    db_uri : str
-        The URI of the database the query will be executed on.
-    query_fp : str
-        The filepath to the sql file containing the query.
-
-    Returns
-    -------
-    list[sqlalchemy.engine.Row]
-        A result of the executed sql query on the selected database as list of
-        rows.
-    """
-
-    engine = db.create_engine(db_uri)
-    with engine.connect() as conn:
-        with open(query_fp) as file:
-            query = db.text(file.read())
-            return conn.execute(query).fetchall()
-
-
 def upload_database(file: FileStorage) -> None:
     """Upload database.
 
@@ -132,35 +172,14 @@ def home():
         session['ml_db_filename'] = form_db.ml_db_file.data.filename
 
     form_query: QuerySelectForm = QuerySelectForm()
+    form_query.edit_queries(get_query_options())
 
-    query_options: list[tuple[str, str]] = get_query_options()
-    form_query.edit_queries(query_options)
-
-    metastats: MetastatsQuery | None = None
-    df: pd.DataFrame | None = None
-
+    query: Query | None = None
     if form_query.query.data and form_query.validate_on_submit() and db_uri:
-        query_name: str = form_query.query.data
+        query = Query(name=form_query.query.data)
+        query.execute_query(db_uri)
 
-        if query_name:
-            QUERY_FILENAME: str = 'query.sql'
-
-            query_fp: str = path.join(
-                current_app.config['MODELS_PATH'],
-                query_name,
-                QUERY_FILENAME
-            )
-
-            query_results: list[db.engine.Row] = run_query(db_uri, query_fp)
-
-            session['query_name'] = query_name
-
-            df = pd.DataFrame(query_results)
-            metastats = MetastatsQuery(
-                num_samples=len(df),
-                num_feats=len(df.columns),
-                num_miss_vals=df.isna().sum().sum()
-            )
+        session['query_name'] = query.name
 
     return render_template(
         'ml_visualization/index.html',
@@ -168,5 +187,5 @@ def home():
         query_name=session.get('query_name'),
         form_db=form_db,
         form_query=form_query,
-        metastats=metastats
+        metastats=query.get_metastats() if query else None
     )
