@@ -189,11 +189,16 @@ def home():
         query.execute_query(db_uri)
         metastats = query.get_metastats()
 
+    df: pd.DataFrame | None = None
+    if query and query.results is not None:
+        df = query.results
+
     return render_template(
         'ml_visualization/index.html',
         ml_db_filename=session.get('ml_db_filename'),
         query_name=session.get('query_name'),
         form_db=form_db,
         form_query=form_query,
-        metastats=metastats
+        metastats=metastats,
+        df=df
     )

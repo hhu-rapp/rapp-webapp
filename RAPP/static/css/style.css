@@ -86,6 +86,10 @@ main {
     font-weight: bold;
 }
 
+.card-scrollable {
+    overflow: scroll;
+}
+
 .col-same-height{
     flex: 1;
 }
