@@ -41,16 +41,10 @@ class Query:
 
     Attributes
     ----------
-    fp: str
-        The relative filepath to the file the sql query can be found in.
-    metastats: QueryMetastats | None
-        The metastats for query results.
     name: str
         The name of the query.
     results: pandas.Dataframe | None
         A pandas dataframe containing the query results.
-    _query: str
-        The query in use.
     """
 
     def __init__(self, name: str) -> None:
@@ -100,8 +94,22 @@ class Query:
         )
 
 
+def create_ml_db_uri(filename: str) -> str:
+    """Create and return a URI for database at given filepath.
+
+    Parameters
+    ----------
+    filename: str
+        The name of the database file the URI will be build for.
+    """
+    db_uri = (current_app.config.get('ML_DB_TYPE', '') + ':///'
+              + create_ml_db_filepath(filename))
+    return db_uri
+
+
 def create_ml_db_filepath(filename: str) -> str:
-    """Create a secure filepath to database upload folder from filename.
+    """Create and return a secure filepath to database upload folder from
+     filename.
 
     Parameters
     ----------
@@ -113,7 +121,6 @@ def create_ml_db_filepath(filename: str) -> str:
     str
         A secure filepath to database upload folder.
     """
-
     return path.join(
         current_app.config['UPLOAD_PATH'],
         'databases',
@@ -148,7 +155,6 @@ def upload_database(file: FileStorage) -> None:
     file: werkzeug.datastructures.FileStorage
         The database file to be uploaded.
     """
-
     if file.filename:
         fp: str = create_ml_db_filepath(file.filename)
         file.save(fp)
@@ -157,29 +163,31 @@ def upload_database(file: FileStorage) -> None:
 @bp.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    db_uri: str | None = None
-    if session.get('ml_db_filename'):
-        db_uri = (current_app.config.get('ML_DB_TYPE', '') + ':///'
-                  + create_ml_db_filepath(session['ml_db_filename']))
+    db_uri: str | None
+    ml_db_filename: str | None = session.get('ml_db_filename')
+    db_uri = create_ml_db_uri(ml_db_filename) if ml_db_filename else None
 
+    # DATABASE FORM
     form_db: DatabaseUploadForm = DatabaseUploadForm()
     if form_db.ml_db_file.data and form_db.validate_on_submit():
         upload_database(form_db.ml_db_file.data)
-
+        session['ml_db_filename'] = form_db.ml_db_file.data.filename
         if session.get('query_name'):
             session.pop('query_name')
 
-        session['ml_db_filename'] = form_db.ml_db_file.data.filename
-
+    # QUERY FORM
     form_query: QuerySelectForm = QuerySelectForm()
     form_query.edit_queries(get_query_options())
+    if form_query.query.data and form_query.validate_on_submit():
+        session['query_name'] = form_query.query.data
 
     query: Query | None = None
-    if form_query.query.data and form_query.validate_on_submit() and db_uri:
-        query = Query(name=form_query.query.data)
+    metastats: QueryMetastats | None = None
+    query_name = session.get('query_name')
+    if query_name and db_uri:
+        query = Query(name=query_name)
         query.execute_query(db_uri)
-
-        session['query_name'] = query.name
+        metastats = query.get_metastats()
 
     return render_template(
         'ml_visualization/index.html',
@@ -187,5 +195,5 @@ def home():
         query_name=session.get('query_name'),
         form_db=form_db,
         form_query=form_query,
-        metastats=query.get_metastats() if query else None
+        metastats=metastats
     )
