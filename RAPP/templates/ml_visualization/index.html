@@ -143,7 +143,7 @@
                 <div class="col s12">
                     <div class="card">
                         <div class="card-content card-scrollable">
-                            {{ df.to_html() | safe}}
+                            {{ df.to_html(table_id='query-results', classes='display') | safe}}
                         </div>
                     </div>
                 </div>

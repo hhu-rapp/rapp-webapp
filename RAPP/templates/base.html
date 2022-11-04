@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link type="text/css" rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/materialize.css') }}"  media="screen,projection"/>
         <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"  media="screen,projection"/>
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -20,6 +21,8 @@
         {% block content %}
         {% endblock %}
         <script type="text/javascript" src="{{ url_for('static', filename='js/materialize.js') }}"></script>
-        <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
     </body>
 </html>
