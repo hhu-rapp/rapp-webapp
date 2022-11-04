@@ -9,7 +9,8 @@ document.addEventListener('DOMContentLoaded', function() {
     var instance = M.Tabs.init(elems);
 });
 
-document.addEventListener('DOMContentLoaded', function() {
+$(document).ready(function () {
+    $('#query-results').DataTable();
     var elems = document.querySelectorAll('select');
     var instances = M.FormSelect.init(elems, {});
 });

@@ -17,6 +17,7 @@ def create_app() -> Flask:
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
     app.config['UPLOAD_PATH'] = 'uploads'
     app.config['ML_DB_TYPE'] = 'sqlite'
+    app.config['QUERY_FILENAME'] = 'query.sql'
 
     db.init_app(app)
 
