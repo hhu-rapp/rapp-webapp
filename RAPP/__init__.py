@@ -16,6 +16,7 @@ def create_app() -> Flask:
     app.config['SECRET_KEY'] = 'dev'
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
     app.config['UPLOAD_PATH'] = 'uploads'
+    app.config['MODEL_FILEFORMAT'] = '.joblib'
     app.config['ML_DB_TYPE'] = 'sqlite'
     app.config['QUERY_FILENAME'] = 'query.sql'
 

@@ -74,24 +74,24 @@
                                 </div>
                             </div>
                             {% if ml_db_filename %}
-                            <form method="post" enctype="multipart/form-data">
-                                {{ form_query.csrf_token }}
-                                <div class="row">
-                                    <div class="col s8">
-                                        <div class="input-field">
-                                            {{ form_query.query() }}
-                                            {{ form_query.query.label }}
+                                <form method="post" enctype="multipart/form-data">
+                                    {{ form_query.csrf_token }}
+                                    <div class="row">
+                                        <div class="col s8">
+                                            <div class="input-field">
+                                                {{ form_query.query() }}
+                                                {{ form_query.query.label }}
+                                            </div>
+                                        </div>
+                                        <div class="col s4">
+                                            {{ form_query.submit(class="btn btn-small", id="btn-query-select") }}
                                         </div>
                                     </div>
-                                    <div class="col s4">
-                                        {{ form_query.submit(class="btn btn-small", id="btn-query-select") }}
-                                    </div>
-                                </div>
-                                {% for error in form_query.query.errors %}
-                                    <span class="form-error">{{ error }}</span>
-                                {% endfor %}
-                            </form>
-                        {% endif %}
+                                    {% for error in form_query.query.errors %}
+                                        <span class="form-error">{{ error }}</span>
+                                    {% endfor %}
+                                </form>
+                            {% endif %}
                         </div>
                         <div class="card-action">
                             <form method="post" enctype="multipart/form-data">
@@ -212,14 +212,43 @@
                     <div class="card">
                         <div class="card-content">
                             <span class="card-title">Loaded Models</span>
-                            <p>Name: RF, DT, SVM</p>
-                            <p>Targets: Dropout, Final Grade</p>
+                            <div class="key-value-list">
+                                <div class="key-value-pair">
+                                    <dt>Models: </dt>
+                                    <dd>
+                                        {% if model_name %}
+                                            {{ model_name }}
+                                        {% else %}
+                                            No models selected.
+                                        {% endif %}
+                                    </dd>
+                                </div>
+                                <div class="key-value-pair">
+                                    <dt>Targets: </dt>
+                                    <dd>
+                                        Dropout, Final Grade
+                                    </dd>
+                                </div>
+                            </div>
                         </div>
                         <div class="card-action">
-                            <a class="btn btn-upload">
-                                <i class="material-icons left">file_upload</i>
-                                <span>Upload</span>
-                            </a>
+                            <form action="/#prediction-tab" method="post" enctype="multipart/form-model">
+                                {{ form_model.csrf_token }}
+                                <div class="row">
+                                    <div class="col s8">
+                                        <div class="input-field">
+                                            {{ form_model.model() }}
+                                            {{ form_model.model.label }}
+                                        </div>
+                                    </div>
+                                    <div class="col s4">
+                                        {{ form_model.submit(class="btn btn-small", id="btn-model-select") }}
+                                    </div>
+                                </div>
+                                {% for error in form_model.model.errors %}
+                                    <span class="form-error">{{ error }}</span>
+                                {% endfor %}
+                            </form>
                         </div>
                     </div>
                 </div>

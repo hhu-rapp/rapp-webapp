@@ -13,6 +13,7 @@ from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
 from .forms import DatabaseUploadForm
+from .forms import ModelSelectForm
 from .forms import QuerySelectForm
 
 bp = Blueprint('ml_visualization', __name__)
@@ -57,7 +58,11 @@ class Query:
 
     def _get_query(self) -> str:
         """Read query from file."""
-        with open(self.get_fp()) as file:
+        filename: str = path.join(
+            self.get_fp(),
+            current_app.config['QUERY_FILENAME']
+        )
+        with open(filename) as file:
             return file.read()
 
     def execute_query(self, db_uri: str) -> None:
@@ -75,11 +80,12 @@ class Query:
             self.results = pd.DataFrame(conn.execute(query).fetchall())
 
     def get_fp(self) -> str:
-        """Return relative filepath to file containing sql query."""
+        """Return relative filepath to folder containing
+        model and sql files.
+        """
         return path.join(
             current_app.config['MODELS_PATH'],
-            self.name,
-            current_app.config['QUERY_FILENAME']
+            self.name
         )
 
     def get_metastats(self) -> QueryMetastats | None:
@@ -92,6 +98,15 @@ class Query:
             num_feats=len(self.results.columns),
             num_miss_vals=self.results.isna().sum().sum()
         )
+
+    def get_model_options(self) -> list[tuple[str, str]]:
+        """Return a list of available models."""
+        fileformat = current_app.config.get('MODEL_FILEFORMAT', '')
+        model_options: list[tuple[str, str]] = []
+        for file in listdir(self.get_fp()):
+            if file.endswith(fileformat):
+                model_options.append((file, file[:-len(fileformat)]))
+        return model_options
 
 
 def create_ml_db_uri(filename: str) -> str:
@@ -193,12 +208,24 @@ def home():
     if query and query.results is not None:
         df = query.results
 
+    # MODEL FORM
+    form_model: ModelSelectForm = ModelSelectForm()
+    if query:
+        form_model.edit_models(query.get_model_options())
+    if form_model.model.data and form_model.validate_on_submit():
+        session['model'] = form_model.model.data
+
+    model_name: str = session.get(
+        'model', '')[:-len(current_app.config.get('MODEL_FILEFORMAT', ''))]
+
     return render_template(
         'ml_visualization/index.html',
         ml_db_filename=session.get('ml_db_filename'),
         query_name=session.get('query_name'),
+        model_name=model_name,
         form_db=form_db,
         form_query=form_query,
+        form_model=form_model,
         metastats=metastats,
         df=df
     )
