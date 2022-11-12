@@ -136,6 +136,18 @@ class DatabaseML:
                  db_type: str,
                  filename: str | None,
                  upload_folder: str) -> None:
+        """Init DatabaseML.
+
+        Parameters
+        ----------
+        db_type: str
+            The type of the database used for machine learning.
+            (e.g. sqlite)
+        filename: str | None
+            The name of the database file.
+        upload_folder: str
+            The name of the upload folder.
+        """
         self.db_type: str = db_type
         self.filename: str | None = filename
         self.upload_folder: str = upload_folder
@@ -176,6 +188,26 @@ class DatabaseML:
             file.save(fp)
 
 
+class Model:
+    """A class managing models."""
+    def __init__(self, filepath: str, fileformat: str) -> None:
+        """Init Model
+
+        Parameters
+        ----------
+        filepath: str
+            The filepath the model can be loaded from.
+        fileformat: str
+            The format of the file the model is stored in.
+        """
+        self.filepath: str = filepath
+        self.fileformat: str = fileformat
+
+    def get_model_name(self) -> str:
+        """Return model name."""
+        return self.filepath[:-len(self.fileformat)]
+
+
 @bp.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
@@ -193,12 +225,16 @@ def home():
         session['ml_db_filename'] = database_ml.filename
         if session.get('query_name'):
             session.pop('query_name')
+        if session.get('model_filepath'):
+            session.pop('model_filepath')
 
     # QUERY FORM
     form_query: QuerySelectForm = QuerySelectForm()
     form_query.edit_queries(Query.get_query_options())
     if form_query.query.data and form_query.validate_on_submit():
         session['query_name'] = form_query.query.data
+        if session.get('model_filepath'):
+            session.pop('model_filepath')
 
     query: Query | None = None
     metastats: QueryMetastats | None = None
@@ -208,25 +244,31 @@ def home():
         query.execute_query(database_ml.get_ml_db_uri())
         metastats = query.get_metastats()
 
-    df: pd.DataFrame | None = None
+    df: pd.DataFrame = pd.DataFrame()
     if query and query.results is not None:
         df = query.results
 
     # MODEL FORM
     form_model: ModelSelectForm = ModelSelectForm()
+    model: Model | None = None
     if query:
         form_model.edit_models(query.get_model_options())
-    if form_model.model.data and form_model.validate_on_submit():
-        session['model'] = form_model.model.data
 
-    model_name: str = session.get(
-        'model', '')[:-len(current_app.config.get('MODEL_FILEFORMAT', ''))]
+    if form_model.model.data and form_model.validate_on_submit():
+        session['model_filepath'] = form_model.model.data
+
+    model_filepath: str | None = session.get('model_filepath')
+    if model_filepath:
+        model = Model(
+            filepath=model_filepath,
+            fileformat=current_app.config.get('MODEL_FILEFORMAT', '')
+        )
 
     return render_template(
         'ml_visualization/index.html',
         ml_db_filename=session.get('ml_db_filename'),
         query_name=session.get('query_name'),
-        model_name=model_name,
+        model_name=model.get_model_name() if model else None,
         form_db=form_db,
         form_query=form_query,
         form_model=form_model,
