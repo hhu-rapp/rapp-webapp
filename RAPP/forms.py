@@ -53,8 +53,29 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Log In')
 
 
+class ModelSelectForm(FlaskForm):
+    """Model Selection form."""
+    model = SelectField(
+        'Select Model',
+        validators=[InputRequired()]
+    )
+
+    submit = SubmitField('Select')
+
+    def edit_models(self, choices: list[tuple[str, str]]) -> None:
+        """Set model choices.
+
+        Parameters
+        ----------
+        choices: list[tuple[str, str]]
+            The models the Query-SelectField will offer to the user
+            as a list of (value, label) pairs.
+        """
+        self.model.choices = choices
+
+
 class QuerySelectForm(FlaskForm):
-    """Query Selection form"""
+    """Query Selection form."""
     query = SelectField(
         'Select Query',
         validators=[InputRequired()]

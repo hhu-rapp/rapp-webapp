@@ -13,6 +13,7 @@ from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
 from .forms import DatabaseUploadForm
+from .forms import ModelSelectForm
 from .forms import QuerySelectForm
 
 bp = Blueprint('ml_visualization', __name__)
@@ -57,8 +58,31 @@ class Query:
 
     def _get_query(self) -> str:
         """Read query from file."""
-        with open(self.get_fp()) as file:
+        filename: str = path.join(
+            self.get_fp(),
+            current_app.config['QUERY_FILENAME']
+        )
+        with open(filename) as file:
             return file.read()
+
+    @staticmethod
+    def get_query_options() -> list[tuple[str, str]]:
+        """Return a list of available sql queries."""
+        # TODO: refactor
+        query_options: list[tuple[str, str]] = []
+        models_root: str = current_app.config['MODELS_PATH']
+
+        for features_folder in listdir(models_root):
+            features_folder_fp = path.join(models_root, features_folder)
+            for labels_folder in listdir(features_folder_fp):
+                query_name: str = path.join(
+                    features_folder,
+                    labels_folder
+                )
+                query_option: tuple[str, str] = (query_name, query_name)
+                query_options.append(query_option)
+
+        return query_options
 
     def execute_query(self, db_uri: str) -> None:
         """Execute query on given database.
@@ -75,11 +99,12 @@ class Query:
             self.results = pd.DataFrame(conn.execute(query).fetchall())
 
     def get_fp(self) -> str:
-        """Return relative filepath to file containing sql query."""
+        """Return relative filepath to folder containing
+        model and sql files.
+        """
         return path.join(
             current_app.config['MODELS_PATH'],
-            self.name,
-            current_app.config['QUERY_FILENAME']
+            self.name
         )
 
     def get_metastats(self) -> QueryMetastats | None:
@@ -93,112 +118,160 @@ class Query:
             num_miss_vals=self.results.isna().sum().sum()
         )
 
-
-def create_ml_db_uri(filename: str) -> str:
-    """Create and return a URI for database at given filepath.
-
-    Parameters
-    ----------
-    filename: str
-        The name of the database file the URI will be build for.
-    """
-    db_uri = (current_app.config.get('ML_DB_TYPE', '') + ':///'
-              + create_ml_db_filepath(filename))
-    return db_uri
+    def get_model_options(self) -> list[tuple[str, str]]:
+        """Return a list of available models for query."""
+        fileformat = current_app.config.get('MODEL_FILEFORMAT', '')
+        model_options: list[tuple[str, str]] = []
+        for file in listdir(self.get_fp()):
+            if file.endswith(fileformat):
+                model_options.append((file, file[:-len(fileformat)]))
+        return model_options
 
 
-def create_ml_db_filepath(filename: str) -> str:
-    """Create and return a secure filepath to database upload folder from
-     filename.
+class DatabaseML:
+    """A class managing the database for machine learning."""
+    DB_UPLOAD_FOLDER: str = 'databases'
 
-    Parameters
-    ----------
-    filename : str
-        The filename of uploaded database.
+    def __init__(self,
+                 db_type: str,
+                 filename: str | None,
+                 upload_folder: str) -> None:
+        """Init DatabaseML.
 
-    Returns
-    -------
-    str
-        A secure filepath to database upload folder.
-    """
-    return path.join(
-        current_app.config['UPLOAD_PATH'],
-        'databases',
-        secure_filename(filename)
-    )
+        Parameters
+        ----------
+        db_type: str
+            The type of the database used for machine learning.
+            (e.g. sqlite)
+        filename: str | None
+            The name of the database file.
+        upload_folder: str
+            The name of the upload folder.
+        """
+        self.db_type: str = db_type
+        self.filename: str | None = filename
+        self.upload_folder: str = upload_folder
+
+    def get_db_filepath(self) -> str:
+        """Create and return a secure filepath to database file from filename.
+
+        Raises
+        ------
+        TypeError:
+            If filename does not exist.
+        """
+        if self.filename is None:
+            raise TypeError
+
+        return path.join(
+            self.upload_folder,
+            self.DB_UPLOAD_FOLDER,
+            secure_filename(self.filename)
+        )
+
+    def get_ml_db_uri(self) -> str:
+        """Create and return database URI."""
+        db_filepath: str = self.get_db_filepath()
+        return (self.db_type + ':///' + db_filepath)
+
+    def upload_database(self, file: FileStorage) -> None:
+        """Upload database.
+
+        Parameters
+        ----------
+        file: werkzeug.datastructures.FileStorage
+            The database file to be uploaded.
+        """
+        if file.filename:
+            self.filename = file.filename
+            fp: str = self.get_db_filepath()
+            file.save(fp)
 
 
-def get_query_options() -> list[tuple[str, str]]:
-    """Return a list of available sql queries."""
-    # TODO: refactor
-    query_options: list[tuple[str, str]] = []
-    models_root: str = current_app.config['MODELS_PATH']
+class Model:
+    """A class managing models."""
+    def __init__(self, filepath: str, fileformat: str) -> None:
+        """Init Model
 
-    for features_folder in listdir(models_root):
-        features_folder_fp = path.join(models_root, features_folder)
-        for labels_folder in listdir(features_folder_fp):
-            query_name: str = path.join(
-                features_folder,
-                labels_folder
-            )
-            query_option: tuple[str, str] = (query_name, query_name)
-            query_options.append(query_option)
+        Parameters
+        ----------
+        filepath: str
+            The filepath the model can be loaded from.
+        fileformat: str
+            The format of the file the model is stored in.
+        """
+        self.filepath: str = filepath
+        self.fileformat: str = fileformat
 
-    return query_options
-
-
-def upload_database(file: FileStorage) -> None:
-    """Upload database.
-
-    Parameters
-    ----------
-    file: werkzeug.datastructures.FileStorage
-        The database file to be uploaded.
-    """
-    if file.filename:
-        fp: str = create_ml_db_filepath(file.filename)
-        file.save(fp)
+    def get_model_name(self) -> str:
+        """Return model name."""
+        return self.filepath[:-len(self.fileformat)]
 
 
 @bp.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    db_uri: str | None
     ml_db_filename: str | None = session.get('ml_db_filename')
-    db_uri = create_ml_db_uri(ml_db_filename) if ml_db_filename else None
+    database_ml: DatabaseML = DatabaseML(
+        db_type=current_app.config.get('ML_DB_TYPE', ''),
+        filename=ml_db_filename,
+        upload_folder=current_app.config.get('UPLOAD_FOLDER', '')
+    )
 
     # DATABASE FORM
     form_db: DatabaseUploadForm = DatabaseUploadForm()
     if form_db.ml_db_file.data and form_db.validate_on_submit():
-        upload_database(form_db.ml_db_file.data)
-        session['ml_db_filename'] = form_db.ml_db_file.data.filename
+        database_ml.upload_database(form_db.ml_db_file.data)
+        session['ml_db_filename'] = database_ml.filename
         if session.get('query_name'):
             session.pop('query_name')
+        if session.get('model_filepath'):
+            session.pop('model_filepath')
 
     # QUERY FORM
     form_query: QuerySelectForm = QuerySelectForm()
-    form_query.edit_queries(get_query_options())
+    form_query.edit_queries(Query.get_query_options())
     if form_query.query.data and form_query.validate_on_submit():
         session['query_name'] = form_query.query.data
+        if session.get('model_filepath'):
+            session.pop('model_filepath')
 
     query: Query | None = None
     metastats: QueryMetastats | None = None
     query_name = session.get('query_name')
-    if query_name and db_uri:
+    if query_name:
         query = Query(name=query_name)
-        query.execute_query(db_uri)
+        query.execute_query(database_ml.get_ml_db_uri())
         metastats = query.get_metastats()
 
-    df: pd.DataFrame | None = None
+    df: pd.DataFrame = pd.DataFrame()
     if query and query.results is not None:
         df = query.results
+
+    # MODEL FORM
+    form_model: ModelSelectForm = ModelSelectForm()
+    model: Model | None = None
+    if query:
+        form_model.edit_models(query.get_model_options())
+
+    if form_model.model.data and form_model.validate_on_submit():
+        session['model_filepath'] = form_model.model.data
+
+    model_filepath: str | None = session.get('model_filepath')
+    if model_filepath:
+        model = Model(
+            filepath=model_filepath,
+            fileformat=current_app.config.get('MODEL_FILEFORMAT', '')
+        )
 
     return render_template(
         'ml_visualization/index.html',
         ml_db_filename=session.get('ml_db_filename'),
         query_name=session.get('query_name'),
+        model_name=model.get_model_name() if model else None,
         form_db=form_db,
         form_query=form_query,
+        form_model=form_model,
         metastats=metastats,
         df=df
     )
