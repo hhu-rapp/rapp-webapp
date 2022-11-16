@@ -25,6 +25,7 @@ models/*
 
 # venv
 venv/
+.venv/
 
 # visual studio
 .vscode/
