@@ -206,6 +206,9 @@ class Model:
         self.filepath: str = filepath
         self.fileformat: str = fileformat
 
+    def __repr__(self) -> str:
+        return f"Model({self.filepath})"
+
     def get_model_name(self) -> str:
         """Return model name."""
         return self.filepath[:-len(self.fileformat)]
