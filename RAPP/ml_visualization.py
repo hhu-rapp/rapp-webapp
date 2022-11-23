@@ -152,6 +152,9 @@ class DatabaseML:
         self.filename: str | None = filename
         self.upload_folder: str = upload_folder
 
+    def __repr__(self) -> str:
+        return f"DatabaseML({self.filename})"
+
     def get_db_filepath(self) -> str:
         """Create and return a secure filepath to database file from filename.
 
