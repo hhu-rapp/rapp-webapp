@@ -43,7 +43,7 @@ class Query:
     Attributes
     ----------
     name: str
-        The name of the query.
+        The name of the query. Temporarily named as filepath.
     results: pandas.Dataframe | None
         A pandas dataframe containing the query results.
     """
@@ -64,6 +64,10 @@ class Query:
         )
         with open(filename) as file:
             return file.read()
+
+    def get_target(self):
+        """Return target of the query."""
+        return path.basename(self.name)
 
     @staticmethod
     def get_query_options() -> list[tuple[str, str]]:
@@ -152,6 +156,9 @@ class DatabaseML:
         self.filename: str | None = filename
         self.upload_folder: str = upload_folder
 
+    def __repr__(self) -> str:
+        return f"DatabaseML({self.filename})"
+
     def get_db_filepath(self) -> str:
         """Create and return a secure filepath to database file from filename.
 
@@ -202,6 +209,9 @@ class Model:
         """
         self.filepath: str = filepath
         self.fileformat: str = fileformat
+
+    def __repr__(self) -> str:
+        return f"Model({self.filepath})"
 
     def get_model_name(self) -> str:
         """Return model name."""
@@ -269,6 +279,7 @@ def home():
         ml_db_filename=session.get('ml_db_filename'),
         query_name=session.get('query_name'),
         model_name=model.get_model_name() if model else None,
+        target=query.get_target() if query and model else None,
         form_db=form_db,
         form_query=form_query,
         form_model=form_model,

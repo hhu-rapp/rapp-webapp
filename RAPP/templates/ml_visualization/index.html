@@ -224,9 +224,13 @@
                                     </dd>
                                 </div>
                                 <div class="key-value-pair">
-                                    <dt>Targets: </dt>
+                                    <dt>Target: </dt>
                                     <dd>
-                                        Dropout, Final Grade
+                                        {% if target %}
+                                            {{ target }}
+                                        {% else %}
+                                            Target not available.
+                                        {% endif %}
                                     </dd>
                                 </div>
                             </div>
