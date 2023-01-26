@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block body %}
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="input-field">
+            {{ render_field(form.email) }}
+        </div>
+        <div class="input-field">
+            {{ render_field(form.password) }}
+        </div>
+        <label>
+            {{ form.remember_me }}
+            <span>Remember me!</span>
+        </label>
+        <br>
+        {{ form.submit(class="btn") }}
+    </form>
+{% endblock %}

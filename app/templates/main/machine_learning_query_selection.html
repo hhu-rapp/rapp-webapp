@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block body %}
+    Select Query
+    <br>
+    {% for query in queries %}
+        {{ query.name }}
+        <a href={{ url_for('main.prediction', db_id=db_id, query_id=query.id)}}>select</a>
+    {% endfor %}
+{% endblock %}

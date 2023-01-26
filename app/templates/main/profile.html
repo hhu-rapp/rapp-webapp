@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <h1>Profile</h1>
+    Email: {{ current_user.email }}
+    <br>
+    <a href={{ url_for("main.change_password") }}>change password</a>
+{% endblock %}

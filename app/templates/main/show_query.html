@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <h1>Show query</h1>
+    ID: {{ query.id }}
+    <br>
+    Name: {{ query.name }}
+    <br>
+    Query-String: {{ query.query_string }}
+    <br>
+    <a href={{ url_for('main.manage_queries') }}>back</a>
+{% endblock %}

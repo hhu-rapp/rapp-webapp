@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block body %}
+    <h1>Add ML-Database</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="input-field">
+            {{ render_field(form.name) }}
+        </div>
+        <div class="file-field input-field">
+            <div class="btn">
+                <span>File</span>
+                {{ form.file }}
+            </div>
+            <div class="file-path-wrapper">
+                <input class="file-path validate" type="text">
+            </div>
+        </div>
+        {{ form.submit(class="btn") }}
+    </form>
+    <a href={{ url_for("main.manage_ml_databases") }}>back</a>
+{% endblock %}

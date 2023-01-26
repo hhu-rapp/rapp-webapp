@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    ID: {{ user.id }}
+    <br>
+    email: {{ user.email }}
+    <br>
+    created: {{ user.created }}
+    <br>
+    {% if user.is_admin %}
+        ADMIN
+        <br>
+    {% endif %}
+    Databases
+    <br>
+    {% for ml_database in user.ml_databases %}
+        ml_database
+    {% endfor %}
+    {% if user.is_admin %}
+        News
+        <br>
+        {% for news_post in user.news %}
+            {{ news_post.title }}
+            <br>
+            {{ news_post.text }}
+            <br>
+            {{ news_post.timestamp }}
+            <br>
+        {% endfor %}
+    {% endif %}
+    <a href={{ url_for('main.manage_users') }}>back</a>
+{% endblock %}

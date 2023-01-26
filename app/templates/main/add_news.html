@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block body %}
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {{ render_field(form.title) }}
+        {{ render_field(form.text) }}
+        {{ form.submit() }}
+    </form>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <h1>Prediction</h1>
+    MachineLearning Statistics (best model? all models?, to be implemented)
+    <br>
+    <a href="">Statistics/Images</a> (to be implemented)
+    <br>
+    <a href="">Fairness</a> (to be implemented)
+    {{ df.to_html(table_id='query-results', classes='display') | safe}}
+{% endblock %}

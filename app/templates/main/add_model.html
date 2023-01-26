@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block body %}
+    <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        <div class="input-field">
+            {{ render_field(form.name) }}
+        </div>
+        <div class="input-field">
+            {{ form.model_file }}
+        </div>
+        {{ form.submit() }}
+    </form>
+{% endblock %}

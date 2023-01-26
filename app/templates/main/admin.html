@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<h1>Admin</h1>
+    <a href={{ url_for('main.manage_users') }}>manage Users</a>
+    <br>
+    <a href={{ url_for('main.news') }}>manage News</a>
+    <br>
+    <a href={{ url_for('main.manage_queries') }}>manage Queries</a>
+    <br>
+    <a href={{ url_for('main.manage_models') }}>manage Models</a>
+{% endblock %}

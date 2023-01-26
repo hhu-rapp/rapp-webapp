@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <a href= {{ url_for('main.add_news') }}>Neue Nachricht erstellen</a>
+    <br>
+    {% for post in news %}
+        <b>{{ post.title }}</b>
+        <br>
+        <p>{{ post.text }}</p>
+        {{ post.author.email }}
+        {{ post.timestamp }}
+        <br>
+        <a href={{ url_for('main.edit_news', news_id=post.id) }}>edit</a>
+        <a href={{ url_for('main.delete_news', news_id=post.id) }}>delete</a>
+        <br>
+    {% endfor %}
+{% endblock %}

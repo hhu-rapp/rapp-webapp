@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <a href= {{ url_for('main.add_model') }}>add Model</a>
+    <br>
+    {% for model in models %}
+        {{ model.name }}
+    {% endfor %}
+    <br>
+    <a href={{ url_for('main.admin') }}>back</a>
+{% endblock %}

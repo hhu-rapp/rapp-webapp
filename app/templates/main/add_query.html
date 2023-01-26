@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block body %}
+    <h1>Add Query</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="input-field">
+            {{ render_field(form.name) }}    
+        </div>
+        <div class="field-input">
+            {{ render_field(form.query_string, class="materialize-textarea") }}
+        </div>
+        {{ form.submit(class="btn")}}
+    </form>
+{% endblock %}

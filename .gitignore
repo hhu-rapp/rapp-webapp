@@ -1,31 +1,38 @@
-# compiled
-*.pyc
+# Byte-compiled / optimized / DLL files
 __pycache__/
+*.pyc
 
-# distribution
+# Databases
+data/database-dev.sqlite
+
+# Distribution
 dist/
 build/
 *.egg-info/
 
-# environment
+
+# Environment
 .env
 .flaskenv
 
-# flask
+# Flask
 instance/
 
-# models
+# Models
 models/*
 
 # mypy
 .mypy_cache/
 
-# unit tests
+# pytest
 .pytest_cache/
 
-# venv
-venv/
-.venv/
+# Upload Folder
+uploads/*
 
-# visual studio
+# Virtual Environment
+.venv/
+venv/
+
+# VsCode
 .vscode/

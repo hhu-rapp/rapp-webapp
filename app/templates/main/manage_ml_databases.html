@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <h1>Manage Databases</h1>
+    <br>
+    <a href={{ url_for('main.add_ml_database') }}>add Database</a>
+    <br>
+    {% for ml_database in ml_databases %}
+        {{ ml_database.name }}, {{ ml_database.timestamp }}, 
+        <a href={{ url_for('main.ml_database', id=ml_database.id) }}>show</a>
+        <a class="modal-trigger" href="#modal-delete-{{ ml_database.id }}">delete</a>
+        <br>
+        <div id="modal-delete-{{ ml_database.id }}" class="modal">
+            <div class="modal-content">
+                <h4>Delete ML-Database</h4>
+                <p>Are you sure?</p>
+            </div>
+            <div class="modal-footer">
+                <a href={{ url_for('main.delete_ml_database', id=ml_database.id) }} class="modal-close waves-effect waves-green btn-flat">Yes</a>
+                <a href="#!" class="modal-close waves-effect waves-green btn-flat">No</a>
+            </div>
+        </div>
+        <br>
+    {% endfor %}
+    <br>
+    <a href={{ url_for('main.home') }}>back</a>
+
+{% endblock %}

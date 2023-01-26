@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% from "_formhelpers.html" import render_field %}
+
+{% block body %}
+    <h1>Add User</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="input-field">
+            {{ render_field(form.email, class="validate") }}
+        </div>
+        <label>
+            {{ form.confirm_send_mail }}
+            <span>Confirmation for sending an email with Login Credentials to given email address</span>
+        </label>
+        <br>
+        {{ form.submit() }}
+    </form>
+    <a href={{ url_for('main.manage_users') }}>back</a>
+{% endblock %}

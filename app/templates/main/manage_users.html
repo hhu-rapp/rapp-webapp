@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <a href={{ url_for('main.add_user') }}>add User</a>
+    <br>
+    {% for user in users %}
+        {{ user.id }}
+        {{ user.email }}
+        {{ user.created }}
+        <a href={{ url_for('main.show_user', id=user.id) }}>show</a>
+        <a href={{ url_for('main.edit_user', id=user.id) }}>edit</a>
+        <a class="modal-trigger" href="#modal-delete-{{ user.id }}">delete</a>
+        <div id="modal-delete-{{ user.id }}" class="modal">
+            <div class="modal-content">
+                <h4>Delete User</h4>
+                <p>Are you sure?</p>
+            </div>
+            <div class="modal-footer">
+                <a href={{ url_for('main.delete_user', id=user.id) }} class="modal-close waves-effect waves-green btn-flat">Yes</a>
+                <a href="#!" class="modal-close waves-effect waves-green btn-flat">No</a>
+            </div>
+        </div>
+        <br>
+    {% endfor %}
+    <a href={{ url_for('main.admin') }}>back</a>
+
+{% endblock %}
