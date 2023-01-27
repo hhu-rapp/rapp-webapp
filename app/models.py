@@ -25,6 +25,7 @@ class MLDatabase(db.Model):     # type: ignore
             f"{self.owner.email}, {self.timestamp}"
 
     __tablename__: str = 'ml_databases'
+    __allow_unmapped__ = True
 
     id: db.Column = db.Column(db.Integer(), primary_key=True)
     name: db.Column = db.Column(db.String(255))
@@ -184,6 +185,7 @@ class Query(db.Model):      # type: ignore
         return f"Query ID:{self.id}, {self.name}"
 
     __tablename__ = 'queries'
+    __allow_unmapped__ = True
 
     id: db.Column = db.Column(db.Integer(), primary_key=True)
     name: db.Column = db.Column(db.String(255))
