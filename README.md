@@ -6,16 +6,16 @@
     Please choose one of following:
 
     - Clone with SSH:
-        ```
+        ```bash
         git clone git@gitlab.cs.uni-duesseldorf.de:dbs/research/project/rapp/rapp-user-frontend.git
         ```
 
     - Clone with https:
-        ```
+        ```bash
         git clone https://gitlab.cs.uni-duesseldorf.de/dbs/research/project/rapp/rapp-user-frontend.git
         ```
 2. Create a virtual environment
-    ```
+    ```bash
     cd rapp-user-frontend
     python -m venv .venv
     ```
@@ -27,7 +27,7 @@
     ```
 
     On Mac/Unix use:
-    ```
+    ```bash
     source .venv/bin/activate
     ```
 4. Install python dependencies
@@ -35,12 +35,14 @@
     pip install -r requirements.txt
     ```
 5. Create .flaskenv file
-    ```
-    touch .flaskenv
-    ```
+    
     For the following commands to work (and easier development) the use of an environment file is neccessary. 
 
-    Create a file named ".flaskenv" within the root folder of this project with the following content:
+    Create a file named ".flaskenv" within the root folder of this project:
+    ```bash
+    touch .flaskenv
+    ```
+    with the following content:
     ```
     # .flaskenv
     FLASK_APP=rapp.py
@@ -52,26 +54,26 @@
 6. Initialize database
 
     Open flask shell:
-    ```
+    ```bash
     flask shell
     ```
 
     Within the shell execute the following commands to initialize the database:
-    ```
+    ```bash
     db.create_all()
     ```
 
 7. Create first admin (development only):
     While still in Flask Shell, run
 
-    ```
+    ```bash
     user = User(email='admin@admin.com', password='admin', is_admin=True)
     db.session.add(user)
     db.session.commit()
     ```
 
     To exit the shell use:
-    ```
+    ```bash
     exit()
     ```
 
@@ -80,7 +82,7 @@
 ## Usage
 1. Start local server (development only)
 
-    ```
+    ```bash
     flask run
     ```
 2. View website in preferred browser
