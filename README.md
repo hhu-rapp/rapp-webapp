@@ -35,6 +35,9 @@
     pip install -r requirements.txt
     ```
 5. Create .flaskenv file
+    ```
+    touch .flaskenv
+    ```
     For the following commands to work (and easier development) the use of an environment file is neccessary. 
 
     Create a file named ".flaskenv" within the root folder of this project with the following content:
