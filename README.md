@@ -69,20 +69,24 @@ Python>=3.10
 7. Create first admin (development only):
     While still in Flask Shell, run
 
-    ```bash
+    ```flask shell
     user = User(email='admin@admin.com', password='admin', is_admin=True)
     db.session.add(user)
     db.session.commit()
     ```
 
-    To exit the shell use:
-    ```bash
+    To exit the flask shell, type:
+    ```flask shell
     exit()
     ```
 
     Email and password can be chosen arbitrarily.
 
 ## Usage
+0. Create upload folder (stores the database and the machine learning models)
+    ```bash
+    mkdir uploads
+    ```
 1. Start local server (development only)
 
     ```bash
