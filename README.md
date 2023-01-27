@@ -1,5 +1,8 @@
 # rapp-user-frontend
 
+## Requirements
+Python>=3.10
+
 ## Installation
 1. Clone the repo
 
