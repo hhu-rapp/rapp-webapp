@@ -261,7 +261,14 @@ def prediction(db_id, query_id, model_id):
     estimator = load(current_app.config['UPLOAD_FOLDER'] + '/' + model.filename)['model']
     pred_df = pipeline.predict(estimator, df, query.name)
 
-    return render_template('main/machine-learning.html', df=pred_df)
+
+    def color_rows(probability):
+        color = 'rgba(255, 0, 0, 0.35)' if pipeline.threshold(probability) else 'rgba(0, 200, 0, 0.25)'
+        return 'background-color: %s' % color
+
+    styled_df = pred_df.style.applymap(color_rows, subset=[pred_df.columns[-1]])
+
+    return render_template('main/machine-learning.html', df=styled_df)
 
 
 @main.route('/reset_password/<int:id>')
