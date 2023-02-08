@@ -261,12 +261,13 @@ def prediction(db_id, query_id, model_id):
     estimator = load(current_app.config['UPLOAD_FOLDER'] + '/' + model.filename)['model']
     pred_df = pipeline.predict(estimator, df, query.name)
 
+    def highlight_greaterthan(s, threshold_val, column):
+        is_max = pd.Series(data=False, index=s.index)
+        is_max[column] = s.loc[column] >= threshold_val
+        return ['background-color: rgba(255, 0, 0, 0.25)' if is_max.any()
+                else 'background-color: rgba(0, 200, 0, 0.15)' for v in is_max]
 
-    def color_rows(probability):
-        color = 'rgba(255, 0, 0, 0.35)' if pipeline.threshold(probability) else 'rgba(0, 200, 0, 0.25)'
-        return 'background-color: %s' % color
-
-    styled_df = pred_df.style.applymap(color_rows, subset=[pred_df.columns[-1]])
+    styled_df = pred_df.style.apply(highlight_greaterthan, threshold_val=0.8, column=[pred_df.columns[-1]], axis=1)
 
     return render_template('main/machine-learning.html', df=styled_df)
 
