@@ -40,7 +40,7 @@ def predict(model, X, label):
         Target variable to be predicted on in X.
     """
     if label in X.columns:
-        y = X.pop(label, axis=1)
+        y = X.drop(labels=label, axis=1)
     else:
         y = None
         
