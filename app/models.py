@@ -59,7 +59,7 @@ class Model(db.Model):      # type: ignore
 
     id: db.Column = db.Column(db.Integer(), primary_key=True)
     name: db.Column = db.Column(db.String(255))
-    model: db.Column = db.Column(db.String(4095))
+    filename: db.Column = db.Column(db.String(4095))
     timestamp: db.Column = db.Column(db.DateTime(), default=datetime.utcnow)
     query_id: db.Column = db.Column(db.Integer(), db.ForeignKey('queries.id'))
 

@@ -25,7 +25,7 @@ def setup_queries_and_models(uploads: str, db_id: int) -> None:
         # Add models
         for model_path in model_paths:
             model_name = os.path.splitext(os.path.basename(model_path))[0]
-            model = Model(name=model_name, model=os.path.relpath(model_path, uploads), query_id=query.id)
+            model = Model(name=model_name, filename=os.path.relpath(model_path, uploads), query_id=query.id)
             model.save()
 
 

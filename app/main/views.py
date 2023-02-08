@@ -224,7 +224,7 @@ def select_prediction_query(db_id):
 
 @main.route('/machine-learning/<int:db_id>/<int:query_id>')
 @login_required
-def prediction(db_id, query_id):
+def data(db_id, query_id):
     db = MLDatabase.query.get_or_404(db_id)
     query = Query.query.get_or_404(query_id)
 
@@ -382,7 +382,7 @@ def add_model():
 
         model = Model(        # type: ignore
             name=form.name.data,
-            model=unique_filename
+            filename=unique_filename
         )
         model.save()
         flash('Model added.')
