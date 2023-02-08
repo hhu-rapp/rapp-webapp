@@ -1,5 +1,6 @@
 import pandas as pd
 import sqlalchemy
+from joblib import load
 
 from flask import abort, current_app, flash, redirect, render_template, url_for
 from flask_login import current_user, login_required
@@ -14,6 +15,7 @@ from .forms import (DatabaseForm, NewsForm, PasswordChangeForm, RegisterForm,
 from ..decorators import admin_required
 from ..email import send_email
 from ..models import MLDatabase, Model, News, Query, User
+from ml_backend import pipeline
 
 
 @main.route('/')
@@ -235,6 +237,30 @@ def prediction(db_id, query_id):
     with engine.connect() as conn:
         query_string = sqlalchemy.text(query.query_string)
         df = pd.DataFrame(conn.execute(query_string).fetchall())
+
+    return render_template('main/machine-learning.html', df=df)
+
+
+@main.route('/prediction/<int:db_id>/<int:query_id>/<int:model_id>')
+@login_required
+def prediction(db_id, query_id, model_id):
+    db = MLDatabase.query.get_or_404(db_id)
+    query = Query.query.get_or_404(query_id)
+    model = Model.query.get_or_404(model_id)
+
+    if db.user_id != current_user.id or not current_user.is_admin:
+        abort(403)
+
+    # TODO: remove hardcoded sqlite
+    db_uri = 'sqlite:///' + current_app.config['UPLOAD_FOLDER'] + '/' + db.filename
+    engine = sqlalchemy.create_engine(db_uri)
+    with engine.connect() as conn:
+        query_string = sqlalchemy.text(query.query_string)
+        df = pd.DataFrame(conn.execute(query_string).fetchall())
+        
+    estimator = load(model.filename)['model']
+    
+    pred_df = pipeline.prediction(estimator, df, query.name)
 
     return render_template('main/machine-learning.html', df=df)
 
