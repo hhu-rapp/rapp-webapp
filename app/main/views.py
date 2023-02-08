@@ -257,12 +257,11 @@ def prediction(db_id, query_id, model_id):
     with engine.connect() as conn:
         query_string = sqlalchemy.text(query.query_string)
         df = pd.DataFrame(conn.execute(query_string).fetchall())
-        
-    estimator = load(model.filename)['model']
-    
+
+    estimator = load(current_app.config['UPLOAD_FOLDER'] + '/' + model.filename)['model']
     pred_df = pipeline.prediction(estimator, df, query.name)
 
-    return render_template('main/machine-learning.html', df=df)
+    return render_template('main/machine-learning.html', df=pred_df)
 
 
 @main.route('/reset_password/<int:id>')
