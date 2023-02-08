@@ -269,7 +269,7 @@ def prediction(db_id, query_id, model_id):
 
     styled_df = pred_df.style.apply(highlight_greaterthan, threshold_val=0.8, column=[pred_df.columns[-1]], axis=1)
 
-    return render_template('main/machine-learning.html', df=styled_df)
+    return render_template('main/machine-learning.html', styled_df=styled_df)
 
 
 @main.route('/reset_password/<int:id>')

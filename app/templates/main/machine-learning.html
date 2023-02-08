@@ -7,5 +7,5 @@
     <a href="">Statistics/Images</a> (to be implemented)
     <br>
     <a href="">Fairness</a> (to be implemented)
-    {{ df.to_html(table_id='query-results', classes='display') | safe}}
+    {{ styled_df.to_html(table_uuid="prediction", table_id='query-results', classes='display') | safe}}
 {% endblock %}
