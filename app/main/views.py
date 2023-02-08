@@ -264,8 +264,8 @@ def prediction(db_id, query_id, model_id):
     def highlight_greaterthan(s, threshold_val, column):
         is_max = pd.Series(data=False, index=s.index)
         is_max[column] = s.loc[column] >= threshold_val
-        return ['background-color: rgba(255, 0, 0, 0.25)' if is_max.any()
-                else 'background-color: rgba(0, 200, 0, 0.15)' for v in is_max]
+        return ['border-top: 0.5pt solid silver; background-color: rgba(255, 0, 0, 0.25)' if is_max.any()
+                else 'border-top: 0.5pt solid silver; background-color: rgba(0, 200, 0, 0.15)' for v in is_max]
 
     styled_df = pred_df.style.apply(highlight_greaterthan, threshold_val=0.8, column=[pred_df.columns[-1]], axis=1)
 
