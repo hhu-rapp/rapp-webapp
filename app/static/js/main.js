@@ -10,7 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 $(document).ready(function () {
     $('#query-results').DataTable();
-    $('#T_prediction').DataTable();
+    $('#T_prediction').DataTable({
+       "scrollX": true});
     var elems = document.querySelectorAll('select');
     var instances = M.FormSelect.init(elems, {});
 });
