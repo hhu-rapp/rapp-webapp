@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def preprocess_data(X):
     """
     Preprocesses X data.
@@ -23,6 +24,7 @@ def preprocess_data(X):
         X = X.drop(categorical, axis=1)
 
     return X
+
 
 def predict(model, X, label):
     """

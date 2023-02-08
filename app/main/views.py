@@ -259,7 +259,7 @@ def prediction(db_id, query_id, model_id):
         df = pd.DataFrame(conn.execute(query_string).fetchall())
 
     estimator = load(current_app.config['UPLOAD_FOLDER'] + '/' + model.filename)['model']
-    pred_df = pipeline.prediction(estimator, df, query.name)
+    pred_df = pipeline.predict(estimator, df, query.name)
 
     return render_template('main/machine-learning.html', df=pred_df)
 
