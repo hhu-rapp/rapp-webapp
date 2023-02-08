@@ -15,3 +15,7 @@ $(document).ready(function () {
     var elems = document.querySelectorAll('select');
     var instances = M.FormSelect.init(elems, {});
 });
+
+$(document).ready(function () {
+    $('.sidenav').sidenav();
+});
