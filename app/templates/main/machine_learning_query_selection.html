@@ -5,6 +5,6 @@
     <br>
     {% for query in queries %}
         {{ query.name }}
-        <a href={{ url_for('main.prediction', db_id=db_id, query_id=query.id)}}>select</a>
+        <a href={{ url_for('main.data', db_id=db_id, query_id=query.id)}}>select</a>
     {% endfor %}
 {% endblock %}
