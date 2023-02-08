@@ -15,7 +15,7 @@ from .forms import (DatabaseForm, NewsForm, PasswordChangeForm, RegisterForm,
 from ..decorators import admin_required
 from ..email import send_email
 from ..models import MLDatabase, Model, News, Query, User
-from ml_backend import pipeline
+from ..ml_backend import pipeline
 
 
 @main.route('/')
