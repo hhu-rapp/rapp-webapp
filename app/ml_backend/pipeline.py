@@ -17,9 +17,9 @@ def preprocess_data(X):
     categorical = X.select_dtypes(exclude=["number"]).columns
     
     # Adapt to categorical data.
-    if len(categorical) != 0:
-        categorical = pd.get_dummies(data=X[categorical], columns=categorical)
-        X = pd.concat([X, categorical], axis=1)
+    if len(categorical) > 0:
+        one_hot = pd.get_dummies(data=X[categorical], columns=categorical)
+        X = pd.concat([X, one_hot], axis=1)
         # Remove old categorical attributes from input features
         X = X.drop(categorical, axis=1)
 
@@ -40,10 +40,8 @@ def predict(model, X, label):
         Target variable to be predicted on in X.
     """
     if label in X.columns:
-        y = X.drop(labels=label, axis=1)
-    else:
-        y = None
-        
+        X.drop(labels=label, axis=1, inplace=True)
+
     X = preprocess_data(X)
     
     # 1 is the worst case outcome for the target variable
