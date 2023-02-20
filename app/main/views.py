@@ -19,6 +19,7 @@ from ..ml_backend import pipeline
 
 
 @main.route('/')
+@login_required
 def index():
     news: News = News.query.order_by(News.timestamp.desc()).all()
     return render_template('main/index.html', news=news)
