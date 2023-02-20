@@ -3,3 +3,17 @@ div.dataTables_wrapper {
     margin: 0 auto;
     padding: 0;
 }
+
+.bg-hhu-gradient {
+  background-image: linear-gradient(to right, rgba(0,106,179,1) 0%, rgba(0,54,99,1) 100%);
+}
+
+.text-hhu-gradient {
+    background-color: #006AB3FF;
+    background-image: linear-gradient(to right, rgba(0, 106, 179, 1) 0%, rgba(0, 54, 99, 1) 100%) !important;
+    background-size: 100%;
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -moz-text-fill-color: transparent;
+}

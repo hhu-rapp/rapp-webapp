@@ -2,19 +2,66 @@
 {% from "_formhelpers.html" import render_field %}
 
 {% block body %}
-    <form method="POST">
-        {{ form.hidden_tag() }}
-        <div class="input-field">
-            {{ render_field(form.email) }}
+<body class="">
+  <main class="main-content  mt-0">
+    <section>
+      <div class="page-header min-vh-75">
+        <div class="container">
+          <div class="row">
+            <div class="col-xl-4 col-lg-5 col-md-6 d-flex flex-column mx-auto">
+              <div class="card card-plain mt-8">
+                  <img src="{{url_for('static', filename='img/logo-hhu.svg')}}" class="img-fluid">
+                <div class="card-header pb-0 text-left bg-transparent text-center">
+                  <h3 class="font-weight-bolder text-hhu-gradient">Welcome back!</h3>
+                  <p class="mb-0">Enter your email and password to log in</p>
+                </div>
+                <div class="card-body">
+                  <form role="form" method="POST">
+                      {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                      <div class="input-field">
+                        {{ render_field(form.email) }}
+                      </div>
+                    </div>
+                    <div class="mb-3">
+                      <div class="input-field">
+                        {{ render_field((form.password)) }}
+                      </div>
+                    </div>
+                    <label>
+                    {{ form.remember_me }}
+                    <span>Remember me!</span>
+                    </label>
+                    <div class="text-center text-white">
+                        {{ form.submit(class="btn bg-hhu-gradient w-100 mt-4 mb-0 text-white") }}
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="oblique position-absolute top-0 h-100 d-md-block d-none me-n8">
+                <div class="oblique-image bg-cover position-absolute fixed-top ms-auto h-100 z-index-0 ms-n6" style="background-image: url('../static/img/shiny-background.jpg')"></div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="input-field">
-            {{ render_field(form.password) }}
+      </div>
+    </section>
+  </main>
+    
+      <footer class="footer py-5">
+    <div class="container">
+      
+      <div class="row">
+        <div class="col-8 mx-auto text-center mt-1">
+          <p class="mb-0 text-secondary">
+            Copyright © <script>
+              document.write(new Date().getFullYear())
+            </script> RAPP
+          </p>
         </div>
-        <label>
-            {{ form.remember_me }}
-            <span>Remember me!</span>
-        </label>
-        <br>
-        {{ form.submit(class="btn") }}
-    </form>
+      </div>
+    </div>
+  </footer>
 {% endblock %}
