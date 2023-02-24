@@ -29,3 +29,22 @@ div.dataTables_wrapper {
   transform: none !important;
 }
 
+.dash-content {
+  opacity: 0;
+  transform: translateX(100%) !important;
+  transition: opacity 0.5s ease, transform 0.5s ease !important;
+}
+
+.dash-content.show {
+  opacity: 1;
+  transform: translateX(0) !important;
+}
+
+.navbar-brand-img{
+    min-height: 5em;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2))!important;
+}
+
+.nav-link.active .icon{
+    background-image: linear-gradient(to right, rgba(0, 106, 179, 1) 0%, rgba(0, 54, 99, 1) 100%) !important;
+}
