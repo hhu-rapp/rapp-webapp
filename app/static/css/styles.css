@@ -17,3 +17,15 @@ div.dataTables_wrapper {
     -webkit-text-fill-color: transparent;
     -moz-text-fill-color: transparent;
 }
+
+.login-form {
+  opacity: 0 !important;
+  transform: translateY(50px) !important;
+  transition: opacity 1s ease, transform 1s ease !important;
+}
+
+.login-form.show {
+  opacity: 1 !important;
+  transform: none !important;
+}
+

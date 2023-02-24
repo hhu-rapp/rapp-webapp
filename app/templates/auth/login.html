@@ -1,67 +1,105 @@
-{% extends 'base.html' %}
 {% from "_formhelpers.html" import render_field %}
 
-{% block body %}
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+	<!--     Fonts and icons     -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet"/>
+
+	<!-- Font Awesome Icons -->
+	<script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+	<link href="{{ url_for('static', filename='css/nucleo-svg.css') }}" rel="stylesheet"/>
+	<!-- CSS Files -->
+	<link id="pagestyle" href="{{ url_for('static', filename='css/soft-ui-dashboard.css') }}" rel="stylesheet"/>
+	<title>RAPP Log in</title>
+</head>
+
 <body class="">
-  <main class="main-content  mt-0">
-    <section>
-      <div class="page-header min-vh-75">
-        <div class="container">
-          <div class="row">
-            <div class="col-xl-4 col-lg-5 col-md-6 d-flex flex-column mx-auto">
-              <div class="card card-plain mt-8">
-                  <img src="{{url_for('static', filename='img/logo-hhu.svg')}}" class="img-fluid">
-                <div class="card-header pb-0 text-left bg-transparent text-center">
-                  <h3 class="font-weight-bolder text-hhu-gradient">Welcome back!</h3>
-                  <p class="mb-0">Enter your email and password to log in</p>
-                </div>
-                <div class="card-body">
-                  <form role="form" method="POST">
-                      {{ form.hidden_tag() }}
-                    <div class="mb-3">
-                      <div class="input-field">
-                        {{ render_field(form.email) }}
-                      </div>
-                    </div>
-                    <div class="mb-3">
-                      <div class="input-field">
-                        {{ render_field((form.password)) }}
-                      </div>
-                    </div>
-                    <label>
-                    {{ form.remember_me }}
-                    <span>Remember me!</span>
-                    </label>
-                    <div class="text-center text-white">
-                        {{ form.submit(class="btn bg-hhu-gradient w-100 mt-4 mb-0 text-white") }}
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="oblique position-absolute top-0 h-100 d-md-block d-none me-n8">
-                <div class="oblique-image bg-cover position-absolute fixed-top ms-auto h-100 z-index-0 ms-n6" style="background-image: url('../static/img/shiny-background.jpg')"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-    
-      <footer class="footer py-5">
-    <div class="container">
-      
-      <div class="row">
-        <div class="col-8 mx-auto text-center mt-1">
-          <p class="mb-0 text-secondary">
-            Copyright © <script>
-              document.write(new Date().getFullYear())
-            </script> RAPP
-          </p>
-        </div>
-      </div>
-    </div>
-  </footer>
-{% endblock %}
+<main class="main-content  mt-0">
+	<section>
+		<div class="page-header min-vh-75">
+			<div class="container">
+				<div class="row">
+					<div class="col-xl-4 col-lg-5 col-md-6 d-flex flex-column mx-auto">
+					
+						{% for message in get_flashed_messages() %}
+							<div class="alert alert-danger alert-dismissible fade show zindex-modal" role="alert">
+								<span class="alert-icon"><i class="ni ni-like-2"></i></span>
+								<span class="alert-text">  {{ message }}</span>
+								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+						{% endfor %}
+					
+						<div class="card card-plain mt-8 login-form">
+							<img src="{{ url_for('static', filename='img/logo-hhu.svg') }}" class="img-fluid">
+							<div class="card-header pb-0 text-left bg-transparent text-center">
+								<h3 class="font-weight-bolder text-hhu-gradient">Welcome back!</h3>
+								<p class="mb-0">Enter your email and password to log in</p>
+							</div>
+							<div class="card-body">
+								<form role="form" method="POST">
+									{{ form.hidden_tag() }}
+									<div class="mb-3">
+										<div class="input-field">
+											{{ render_field(form.email) }}
+										</div>
+									</div>
+									<div class="mb-3">
+										<div class="input-field">
+											{{ render_field((form.password)) }}
+										</div>
+									</div>
+									<label>
+										{{ form.remember_me }}
+										<span>Remember me!</span>
+									</label>
+									<div class="text-center text-white">
+										{{ form.submit(class="btn bg-hhu-gradient w-100 mt-4 mb-0 text-white") }}
+									</div>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="oblique position-absolute top-0 h-100 d-md-block d-none me-n8">
+							<div class="oblique-image bg-cover position-absolute fixed-top ms-auto h-100 z-index-0 ms-n6"
+								 style="background-image: url('../static/img/shiny-background.jpg')"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+</main>
+
+<footer class="footer py-5">
+	<div class="container">
+		<div class="row">
+			<div class="col-8 mx-auto text-center mt-1">
+				<p class="mb-0 text-secondary">
+					Copyright ©
+					<script>
+                        document.write(new Date().getFullYear())
+					</script>
+					RAPP
+				</p>
+			</div>
+		</div>
+	</div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<!--   Core JS Files   -->
+<script src="{{ url_for('static', filename='js/core/popper.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/core/bootstrap.min.js') }}"></script>
+<!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
+<script src="{{ url_for('static', filename='js/soft-ui-dashboard.min.js') }}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelector(".login-form").classList.add("show");
+    });</script>
+</body>
+</html>
