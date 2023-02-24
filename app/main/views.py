@@ -239,7 +239,7 @@ def data(db_id, query_id):
         query_string = sqlalchemy.text(query.query_string)
         df = pd.DataFrame(conn.execute(query_string).fetchall())
 
-    return render_template('main/machine-learning.html', df=df)
+    return render_template('main/machine-learning.html', styled_df=df.style)
 
 
 @main.route('/prediction/<int:db_id>/<int:query_id>/<int:model_id>')
