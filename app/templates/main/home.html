@@ -1,15 +1,31 @@
 {% extends 'base.html' %}
 
 {% block body %}
-    <h1>Home</h1>
-    <br>
-    <a href={{ url_for('main.manage_ml_databases') }}>manage Databases</a>
-    <br>
-    {% for ml_database in ml_databases %}
-        {{ ml_database.name }}, {{ ml_database.timestamp }}, 
-        <a href={{ url_for('main.select_prediction_query', db_id=ml_database.id) }}>select</a>
-        <br>
-    {% endfor %}
-    <br>
-
+<div class="container-fluid py-4">
+	<div class="row">
+		<div class="col-12">
+			<div class="card mb-4">
+				<div class="card-header pb-0">
+					<h6>Dashboard</h6>
+					<br>
+					<a href="{{ url_for('main.manage_ml_databases') }}">manage Databases</a>
+				</div>
+				<div class="card-body px-0 pt-0 pb-2">
+					<div class="container">
+						{% for ml_database in ml_databases %}
+							{{ ml_database.name }}, {{ ml_database.timestamp }},
+							<a href="{{ url_for('main.select_prediction_query', db_id=ml_database.id) }}">select</a>
+							<br>
+						{% endfor %}
+						<br>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	let element = document.getElementById("datasetLink");
+	element.classList.add("active");
+</script>
 {% endblock %}

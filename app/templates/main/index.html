@@ -1,11 +1,16 @@
 {% extends 'base.html' %}
 
 {% block body %}
-    {% for post in news %}
-        <b>{{ post.title }}</b>
-        <br>
-        <p>{{ post.text }}</p>
-        {{ post.author.email }}
-        {{ post.timestamp }}
-    {% endfor %}
+	{% for post in news %}
+		<b>{{ post.title }}</b>
+		<br>
+		<p>{{ post.text }}</p>
+		{{ post.author.email }}
+		{{ post.timestamp }}
+	{% endfor %}
+
+<script>
+	let element = document.getElementById("dashboardLink");
+	element.classList.add("active");
+</script>
 {% endblock %}

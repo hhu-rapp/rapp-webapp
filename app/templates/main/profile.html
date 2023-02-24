@@ -1,8 +1,27 @@
 {% extends "base.html" %}
 
 {% block body %}
-    <h1>Profile</h1>
-    Email: {{ current_user.email }}
-    <br>
-    <a href={{ url_for("main.change_password") }}>change password</a>
+<div class="container-fluid py-4">
+	<div class="row">
+		<div class="col-12">
+			<div class="card mb-4">
+				<div class="card-header pb-0">
+					<h6>Profile</h6>
+				</div>
+				<div class="card-body px-0 pt-0 pb-2">
+					<div class="container">
+						Email: {{ current_user.email }}
+						<br>
+						<a href={{ url_for("main.change_password") }}>change password</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	let element = document.getElementById("profileLink");
+	element.classList.add("active");
+</script>
 {% endblock %}

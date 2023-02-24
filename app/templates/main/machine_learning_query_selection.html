@@ -1,10 +1,32 @@
 {% extends "base.html" %}
 
 {% block body %}
-    Select Query
-    <br>
-    {% for query in queries %}
-        {{ query.name }}
-        <a href={{ url_for('main.data', db_id=db_id, query_id=query.id)}}>select</a>
-    {% endfor %}
+<div class="container-fluid py-4">
+	<div class="row">
+		<div class="col-12">
+			<div class="card mb-4">
+				<div class="card-header pb-0">
+					<h6>Queries</h6>
+					<p>Select Query
+					<p>
+				</div>
+				<div class="card-body px-0 pt-0 pb-2">
+					<div class="container">
+						<br>
+						{% for query in queries %}
+							{{ query.name }}
+							<a href={{ url_for('main.data', db_id=db_id, query_id=query.id) }}>select</a>
+						{% endfor %}
+						<br>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	let element = document.getElementById("datasetLink");
+	element.classList.add("active");
+</script>
+
 {% endblock %}
