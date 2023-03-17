@@ -4,6 +4,10 @@ div.dataTables_wrapper {
     padding: 0;
 }
 
+body {
+    overflow-x: hidden;
+}
+
 .bg-hhu-gradient {
   background-image: linear-gradient(to right, rgba(0,106,179,1) 0%, rgba(0,54,99,1) 100%);
 }
