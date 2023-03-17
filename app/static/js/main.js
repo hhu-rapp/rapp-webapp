@@ -6,4 +6,6 @@ $(document).ready(function () {
        "scrollX": true});
 });
 
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelector(".dash-content").classList.add("show");
 });
