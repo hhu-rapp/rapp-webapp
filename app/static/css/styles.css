@@ -52,3 +52,22 @@ body {
 .nav-link.active .icon{
     background-image: linear-gradient(to right, rgba(0, 106, 179, 1) 0%, rgba(0, 54, 99, 1) 100%) !important;
 }
+
+.modal-backdrop.show {
+    z-index: 1040 !important;
+}
+.modal.show {
+    z-index: 1050 !important;
+    overflow: inherit;
+}
+
+.modal-open .dash-content {
+    z-index: 1050;
+}
+
+.modal-open .card {
+    background: #979797;
+}
+.modal-open .card-header {
+    background: #979797;
+}
