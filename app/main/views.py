@@ -21,8 +21,11 @@ from ..ml_backend import pipeline
 @main.route('/')
 @login_required
 def index():
+    page_title = "Dashboard"
     news: News = News.query.order_by(News.timestamp.desc()).all()
-    return render_template('main/index.html', news=news)
+
+    notifications = [{"link": '/prediction/1/1/1', "title": 'New Prediction', "mins_ago": 10}]
+    return render_template('main/index.html', news=news, notifications=notifications, page_title=page_title)
 
 
 @main.route('/admin/news')
