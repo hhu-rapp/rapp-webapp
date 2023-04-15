@@ -50,7 +50,14 @@ body {
 }
 
 .nav-link.active .icon{
-    background-image: linear-gradient(to right, rgba(0, 106, 179, 1) 0%, rgba(0, 54, 99, 1) 100%) !important;
+    /*background-image: linear-gradient(to right, rgba(0, 106, 179, 1) 0%, rgba(0, 54, 99, 1) 100%) !important;*/
+    background-image: linear-gradient(to right, rgba(0, 106, 179, 1) 0%, rgba(0, 106, 179, 1) 100%) !important;
+}
+
+.navbar-nav .nav-link {
+    font-size: 0.8rem; /* reduce the font size */
+    padding: 0.2rem 0.5rem; /* adjust the padding */
+    margin: 0.1rem 0; /* adjust the margin */
 }
 
 .modal-backdrop.show {
