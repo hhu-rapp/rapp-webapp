@@ -134,7 +134,8 @@ def delete_ml_database(id: int):
 @main.route('/admin')
 @admin_required
 def admin():
-    return render_template('main/admin.html')
+    page_title = "Admin Panel"
+    return render_template('main/admin.html', page_title=page_title)
 
 
 @main.route('/users')
@@ -248,6 +249,8 @@ def data(db_id, query_id):
 @main.route('/prediction/<int:db_id>/<int:query_id>/<int:model_id>')
 @login_required
 def prediction(db_id, query_id, model_id):
+    page_title = "Student Predictions"
+
     db = MLDatabase.query.get_or_404(db_id)
     query = Query.query.get_or_404(query_id)
     model = Model.query.get_or_404(model_id)
@@ -273,7 +276,7 @@ def prediction(db_id, query_id, model_id):
 
     styled_df = pred_df.style.apply(highlight_greaterthan, threshold_val=0.8, column=[pred_df.columns[-1]], axis=1)
 
-    return render_template('main/machine-learning.html', styled_df=styled_df)
+    return render_template('main/machine-learning.html', styled_df=styled_df, page_title=page_title)
 
 
 @main.route('/reset_password/<int:id>')
@@ -297,7 +300,8 @@ def reset_password(id):
 @main.route('/profile')
 @login_required
 def profile():
-    return render_template('main/profile.html')
+    page_title = "Profile"
+    return render_template('main/profile.html', page_title = page_title)
 
 
 @main.route('/change_password', methods=['GET', 'POST'])
