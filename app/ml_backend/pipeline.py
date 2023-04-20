@@ -15,7 +15,7 @@ def preprocess_data(X):
         Preprocessed X data.
     """
     categorical = X.select_dtypes(exclude=["number"]).columns
-    
+
     # Adapt to categorical data.
     if len(categorical) > 0:
         one_hot = pd.get_dummies(data=X[categorical], columns=categorical)
@@ -42,18 +42,18 @@ def predict(model, X, label):
     if label in X.columns:
         X.drop(labels=label, axis=1, inplace=True)
 
-    X = preprocess_data(X)
-    
+    X_encoded = preprocess_data(X)
+
     # 1 is the worst case outcome for the target variable
-    X['Prediction'] = model.predict_proba(X)[:, 1]
-    
+    X['Risk Score'] = model.predict_proba(X_encoded)[:, 1]
+
     return X
-    
-    
+
+
 def threshold(proba, value=0.80):
     """
     Returns threshold for prediction.
-    
+
     Parameters
     ----------
     proba : (n_samples, 1)
