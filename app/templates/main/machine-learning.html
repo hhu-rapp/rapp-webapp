@@ -2,28 +2,75 @@
 
 {% block body %}
 <div class="container-fluid py-4">
+
+<div class="d-flex ">
+<ul class="me-auto nav nav-pills m-2" id="prediction-tabs" role="tablist">
+	<li class="nav-item">
+    <a class="nav-link active" id="individual-tab" href="#" data-toggle="tab" data-target=".individualPred">Individual-level</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="group-pill" href="#group-level" data-toggle="tab" data-target=".aggregationSelect, .featureSelect, .groupPred">Group-level</a>
+  </li>
+</ul>
+	
+<div class=" d-flex tab-content">
+	<div class="p-2 dropdown tab-pane fade featureSelect" role="tabpanel">
+  <button class="btn bg-gradient-primary dropdown-toggle" type="button" id="featureSelectButton" data-bs-toggle="dropdown" aria-expanded="false">
+    Feature
+  </button>
+  <div class="dropdown-menu dropdown-menu" aria-labelledby="dropdownMenuButton">
+    {% for feature in features %}
+	  <a class="dropdown-item feature-link" href="#">{{ feature }}</a>
+    {% endfor %}
+  </div>
+	</div>
+
+	<div class="p-2 dropdown tab-pane fade aggregationSelect" role="tabpanel">
+  <button class="btn bg-gradient-secondary dropdown-toggle" type="button" id="aggregationSelectButton" data-bs-toggle="dropdown" aria-expanded="false">
+    Average
+  </button>
+  <div class="dropdown-menu dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <a class="dropdown-item aggregation-link" href="#">Average</a>
+    <a class="dropdown-item aggregation-link" href="#">Count</a>
+    <a class="dropdown-item aggregation-link" href="#">Maximum</a>
+	<a class="dropdown-item aggregation-link" href="#">Minimum</a>
+    <a class="dropdown-item aggregation-link" href="#">Sum</a>
+  </div>
+	</div>
+</div>
+</div>
+
 	<div class="row">
-		<div class="col-12">
-			<div class="card mb-4">
+		<div class="col-12 tab-content">
+			{# Individual Tab#}
+			<div class="card mb-4 tab-pane fade show active individualPred" role="tabpanel" aria-labelledby="individual-tab">
 				<div class="card-header pb-0">
-					<h6>Prediction</h6>
-					MachineLearning Statistics (best model? all models?, to be implemented)
-					<br>
-					<a href="">Statistics/Images</a> (to be implemented)
-					<br>
-					<a href="">Fairness</a> (to be implemented)
+
 				</div>
 				<div class="card-body px-0 pt-0 pb-2">
-					<div class="container">
-						{{ styled_df.to_html(table_uuid="prediction", table_id='query-results', classes='display') |
+					<div class="container" id="pred-table">
+						{{ styled_df.to_html(table_uuid="prediction", classes='display') |
 						safe}}
+					</div>
+				</div>
+			</div>
+			{# Group Tab#}
+			<div class="card mb-4 tab-pane fade groupPred" role="tabpanel" aria-labelledby="group-tab">
+				<div class="card-header pb-0">
+
+				</div>
+				<div class="card-body px-0 pt-0 pb-2">
+					<div class="container" id="group-pred-table">
+						<p style="text-align: center">
+						To view data at the group level, you can select a Feature and an Aggregation from the dropdown menus above. Once you've made a selection, your data will be displayed. 
+						</p>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
-
+	
 <script>
 	let element = document.getElementById("predictionLink");
 	element.classList.add("active");

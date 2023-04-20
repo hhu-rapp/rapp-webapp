@@ -78,3 +78,14 @@ body {
 .modal-open .card-header {
     background: #979797;
 }
+
+.nav-pills .nav-link {
+  transition: background-color 0.2s ease;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+  color: var(--bs-nav-pills-link-active-color);
+  background-color: var(--bs-nav-pills-link-active-bg);
+    box-shadow: 0 0 0 0.1rem rgba(0, 0, 0, 0.25);
+}

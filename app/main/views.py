@@ -2,12 +2,11 @@ import pandas as pd
 import sqlalchemy
 from joblib import load
 
-from flask import abort, current_app, flash, redirect, render_template, url_for
+from flask import abort, current_app, flash, redirect, render_template, url_for, request, jsonify
 from flask_login import current_user, login_required
 from pathlib import Path
 from uuid import uuid4
 from werkzeug.utils import secure_filename
-
 
 from . import main
 from .forms import (DatabaseForm, NewsForm, PasswordChangeForm, RegisterForm,
@@ -43,7 +42,7 @@ def add_news():
         news_post = News(
             title=form.title.data,
             text=form.text.data,
-            author_id=current_user.id       # type: ignore
+            author_id=current_user.id  # type: ignore
         )
         news_post.save()
         flash('New post has been added.')
@@ -83,7 +82,7 @@ def delete_news(news_id: int):
 def ml_database(id: int):
     ml_database: MLDatabase = MLDatabase.query.get_or_404(id)
 
-    if ml_database.user_id != current_user.id:      # type: ignore
+    if ml_database.user_id != current_user.id:  # type: ignore
         abort(403)
 
     return render_template(
@@ -98,7 +97,7 @@ def add_ml_database():
     form: DatabaseForm = DatabaseForm()
     if form.validate_on_submit():
         name: str = form.name.data
-        user_id: int = current_user.id      # type: ignore
+        user_id: int = current_user.id  # type: ignore
 
         filename = secure_filename(form.file.data.filename or '')
         if not filename:
@@ -123,7 +122,7 @@ def add_ml_database():
 def delete_ml_database(id: int):
     ml_database: MLDatabase = MLDatabase.query.get_or_404(id)
 
-    if ml_database.user_id != current_user.id or not current_user.is_admin:   # type: ignore
+    if ml_database.user_id != current_user.id or not current_user.is_admin:  # type: ignore
         abort(403)
 
     ml_database.delete()
@@ -155,7 +154,7 @@ def add_user():
         user = User(
             email=form.email.data,
             password=password
-        )       # type: ignore
+        )  # type: ignore
         user.save()
 
         send_email(
@@ -209,7 +208,7 @@ def delete_user(id: int):
 @main.route('/home')
 @login_required
 def home():
-    ml_databases = current_user.ml_databases    # type: ignore
+    ml_databases = current_user.ml_databases  # type: ignore
     return render_template(
         'main/home.html',
         ml_databases=ml_databases
@@ -264,10 +263,47 @@ def prediction(db_id, query_id, model_id):
     estimator = load(current_app.config['UPLOAD_FOLDER'] + '/' + model.filename)['model']
     pred_df = pipeline.predict(estimator, df, label)
 
+    styled_df = df.style.apply(highlight_greaterthan, threshold_val=0.8, column=[pred_df.columns[-1]], axis=1)
+
+    return render_template('main/machine-learning.html', styled_df=styled_df, features=pred_df.columns[:-1], page_title=page_title)
+
+
+@main.route('/group_level_prediction/<int:db_id>/<int:query_id>/<int:model_id>')
+@login_required
+def group_prediction(db_id, query_id, model_id):
+    aggregations = {
+        'Average': 'mean',
+        'Count': 'count',
+        'Sum': 'sum',
+        'Maximum': 'max',
+        'Minimum': 'min'
+    }
+    db = MLDatabase.query.get_or_404(db_id)
+    query = Query.query.get_or_404(query_id)
+    model = Model.query.get_or_404(model_id)
+
+    if db.user_id != current_user.id or not current_user.is_admin:
+        abort(403)
+
+    df = query_database(db, query)
+    label = query.name
+
+    estimator = load(current_app.config['UPLOAD_FOLDER'] + '/' + model.filename)['model']
+    pred_df = pipeline.predict(estimator, df, label)
+
+    group = request.args.get('feature', None)
+    agg = request.args.get('aggregation', 'Average')
+
+    if group not in pred_df.columns:
+        group = pred_df.columns[0]
+    if agg.strip('\n') not in aggregations.keys():
+        agg = 'Average'
+
+    pred_df = pred_df.groupby(by=group, dropna=False).agg(aggregations[agg])
 
     styled_df = pred_df.style.apply(highlight_greaterthan, threshold_val=0.8, column=[pred_df.columns[-1]], axis=1)
 
-    return render_template('main/machine-learning.html', styled_df=styled_df, page_title=page_title)
+    return jsonify(styled_df=styled_df.to_html(table_uuid="group_prediction", classes='display'))
 
 
 @main.route('/reset_password/<int:id>')
@@ -302,7 +338,7 @@ def change_password():
     if form.validate_on_submit():
         if current_user.verify_password(form.old_password.data):
             current_user.password = form.new_password.data
-            current_user.save()     # type: ignore
+            current_user.save()  # type: ignore
             flash('Password has been updated.')
             return redirect(url_for('main.profile'))
         flash('Wrong password.')
@@ -386,7 +422,7 @@ def add_model():
         form.model_file.data.save(
             Path(current_app.config['UPLOAD_FOLDER']) / unique_filename)
 
-        model = Model(        # type: ignore
+        model = Model(  # type: ignore
             name=form.name.data,
             filename=unique_filename
         )
@@ -399,7 +435,7 @@ def add_model():
 @main.route('/ml_databases')
 @login_required
 def manage_ml_databases():
-    ml_databases = current_user.ml_databases    # type: ignore
+    ml_databases = current_user.ml_databases  # type: ignore
     return render_template(
         'main/manage_ml_databases.html',
         ml_databases=ml_databases
