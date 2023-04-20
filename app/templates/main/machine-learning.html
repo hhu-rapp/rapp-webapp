@@ -76,5 +76,11 @@
 	element.classList.add("active");
     element = document.getElementById("predictionLinkMobile");
 	element.classList.add("active");
+		
+	var pathArray = window.location.pathname.split('/');
+	var db_id = pathArray[2];
+	var query_id = pathArray[3];
+	var model_id = pathArray[4];
+	$SCRIPT_PARAMS = '/' + db_id + '/' + query_id + '/' + model_id;
 </script>
 {% endblock %}
