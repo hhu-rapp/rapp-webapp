@@ -15,7 +15,7 @@ from .forms import (DatabaseForm, NewsForm, PasswordChangeForm, RegisterForm,
 from ..decorators import admin_required
 from ..email import send_email
 from ..models import MLDatabase, Model, News, Query, User
-from ..ml_backend import pipeline
+from ..ml_backend import pipeline, highlight_greaterthan, query_database
 
 
 @main.route('/')
@@ -258,21 +258,12 @@ def prediction(db_id, query_id, model_id):
     if db.user_id != current_user.id or not current_user.is_admin:
         abort(403)
 
-    # TODO: remove hardcoded sqlite
-    db_uri = 'sqlite:///' + current_app.config['UPLOAD_FOLDER'] + '/' + db.filename
-    engine = sqlalchemy.create_engine(db_uri)
-    with engine.connect() as conn:
-        query_string = sqlalchemy.text(query.query_string)
-        df = pd.DataFrame(conn.execute(query_string).fetchall())
+    df = query_database(db, query)
+    label = query.name
 
     estimator = load(current_app.config['UPLOAD_FOLDER'] + '/' + model.filename)['model']
-    pred_df = pipeline.predict(estimator, df, query.name)
+    pred_df = pipeline.predict(estimator, df, label)
 
-    def highlight_greaterthan(s, threshold_val, column):
-        is_max = pd.Series(data=False, index=s.index)
-        is_max[column] = s.loc[column] >= threshold_val
-        return ['border-top: 0.5pt solid silver; background-color: rgba(255, 0, 0, 0.25)' if is_max.any()
-                else 'border-top: 0.5pt solid silver; background-color: rgba(0, 200, 0, 0.15)' for v in is_max]
 
     styled_df = pred_df.style.apply(highlight_greaterthan, threshold_val=0.8, column=[pred_df.columns[-1]], axis=1)
 
