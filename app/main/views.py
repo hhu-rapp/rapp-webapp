@@ -335,6 +335,27 @@ def individual_performance(student_id):
     return jsonify(student_df.to_json(orient='records'))
 
 
+# Get individual Data
+@main.route('/group_performance/<string:group_id>')
+@login_required
+def group_performance(group_id):
+    # generate dummy data
+    df = generate_performance_history(100)
+
+    if group_id == 'degree':
+        # group by degree
+        grouped_df = df.groupby(by=['Num_Semester', 'Degree'], dropna=False).agg({'ECTS': 'mean'})
+    if group_id == 'major':
+        # group by studies
+        grouped_df = df.groupby(by=['Num_Semester', 'major'], dropna=False).agg({'ECTS': 'mean'}).sort_values(
+            by=['Num_Semester'])
+
+    # reset index to get Num_Semester and group as column
+    grouped_df = grouped_df.reset_index(0).reset_index()
+
+    return jsonify(grouped_df.to_json(orient='records'))
+
+
 @main.route('/reset_password/<int:id>')
 @login_required
 def reset_password(id):
