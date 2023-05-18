@@ -1,6 +1,7 @@
 import pandas as pd
 import sqlalchemy
 from joblib import load
+import json
 
 from flask import abort, current_app, flash, redirect, render_template, url_for, request, jsonify
 from flask_login import current_user, login_required
@@ -324,6 +325,9 @@ def individual_performance(student_id):
 
     # get data of that student
     student_df = df[df['Matrikel_Nummer'] == student_id]
+    # get Major and degree
+    major = student_df['Major'].iloc[0]
+    degree = student_df['Degree'].iloc[0]
     # group ECTS and sort by Num_Semester
     student_df = student_df.groupby(by=['Num_Semester'], dropna=False).agg({'ECTS': 'sum'}).sort_values(by=['Num_Semester'])
     # reset index to get Num_Semester as column
@@ -332,7 +336,14 @@ def individual_performance(student_id):
     # calculate ECTS cummulative based on Num_Semester
     student_df['ECTS'] = student_df['ECTS'].cumsum()
 
-    return jsonify(student_df.to_json(orient='records'))
+    response = student_df.to_json(orient='records')
+    # add major and degree to json response
+    response = json.loads(response)
+    # add major and degree to json response as separate object
+    response = {'data': response, 'major': major, 'degree': degree}
+    response = json.dumps(response)
+
+    return jsonify(response)
 
 
 # Get individual Data

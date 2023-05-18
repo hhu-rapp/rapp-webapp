@@ -126,18 +126,23 @@ function fetchIndividualPerformance(studentId) {
       const jsonData = JSON.parse(data);
 
       // Extract the necessary columns from the data
-      const numSemesterData = jsonData.map(function(item) {
+      const numSemesterData = jsonData.data.map(function(item) {
         return item.Num_Semester;
       });
-      const ectsData = jsonData.map(function(item) {
+      const ectsData = jsonData.data.map(function(item) {
         return item.ECTS;
       });
+      const studentMajor = jsonData.major;
+      const studentDegree = jsonData.degree;
+      
       
       // Check if the chart instance already exists
       if (chart) {
         // Update the chart's data
         chart.data.labels = numSemesterData;
         chart.data.datasets[0].data = ectsData;
+        chart.options.plugins.title.text = 'Matrikelnummer: ' + studentId;
+        chart.options.plugins.subtitle.text = studentMajor + ' (' + studentDegree + ')';
 
         // Redraw the chart
         chart.update();
@@ -174,7 +179,19 @@ function fetchIndividualPerformance(studentId) {
                               text: 'Semester'
                           }
                       }
-                  }
+                  },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Matrikelnummer: ' + studentId
+                        },
+                        subtitle: {
+                            display: true,
+                            text: studentMajor + ' (' + studentDegree + ')'
+                        },
+                    
+                    }
+                  
               }
           });
       }
@@ -194,7 +211,7 @@ $(document).ready(function() {
     $('#perf-studentId-btn').click(function () {
 
         const studentId = $('#perf-studentId-input').val();
-
+        
         fetchIndividualPerformance(2000000 + Number(studentId));
     });
 });
@@ -247,7 +264,7 @@ function fetchGroupPerformance(groupId) {
             // Check if the chart instance already exists
             if (groupChart) {
                 // Update the chart's data
-                groupChart.data.labels = masterNumSemesterData;
+                groupChart.data.labels = bachelorNumSemesterData;
                 groupChart.data.datasets[0].data = masterEctsData;
                 groupChart.data.datasets[1].data = bachelorEctsData;
 
@@ -260,7 +277,7 @@ function fetchGroupPerformance(groupId) {
                 groupChart = new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: masterNumSemesterData,
+                        labels: bachelorNumSemesterData,
                         datasets: [{
                             label: 'Master',
                             data: masterEctsData,
