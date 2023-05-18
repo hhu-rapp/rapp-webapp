@@ -41,7 +41,7 @@ def generate_performance_history(n):
 
         # Determine the total number of semesters the student will study
         # 80% chance of 6-8 semesters, 20% chance of 1-5 semesters
-        total_semesters = random.randint(6, 8) if random.random() <= 0.8 else random.randint(1, 5)
+        total_semesters = random.randint(6, 8) if random.random() <= 0.8 else random.randint(2, 5)
 
         # Calculate the starting year based on the total number of semesters
         year = max_year - total_semesters * 2
@@ -75,6 +75,8 @@ def generate_performance_history(n):
                             continue
                         else:
                             ects = max_bachelor_ects - total_ects
+                            if ects < 0:
+                                continue
                             total_ects = max_bachelor_ects
 
                     # Append the course information to the DataFrame
@@ -106,6 +108,8 @@ def generate_performance_history(n):
                             continue
                         else:
                             ects = max_master_ects - total_ects
+                            if ects < 0:
+                                continue
                             total_ects = max_master_ects
 
                     # Append the course information to the DataFrame
