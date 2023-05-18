@@ -306,6 +306,15 @@ def group_prediction(db_id, query_id, model_id):
     return jsonify(styled_df=styled_df.to_html(table_uuid="group_prediction", classes='display'))
 
 
+# Performance history
+@main.route('/performance_history/')
+@login_required
+def performance_history():
+    page_title = "Performance History"
+    filters = ['Filter 1', 'Filter 2', 'Filter 3']
+    return render_template('main/performance_history.html', page_title=page_title, filters=filters)
+
+
 @main.route('/reset_password/<int:id>')
 @login_required
 def reset_password(id):

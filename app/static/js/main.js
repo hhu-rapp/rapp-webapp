@@ -92,3 +92,17 @@ $(function () {
         return false;
     });
 });
+
+//Performance History
+// Performance Tabs
+$('#performance-tabs a').on('click', function (e) {
+    e.preventDefault()
+    $(this).tab('show')
+})
+
+$('#performance-tabs a[data-toggle="tab"]').on('show.bs.tab', function (e) {
+    let target = $(e.target).data('target');
+    $('.tab-pane').not(target).removeClass('active show');
+    $(target)
+        .addClass('active show')
+});
