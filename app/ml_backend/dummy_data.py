@@ -93,8 +93,8 @@ def generate_performance_history(n):
                     if total_ects >= max_bachelor_ects:
                         break
             else:
-                # Randomly determine the number of courses the student takes in this semester (1-4 courses)
-                num_courses = random.randint(1, 4)
+                # Randomly determine the number of courses the student takes in this semester (3-5 courses)
+                num_courses = random.randint(3, 5)
 
                 for _ in range(num_courses):
                     # Randomly select the ECTS value for each course
