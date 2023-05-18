@@ -13,6 +13,7 @@ from .forms import (DatabaseForm, NewsForm, PasswordChangeForm, RegisterForm,
                     QueryForm, UserEditAdminForm, ModelForm)
 from ..decorators import admin_required
 from ..email import send_email
+from ..ml_backend.dummy_data import generate_performance_history
 from ..models import MLDatabase, Model, News, Query, User
 from ..ml_backend import pipeline, highlight_greaterthan, query_database
 
@@ -313,6 +314,25 @@ def performance_history():
     page_title = "Performance History"
     filters = ['Filter 1', 'Filter 2', 'Filter 3']
     return render_template('main/performance_history.html', page_title=page_title, filters=filters)
+
+# Get individual Data
+@main.route('/individual_performance/<int:student_id>')
+@login_required
+def individual_performance(student_id):
+    # generate dummy data
+    df = generate_performance_history(100)
+
+    # get data of that student
+    student_df = df[df['Matrikel_Nummer'] == student_id]
+    # group ECTS and sort by Num_Semester
+    student_df = student_df.groupby(by=['Num_Semester'], dropna=False).agg({'ECTS': 'sum'}).sort_values(by=['Num_Semester'])
+    # reset index to get Num_Semester as column
+    student_df = student_df.reset_index()
+
+    # calculate ECTS cummulative based on Num_Semester
+    student_df['ECTS'] = student_df['ECTS'].cumsum()
+
+    return jsonify(student_df.to_json(orient='records'))
 
 
 @main.route('/reset_password/<int:id>')

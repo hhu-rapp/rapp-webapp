@@ -106,3 +106,67 @@ $('#performance-tabs a[data-toggle="tab"]').on('show.bs.tab', function (e) {
     $(target)
         .addClass('active show')
 });
+
+// Ajax Individual Performance
+$(document).ready(function() {
+     var loadingDiv = $('.perfLoading');
+    $.ajax({
+      url: "/individual_performance/2000000", 
+     method: "GET", 
+    beforeSend: function() {
+      // Remove the "fade" class to show the loading <div>
+      loadingDiv.removeClass('fade');
+    },
+    success: function(data) {
+      // Parse the data received from the backend
+      var jsonData = JSON.parse(data);
+
+      // Extract the necessary columns from the data
+      var numSemesterData = jsonData.map(function(item) {
+        return item.Num_Semester;
+      });
+      var ectsData = jsonData.map(function(item) {
+        return item.ECTS;
+      });
+
+      // Create the chart using Charts.js
+      var ctx = document.getElementById('individual-perf-chart').getContext('2d');
+      var chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: numSemesterData,
+          datasets: [{
+            label: 'ECTS',
+            data: ectsData,
+            borderColor: '#006ab3',
+            backgroundColor: '#006ab3',
+            borderWidth: 3,
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+             title: {
+                    display: true,
+                    text: 'Cumulative ECTS'
+                }
+            },
+            x: {
+                title: {
+                    display: true,
+                    text: 'Semester'
+                }
+            }
+          }
+        }
+      });
+      loadingDiv.addClass('fade');
+    },
+    error: function() {
+      console.error("Failed to fetch data from the backend.");
+      loadingDiv.addClass('fade');
+    }
+  });
+});
