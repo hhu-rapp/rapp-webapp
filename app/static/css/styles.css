@@ -107,3 +107,12 @@ body {
     transform: translate(-50%, -50%);
 }
 
+.log-out-link:hover{
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+}
+
+.notification-icon:hover i {
+    scale: 1.2;
+    transition: transform 150ms ease-in-out;
+}

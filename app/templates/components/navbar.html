@@ -18,7 +18,7 @@
 				</div>
 				<ul class="navbar-nav  justify-content-end">
 					<li class="nav-item d-flex align-items-center">
-						<a href="{{ url_for('auth.logout') }}" class="nav-link text-body font-weight-bold px-0">
+						<a href="{{ url_for('auth.logout') }}" class="nav-link text-body font-weight-bold px-0 log-out-link">
 							<i class="fa fa-sign-out me-sm-1"></i>
 							<span class="d-sm-inline d-none">Log Out</span>
 						</a>
@@ -33,7 +33,7 @@
 						</a>
 					</li>
 					<li class="nav-item dropdown px-3 pe-2 d-flex align-items-center">
-						<a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton"
+						<a href="javascript:;" class="nav-link text-body p-0 notification-icon" id="dropdownMenuButton"
 						   data-bs-toggle="dropdown" aria-expanded="false">
 							<i class="fa fa-bell cursor-pointer">
 								{% if notifications|length > 0 %}
