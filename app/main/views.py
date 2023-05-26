@@ -316,12 +316,15 @@ def performance_history():
     filters = ['Filter 1', 'Filter 2', 'Filter 3']
     return render_template('main/performance_history.html', page_title=page_title, filters=filters)
 
-# Get individual Data
+# Get individual performance history
 @main.route('/individual_performance/<int:student_id>')
 @login_required
 def individual_performance(student_id):
     # generate dummy data
-    df = generate_performance_history(100)
+    df = generate_performance_history(50)
+
+    # student_id should always be valid 
+    student_id = 2000000 + student_id % 50
 
     # get data of that student
     student_df = df[df['Matrikel_Nummer'] == student_id]
@@ -346,7 +349,7 @@ def individual_performance(student_id):
     return jsonify(response)
 
 
-# Get individual Data
+# Get group performance history
 @main.route('/group_performance/<string:group_id>')
 @login_required
 def group_performance(group_id):

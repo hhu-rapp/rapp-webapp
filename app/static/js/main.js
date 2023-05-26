@@ -205,14 +205,14 @@ function fetchIndividualPerformance(studentId) {
 }
 
 $(document).ready(function() {
-  const studentId = 2000000;
+  const studentId = 0;
     fetchIndividualPerformance(studentId);
 
     $('#perf-studentId-btn').click(function () {
 
         const studentId = $('#perf-studentId-input').val();
         
-        fetchIndividualPerformance(2000000 + Number(studentId));
+        fetchIndividualPerformance(Number(studentId));
     });
 });
 
