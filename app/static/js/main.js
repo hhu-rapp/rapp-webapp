@@ -246,8 +246,6 @@ function fetchGroupPerformance(groupId) {
                 return item.ECTS;
             });
             
-            console.log(masterData);
-            
             // Filter the data for Bachelor degree
             const bachelorData = jsonData.filter(function (item) {
                 return item.Degree === 'Bachelor';
@@ -335,3 +333,100 @@ $(document).ready(function () {
         // });
     }
 );
+
+//Risk Analysis
+//Ajax Risk Analysis
+
+var riskChart = null;
+
+
+function fetchRiskAnalysis(featureId) {
+
+    const url = "/get_risk_analysis/" + featureId;
+    const loadingDiv = $('.riskLoading');
+
+    $.ajax({
+        url: url,
+        method: "GET",
+        beforeSend: function () {
+            // Remove the "fade" class to show the loading <div>
+            loadingDiv.removeClass('fade');
+        },
+        success: function (data) {
+            // Parse the data received from the backend
+            const jsonData = JSON.parse(data);
+            
+            const dataLabels = jsonData.labels;
+            const graduateData = jsonData.graduate;
+            const dropoutData = jsonData.dropout;
+            
+            // Check if the chart instance already exists
+            if (riskChart) {
+                // Update the chart's data
+                riskChart.data.labels = dataLabels;
+                riskChart.data.datasets[0].data = graduateData;
+                riskChart.data.datasets[1].data = dropoutData;
+
+                // Redraw the chart
+                riskChart.update();
+            } else {
+
+                // Create the chart using Charts.js
+                const ctx = document.getElementById('risk-chart').getContext('2d');
+                riskChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: dataLabels,
+                        datasets: [{
+                            label: 'Graduate',
+                            data: graduateData,
+                            borderColor: '#006ab3',
+                            backgroundColor: '#006ab3',
+                            borderWidth: 3,
+                        }, {
+                            label: 'Dropout',
+                            data: dropoutData,
+                            borderColor: '#ff5050',
+                            backgroundColor: '#ff5050',
+                            borderWidth: 3,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                stacked: true,
+                            },
+                            x: {
+                                stacked: true,
+                            },},
+                            plugins: {
+                                title: {
+                                    display: true,
+                                    text: 'Dropout Analysis'
+                                },
+                            }
+                        
+                    }
+                });
+            }
+
+            loadingDiv.addClass('fade');
+        },
+        error: function () {
+            console.error("Failed to fetch data from the backend.");
+            loadingDiv.addClass('fade');
+        }
+    });
+    
+}
+
+$(document).ready(function () {
+    const featureId = 'Sex';
+    fetchRiskAnalysis(featureId);
+
+    $('input[name="riskFeatureRadioOption"]').change(function () {
+        const featureId = $(this).val();
+        fetchRiskAnalysis(featureId);
+    });
+});

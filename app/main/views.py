@@ -14,7 +14,7 @@ from .forms import (DatabaseForm, NewsForm, PasswordChangeForm, RegisterForm,
                     QueryForm, UserEditAdminForm, ModelForm)
 from ..decorators import admin_required
 from ..email import send_email
-from ..ml_backend.dummy_data import generate_performance_history
+from ..ml_backend.dummy_data import generate_performance_history, generate_risk_analysis
 from ..models import MLDatabase, Model, News, Query, User
 from ..ml_backend import pipeline, highlight_greaterthan, query_database
 
@@ -376,6 +376,29 @@ def group_performance(group_id):
 def risk_analysis():
     page_title = "Risk Analysis"
     return render_template('main/risk_analysis.html', page_title=page_title)
+
+
+# Get risk analysis
+@main.route('/get_risk_analysis/<string:feature_id>')
+@login_required
+def get_risk_analysis(feature_id):
+    # generate dummy data
+    df = generate_risk_analysis(500)
+
+    # only use the feature that is selected as Feature and the Dropout column
+    df = df[[feature_id, 'Dropout']]
+
+    # Perform group by and aggregation
+    df = df.groupby([feature_id, 'Dropout']).size().unstack(fill_value=0).reset_index()
+
+    labels = df[feature_id].tolist()
+    graduates = df['No'].tolist()
+    dropouts = df['Yes'].tolist()
+
+    response = {'labels': labels, 'graduate': graduates, 'dropout': dropouts}
+    response = json.dumps(response)
+
+    return jsonify(response)
 
 
 @main.route('/reset_password/<int:id>')
