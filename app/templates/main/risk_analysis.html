@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block body %}
+	<div class="container-fluid py-4">
+
+	<div class="d-flex flex-row-reverse">
+		<div class="d-flex ">
+
+			<div id="risk-featureId-radio" class="input-group mb-3 mt-3">
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" name="riskFeatureRadioOption" id="inlineRadio1"
+						   value="Sex" checked>
+					<label class="form-check-label" for="inlineRadio1">Sex</label>
+				</div>
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" name="riskFeatureRadioOption" id="inlineRadio2"
+						   value="Nationality">
+					<label class="form-check-label" for="inlineRadio2">Nationality</label>
+				</div>
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" name="riskFeatureRadioOption" id="inlineRadio3"
+						   value="Degree">
+					<label class="form-check-label" for="inlineRadio3">Degree</label>
+				</div>
+				<div class="form-check form-check-inline">
+					<input class="form-check-input" type="radio" name="riskFeatureRadioOption" id="inlineRadio4"
+						   value="Major">
+					<label class="form-check-label" for="inlineRadio4">Major</label>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-12">
+			<div class="card mb-4 tab-pane">
+				<div class="card-header pb-0">
+
+				</div>
+				<div class="card-body px-0 pt-0 pb-2">
+					<div class="container">
+
+						<div class="d-flex justify-content-center align-items-center riskLoading fade">
+							<div class="spinner-border text-secondary" role="status">
+								<span class="sr-only">Loading...</span>
+							</div>
+						</div>
+
+
+						<div class="chart">
+							<canvas id="risk-chart" class="chart-canvas" height="100px"></canvas>
+						</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+        let element = document.getElementById("analysisLink");
+        element.classList.add("active");
+        element = document.getElementById("analysisLinkMobile");
+        element.classList.add("active");
+        
+	</script>
+{% endblock %}

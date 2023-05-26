@@ -370,6 +370,14 @@ def group_performance(group_id):
     return jsonify(grouped_df.to_json(orient='records'))
 
 
+# Risk Analysis
+@main.route('/risk_analysis/')
+@login_required
+def risk_analysis():
+    page_title = "Risk Analysis"
+    return render_template('main/risk_analysis.html', page_title=page_title)
+
+
 @main.route('/reset_password/<int:id>')
 @login_required
 def reset_password(id):
