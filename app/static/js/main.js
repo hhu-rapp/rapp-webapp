@@ -380,15 +380,15 @@ function fetchRiskAnalysis(featureId) {
                         datasets: [{
                             label: 'Graduate',
                             data: graduateData,
-                            borderColor: '#006ab3',
+                            borderColor: '#015f9f',
                             backgroundColor: '#006ab3',
-                            borderWidth: 3,
+                            borderWidth: 1,
                         }, {
                             label: 'Dropout',
                             data: dropoutData,
-                            borderColor: '#ff5050',
+                            borderColor: '#ea4a4a',
                             backgroundColor: '#ff5050',
-                            borderWidth: 3,
+                            borderWidth: 1,
                         }]
                     },
                     options: {
