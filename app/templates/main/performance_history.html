@@ -17,41 +17,23 @@
 
 		<div class="d-flex ">
 			<div class="input-group mb-4 mt-2 tab-pane fade show active studentFilter">
-				<input type="text" class="form-control" placeholder="Search Matrikelnummer"
-					   aria-label="Search Matrikelnummer" aria-describedby="button-addon2">
-				<button class="btn btn-outline-secondary mb-0" type="button" id="button-addon2">
+				<input id="perf-studentId-input" type="number" class="form-control" placeholder="Search Matrikelnummer"
+					   aria-label="Search Matrikelnummer" aria-describedby="Matrikelnummer">
+				<button class="btn btn-outline-secondary mb-0" type="button" id="perf-studentId-btn">
 					<i class="fa fa-search"></i>
 				</button>
 			</div>
 
 			<div class="input-group mb-3 mt-3 tab-pane fade perfGrouping">
 				<div class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1"
-						   value="option1">
-					<label class="form-check-label" for="inlineRadio1">Year</label>
-				</div>
-				<div class="form-check form-check-inline">
 					<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2"
-						   value="option2">
+						   value="option2" checked>
 					<label class="form-check-label" for="inlineRadio2">Degree</label>
 				</div>
 				<div class="form-check form-check-inline">
 					<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3"
-						   value="option3">
+						   value="option3" disabled>
 					<label class="form-check-label" for="inlineRadio3">Studies</label>
-				</div>
-			</div>
-
-			<div class="p-2 dropdown filterSelect">
-				<button class="btn bg-gradient-primary dropdown-toggle" type="button" id="featureSelectButton"
-						data-bs-toggle="dropdown" aria-expanded="false">
-					<i class="fa fa-filter me-sm-1"></i>
-					Filter
-				</button>
-				<div class="dropdown-menu dropdown-menu" aria-labelledby="dropdownMenuButton">
-					{% for filter in filters %}
-						<a class="dropdown-item feature-link" href="#">{{ filter }}</a>
-					{% endfor %}
 				</div>
 			</div>
 
@@ -69,16 +51,17 @@
 				<div class="card-body px-0 pt-0 pb-2">
 					<div class="container" id="individual-perf">
 
-						<div class="d-flex justify-content-center perfLoading fade">
+						<div class="d-flex justify-content-center align-items-center perfLoading fade">
 							<div class="spinner-border text-secondary" role="status">
 								<span class="sr-only">Loading...</span>
 							</div>
 						</div>
-						
+
+
 						<div class="chart">
-							<canvas id="line-chart" class="chart-canvas" height="300px"></canvas>
+							<canvas id="individual-perf-chart" class="chart-canvas" height="100px"></canvas>
 						</div>
-						
+
 					</div>
 				</div>
 			</div>
@@ -93,6 +76,9 @@
 							<div class="spinner-border text-secondary" role="status">
 								<span class="sr-only">Loading...</span>
 							</div>
+						</div>
+						<div class="chart">
+							<canvas id="group-perf-chart" class="chart-canvas" height="100px"></canvas>
 						</div>
 					</div>
 				</div>
