@@ -132,3 +132,55 @@ def generate_performance_history(n):
 
     # Return the generated DataFrame
     return df
+
+
+def generate_risk_analysis(n):
+    # Define the sensitive attributes
+    sensitive_attributes = ['Sex', 'Nationality', 'Degree', 'Major']
+
+    # Define lists of possible values for each attribute
+    sex = ['Male', 'Female', 'Other']
+    nationalities = ['German', 'Non-German']
+    degrees = ['Bachelor', 'Master']
+    majors = ['Informatik', 'Sozialwissenschaften', 'Wirtschaftswissenschaften', 'Rechtswissenschaften']
+
+    dropout_probabilities = {
+        'Male': 0.05,
+        'Female': 0.03,
+        'Other': 0.1,
+        'German': 0.05,
+        'Non-German': 0.1,
+        'Bachelor': 0.2,
+        'Master': 0.05,
+        'Informatik': 0.2,
+        'Sozialwissenschaften': 0.05,
+        'Wirtschaftswissenschaften': 0.15,
+        'Rechtswissenschaften': 0.09
+    }
+
+    # Generate n random student records
+    student_data = []
+    for _ in range(n):
+        student = {}
+
+        # Generate random sensitive attribute values
+        student['Sex'] = random.choice(sex)
+        student['Nationality'] = random.choice(nationalities)
+        student['Degree'] = random.choice(degrees)
+        student['Major'] = random.choice(majors)
+
+        # student['Dropout'] = 'No' if random.random() <= 0.8 else 'Yes'
+
+        # Generate dropout probability by adding the probabilities of the sensitive attribute values
+        dropout_probability = 0
+        for attr in sensitive_attributes:
+            dropout_probability += dropout_probabilities[student[attr]]
+
+        student['Dropout'] = 'No' if random.random() > dropout_probability else 'Yes'
+
+        student_data.append(student)
+
+    student_data = pd.DataFrame(student_data)
+
+    return student_data
+
