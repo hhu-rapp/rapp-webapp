@@ -6,17 +6,17 @@
 	<div class="d-flex ">
 		<ul class="me-auto nav nav-pills m-2" id="performance-tabs" role="tablist">
 			<li class="nav-item pill">
-				<a class="nav-link active" id="ind-perf-tab" href="#" data-toggle="tab"
+				<a class="nav-link" id="ind-perf-tab" href="#" data-toggle="tab"
 				   data-target=".individualPerf, .studentIdFilter, .filterSelect, .studentFilter">Individual-level</a>
 			</li>
-			<li class="nav-item pill">
-				<a class="nav-link" id="group-perf-tab" href="#group-level" data-toggle="tab"
+			<li class="nav-item pill active">
+				<a class="nav-link active" id="group-perf-tab" href="#group-level" data-toggle="tab"
 				   data-target=".groupPerf, .filterSelect, .perfGrouping">Group-level</a>
 			</li>
 		</ul>
 
 		<div class="d-flex ">
-			<div class="input-group mb-4 mt-2 tab-pane fade show active studentFilter">
+			<div class="input-group mb-4 mt-2 tab-pane fade studentFilter">
 				<input id="perf-studentId-input" type="number" class="form-control" placeholder="Matrikelnummer"
 					   aria-label="Search Matrikelnummer" aria-describedby="Matrikelnummer">
 				<button class="btn btn-outline-secondary mb-0" type="button" id="perf-studentId-btn">
@@ -24,7 +24,7 @@
 				</button>
 			</div>
 
-			<div class="input-group mb-3 mt-3 tab-pane fade perfGrouping">
+			<div class="input-group mb-3 mt-3 tab-pane fade show active perfGrouping">
 				<div class="form-check form-check-inline">
 					<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2"
 						   value="option2" checked>
@@ -43,7 +43,7 @@
 	<div class="row">
 		<div class="col-12 tab-content">
 			{# Individual Tab#}
-			<div class="card mb-4 tab-pane fade show active individualPerf" role="tabpanel"
+			<div class="card mb-4 tab-pane fade individualPerf" role="tabpanel"
 				 aria-labelledby="individual-tab">
 				<div class="card-header pb-0">
 
@@ -66,7 +66,7 @@
 				</div>
 			</div>
 			{# Group Tab#}
-			<div class="card mb-4 tab-pane fade groupPerf" role="tabpanel" aria-labelledby="group-tab">
+			<div class="card mb-4 tab-pane fade show active groupPerf" role="tabpanel" aria-labelledby="group-tab">
 				<div class="card-header pb-0">
 
 				</div>
