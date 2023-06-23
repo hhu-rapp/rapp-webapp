@@ -8,12 +8,12 @@
 		<div class="d-flex ">
 			<div class="dropdown me-auto ">
 				<button class="btn bg-gradient-primary dropdown-toggle" type="button" id="majorSelectButton"
-						data-bs-toggle="dropdown" aria-expanded="false" disabled>
+						data-bs-toggle="dropdown" aria-expanded="false">
 					Major
 				</button>
 				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 					{% for major in majors %}
-						<a class="dropdown-item feature-link" href="#">{{ major }}</a>
+						<a class="dropdown-item major-link" href="#">{{ major }}</a>
 					{% endfor %}
 				</div>
 			</div>
@@ -25,13 +25,13 @@
 					<div class="form-check form-check-inline">
 						<input class="form-check-input" type="checkbox" name="dashboardDegreeCheckbox"
 							   id="inlineCheckbox1"
-							   value="bachelor" checked disabled>
+							   value="bachelor" checked>
 						<label class="form-check-label" for="inlineCheckbox1">Bachelor</label>
 					</div>
 					<div class="form-check form-check-inline">
 						<input class="form-check-input" type="checkbox" name="dashboardDegreeCheckbox"
 							   id="inlineCheckbox2"
-							   value="master" checked disabled>
+							   value="master" checked>
 						<label class="form-check-label" for="inlineCheckbox2">Master</label>
 					</div>
 				</div>
@@ -52,7 +52,7 @@
 						<div class="col-8">
 							<div class="numbers">
 								<p class="text-sm mb-0 text-capitalize font-weight-bold">Total Students</p>
-								<h5 class="font-weight-bolder mb-0">
+								<h5 class="font-weight-bolder mb-0" id="totalStudents">
 									103,430
 									<span class="text-danger text-sm font-weight-bolder">-5%</span>
 								</h5>
@@ -74,7 +74,7 @@
 						<div class="col-8">
 							<div class="numbers">
 								<p class="text-sm mb-0 text-capitalize font-weight-bold">Total Dropouts</p>
-								<h5 class="font-weight-bolder mb-0">
+								<h5 class="font-weight-bolder mb-0" id="totalDropouts">
 									3,462
 									<span class="text-danger text-sm font-weight-bolder">+3%</span>
 								</h5>
@@ -96,7 +96,7 @@
 						<div class="col-8">
 							<div class="numbers">
 								<p class="text-sm mb-0 text-capitalize font-weight-bold">Avg. Study Length</p>
-								<h5 class="font-weight-bolder mb-0">
+								<h5 class="font-weight-bolder mb-0" id="avgEctsStudyLength">
 									6.5 Semesters
 								</h5>
 							</div>
@@ -117,7 +117,7 @@
 						<div class="col-8">
 							<div class="numbers">
 								<p class="text-sm mb-0 text-capitalize font-weight-bold">Avg. ECTS/Semester</p>
-								<h5 class="font-weight-bolder mb-0">
+								<h5 class="font-weight-bolder mb-0" id="avgEctsPerSemester">
 									30 ECTS
 								</h5>
 							</div>
@@ -130,6 +130,12 @@
 					</div>
 				</div>
 			</div>
+		</div>
+	</div>
+
+	<div class="d-flex justify-content-center align-items-center dashboardLoading fade">
+		<div class="spinner-border text-secondary" role="status">
+			<span class="sr-only">Loading...</span>
 		</div>
 	</div>
 
@@ -176,66 +182,138 @@
         element = document.getElementById("dashboardLinkMobile");
         element.classList.add("active");
 
+        var sexChart = null;
+        var natChart = null;
 
-        //document ready function
         $(document).ready(function () {
+            var degreeId = 'all';
+            var majorId = 'all';
 
-            // Sex Plot
-            const sexLabels = ['Male', 'Female', 'Other'];
-            const sexData = [300, 275, 100]
-            const ctxSex = document.getElementById('dashboard-sex').getContext('2d');
-            sexChart = new Chart(ctxSex, {
-                type: 'bar',
-                data: {
-                    labels: sexLabels,
-                    datasets: [{
-                        label: 'Graduate',
-                        data: sexData,
-                        borderColor: '#015f9f',
-                        backgroundColor: '#006ab3',
-                        borderWidth: 1,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                    }
+            fetchDashboardData(majorId, degreeId);
 
+            $('input[name="dashboardDegreeCheckbox"]').change(function () {
+                const bachelorChecked = $('#inlineCheckbox1').is(':checked');
+                const masterChecked = $('#inlineCheckbox2').is(':checked');
+
+                if (bachelorChecked && masterChecked) {
+                    degreeId = 'all';
+                } else if (bachelorChecked) {
+                    degreeId = 'bachelor';
+                } else if (masterChecked) {
+                    degreeId = 'master';
+                } else {
+                    // TODO: handle this case
+                    degreeId = 'all';
                 }
+
+                fetchDashboardData(majorId, degreeId);
             });
+            
+			$('.major-link').click(function (event) {
+				event.preventDefault(); // prevent the link from following the href
+				majorId = $(this).text();
 
+				// Update the feature button text
+				var majorSelect = document.getElementById('majorSelectButton');
+				majorSelect.innerHTML = majorId;
 
-            // Nationality Plot
-            const natLabels = ['German', 'Non-german'];
-            const natData = [475, 200]
-            const ctxNat = document.getElementById('dashboard-nationality').getContext('2d');
-            NatChart = new Chart(ctxNat, {
-                type: 'bar',
-                data: {
-                    labels: natLabels,
-                    datasets: [{
-                        label: 'Graduate',
-                        data: natData,
-                        borderColor: '#015f9f',
-                        backgroundColor: '#006ab3',
-                        borderWidth: 1,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                    }
+				fetchDashboardData(majorId, degreeId);
 
-                }
-            });
+			});
 
         });
+
+            
+            function fetchDashboardData(majorId, degreeId) {
+                const url = "/dashboard-data/" + majorId + "/" + degreeId;
+                const loadingDiv = $('.dashboardLoading');
+
+                $.ajax({
+                    url: url,
+                    method: "GET",
+                    beforeSend: function () {
+                        // Remove the "fade" class to show the loading <div>
+                        loadingDiv.removeClass('fade');
+                    },
+                    success: function (data) {
+                        // Parse the data received from the backend
+                        const jsonData = JSON.parse(data);
+
+                        const totalStudents = jsonData.totalStudents;
+                        const totalDropouts = jsonData.totalDropouts;
+                        const avgBachelorSemesters = jsonData.avgBachelorSemesters;
+                        const avgMasterSemesters = jsonData.avgMasterSemesters;
+                        const avgEctsPerSemester = jsonData.avgEctsPerSemester;
+
+                        const sexData = jsonData.sexPlot;
+                        const natData = jsonData.natPlot;
+
+                        populateStatistics(totalStudents, totalDropouts, avgBachelorSemesters, avgMasterSemesters, avgEctsPerSemester);
+
+                        const sexCtx = document.getElementById('dashboard-sex').getContext('2d');
+                        sexChart = populateChart(sexChart, sexCtx, sexData);
+
+                        const natCtx = document.getElementById('dashboard-nationality').getContext('2d');
+                        natChart = populateChart(natChart, natCtx, natData);
+                        console.log("Success");
+
+                        loadingDiv.addClass('fade');
+                    },
+                    error: function () {
+                        console.error("Failed to fetch data from the backend.");
+                        loadingDiv.addClass('fade');
+                    }
+                });
+            }
+
+            function populateChart(chart, ctx, plotData) {
+                const parsedData = JSON.parse(plotData);
+                console.log(chart)
+
+
+                // Check if the chart instance already exists
+                if (chart) {
+                    // Update the chart's data
+                    chart.data.labels = parsedData.labels;
+                    chart.data.datasets[0].data = parsedData.data;
+
+                    // Redraw the chart
+                    chart.update();
+                } else {
+                    // Create the chart using Charts.js
+                    chart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: parsedData.labels,
+                            datasets: [{
+                                label: 'Students',
+                                data: parsedData.data,
+                                borderColor: '#015f9f',
+                                backgroundColor: '#006ab3',
+                                borderWidth: 1,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                            }
+
+                        }
+                    });
+                }
+
+                return chart;
+            }
+
+            function populateStatistics(totalStudents, totalDropouts, avgBachelorSemesters, avgMasterSemesters, avgEctsPerSemester) {
+                $('#totalStudents').text(totalStudents);
+                $('#totalDropouts').text(totalDropouts);
+                $('#avgEctsStudyLength').text(avgBachelorSemesters + '/' + avgMasterSemesters + ' semesters');
+                $('#avgEctsPerSemester').text(avgEctsPerSemester + ' ECTS');
+            }
 
 
 	</script>
