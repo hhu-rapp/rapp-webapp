@@ -19,13 +19,15 @@ def generate_performance_history(n):
     """
 
     # Define column names for the DataFrame
-    columns = ['Matrikel_Nummer', 'Semester', 'Num_Semester', 'Year', 'Major', 'Degree', 'ECTS']
+    columns = ['Matrikel_Nummer', 'Semester', 'Num_Semester', 'Year', 'Major', 'Degree', 'ECTS', 'Sex', 'Nationality']
 
     # Define lists of possible values for each attribute
     majors = ['Informatik', 'Sozialwissenschaften', 'Wirtschaftswissenschaften', 'Rechtswissenschaften']
     degrees = ['Bachelor', 'Master']
     ects_values = [5, 8, 10]
     semesters = ['WS', 'SS']
+    sexes = ['Male', 'Female', 'Other']
+    nationalities = ['German', 'Non-German']
 
     # Define maximum ECTS values and year
     max_bachelor_ects = 180
@@ -51,6 +53,12 @@ def generate_performance_history(n):
 
         # Determine the student's degree (Bachelor or Master) with a 75% chance of being a Bachelor
         degree = random.choice(degrees) if random.random() > 0.75 else 'Bachelor'
+
+        # Randomly select the student's sex
+        sex = random.choice(sexes)
+
+        # Determine the student's nationality with a 50% chance of being a 'German'
+        nationality = random.choice(nationalities) if random.random() > 0.50 else 'German'
 
         total_ects = 0
 
@@ -87,7 +95,9 @@ def generate_performance_history(n):
                         'Year': [year],
                         'Major': [major],
                         'Degree': [degree],
-                        'ECTS': [ects]
+                        'ECTS': [ects],
+                        'Sex': [sex],
+                        'Nationality': [nationality]
                     })], ignore_index=True)
 
                     if total_ects >= max_bachelor_ects:
@@ -120,7 +130,9 @@ def generate_performance_history(n):
                         'Year': [year],
                         'Major': [major],
                         'Degree': [degree],
-                        'ECTS': [ects]
+                        'ECTS': [ects],
+                        'Sex': [sex],
+                        'Nationality': [nationality]
                     })], ignore_index=True)
 
                     if total_ects >= max_master_ects:
