@@ -25,8 +25,9 @@ def index():
     page_title = "Dashboard"
     news: News = News.query.order_by(News.timestamp.desc()).all()
 
-    notifications = [{"link": '/prediction/1/1/1', "title": 'New Prediction', "mins_ago": 10}]
-    return render_template('main/index.html', news=news, notifications=notifications, page_title=page_title)
+    notifications = [{"link": '/prediction/1/1/1', "title": 'New Prediction', "mins_ago": 10}, {"link": '/performance_history', "title": 'New Performance History', "mins_ago": 15}]
+    majors = ['Informatik', 'Sozialwissenschaften', 'Wirtschaftswissenschaften', 'Rechtswissenschaften']
+    return render_template('main/dashboard.html', news=news, notifications=notifications, page_title=page_title, majors=majors)
 
 
 @main.route('/admin/news')
@@ -316,6 +317,7 @@ def performance_history():
     filters = ['Filter 1', 'Filter 2', 'Filter 3']
     return render_template('main/performance_history.html', page_title=page_title, filters=filters)
 
+
 # Get individual performance history
 @main.route('/individual_performance/<int:student_id>')
 @login_required
@@ -323,7 +325,7 @@ def individual_performance(student_id):
     # generate dummy data
     df = generate_performance_history(50)
 
-    # student_id should always be valid 
+    # student_id should always be valid
     student_id = 2000000 + student_id % 50
 
     # get data of that student

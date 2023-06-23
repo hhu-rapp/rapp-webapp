@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+
+{% block body %}
+	<!-- Filters -->
+	<div class="container-fluid py-2 ml-2">
+
+		<!-- Major Select -->
+		<div class="d-flex ">
+			<div class="dropdown me-auto ">
+				<button class="btn bg-gradient-primary dropdown-toggle" type="button" id="majorSelectButton"
+						data-bs-toggle="dropdown" aria-expanded="false" disabled>
+					Major
+				</button>
+				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					{% for major in majors %}
+						<a class="dropdown-item feature-link" href="#">{{ major }}</a>
+					{% endfor %}
+				</div>
+			</div>
+
+
+			<!-- Degree Checkboxes -->
+			<div class="d-flex">
+				<div id="dashboard-degree-checkbox" class="input-group mb-1 mt-2">
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="checkbox" name="dashboardDegreeCheckbox"
+							   id="inlineCheckbox1"
+							   value="bachelor" checked disabled>
+						<label class="form-check-label" for="inlineCheckbox1">Bachelor</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="checkbox" name="dashboardDegreeCheckbox"
+							   id="inlineCheckbox2"
+							   value="master" checked disabled>
+						<label class="form-check-label" for="inlineCheckbox2">Master</label>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+
+
+	<!-- Top Numbers -->
+	<div class="container-fluid py-4 ml-2">
+	<div class="row">
+		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+			<div class="card">
+				<div class="card-body p-3">
+					<div class="row">
+						<div class="col-8">
+							<div class="numbers">
+								<p class="text-sm mb-0 text-capitalize font-weight-bold">Total Students</p>
+								<h5 class="font-weight-bolder mb-0">
+									103,430
+									<span class="text-danger text-sm font-weight-bolder">-5%</span>
+								</h5>
+							</div>
+						</div>
+						<div class="col-4 text-end">
+							<div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+								<i class="ni ni-hat-3 text-lg opacity-10" aria-hidden="true"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+			<div class="card">
+				<div class="card-body p-3">
+					<div class="row">
+						<div class="col-8">
+							<div class="numbers">
+								<p class="text-sm mb-0 text-capitalize font-weight-bold">Total Dropouts</p>
+								<h5 class="font-weight-bolder mb-0">
+									3,462
+									<span class="text-danger text-sm font-weight-bolder">+3%</span>
+								</h5>
+							</div>
+						</div>
+						<div class="col-4 text-end">
+							<div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+								<i class="ni ni-fat-remove text-lg opacity-10" aria-hidden="true"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+			<div class="card">
+				<div class="card-body p-3">
+					<div class="row">
+						<div class="col-8">
+							<div class="numbers">
+								<p class="text-sm mb-0 text-capitalize font-weight-bold">Avg. Study Length</p>
+								<h5 class="font-weight-bolder mb-0">
+									6.5 Semesters
+								</h5>
+							</div>
+						</div>
+						<div class="col-4 text-end">
+							<div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+								<i class="ni ni-watch-time text-lg opacity-10" aria-hidden="true"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xl-3 col-sm-6">
+			<div class="card">
+				<div class="card-body p-3">
+					<div class="row">
+						<div class="col-8">
+							<div class="numbers">
+								<p class="text-sm mb-0 text-capitalize font-weight-bold">Avg. ECTS/Semester</p>
+								<h5 class="font-weight-bolder mb-0">
+									30 ECTS
+								</h5>
+							</div>
+						</div>
+						<div class="col-4 text-end">
+							<div class="icon icon-shape bg-gradient-primary shadow text-center border-radius-md">
+								<i class="ni ni-paper-diploma text-lg opacity-10" aria-hidden="true"></i>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Graphs -->
+	<div class="row mt-4">
+
+	<!-- Sex -->
+	<div class="col-lg-6 mb-lg-0 mb-4">
+		<div class="card">
+			<div class="card-body p-3">
+
+				<div class="d-flex flex-column h-100">
+					<p class="mb-1 pt-2 text-bold">Sex Distribution</p>
+				</div>
+
+				<div class="chart mt-2">
+					<canvas id="dashboard-sex" class="chart-canvas" height="150"></canvas>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<!-- Nationality -->
+	<div class="col-lg-6 mb-lg-0 mb-4">
+		<div class="card">
+			<div class="card-body p-3">
+
+				<div class="d-flex flex-column h-100">
+					<p class="mb-1 pt-2 text-bold">Nationality Distribution</p>
+				</div>
+
+				<div class="chart mt-2">
+					<canvas id="dashboard-nationality" class="chart-canvas" height="150"></canvas>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+
+	<script>
+        let element = document.getElementById("dashboardLink");
+        element.classList.add("active");
+        element = document.getElementById("dashboardLinkMobile");
+        element.classList.add("active");
+
+
+        //document ready function
+        $(document).ready(function () {
+
+            // Sex Plot
+            const sexLabels = ['Male', 'Female', 'Other'];
+            const sexData = [300, 275, 100]
+            const ctxSex = document.getElementById('dashboard-sex').getContext('2d');
+            sexChart = new Chart(ctxSex, {
+                type: 'bar',
+                data: {
+                    labels: sexLabels,
+                    datasets: [{
+                        label: 'Graduate',
+                        data: sexData,
+                        borderColor: '#015f9f',
+                        backgroundColor: '#006ab3',
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                    }
+
+                }
+            });
+
+
+            // Nationality Plot
+            const natLabels = ['German', 'Non-german'];
+            const natData = [475, 200]
+            const ctxNat = document.getElementById('dashboard-nationality').getContext('2d');
+            NatChart = new Chart(ctxNat, {
+                type: 'bar',
+                data: {
+                    labels: natLabels,
+                    datasets: [{
+                        label: 'Graduate',
+                        data: natData,
+                        borderColor: '#015f9f',
+                        backgroundColor: '#006ab3',
+                        borderWidth: 1,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                    }
+
+                }
+            });
+
+        });
+
+
+	</script>
+{% endblock %}
