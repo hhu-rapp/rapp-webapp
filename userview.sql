@@ -10,3 +10,4 @@ AND S.Pseudonym = SSP.Pseudonym
 AND SSP.Version = P.Version
 AND SSP.Nummer = P.Nummer
 GROUP BY S.Pseudonym, SSP.Studienfach, SSP.Version, SSP.Nummer, P.Modul, SSP.ECTS, SSP.Versuch, SSP.Fachsemester, SSP.Hochschulsemester
+ORDER BY SSP.Fachsemester
