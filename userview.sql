@@ -5,7 +5,7 @@ JOIN (
   FROM Student_schreibt_Pruefung
   WHERE Note IS NOT NULL
 ) AS SSP2 ON SSP.Version = SSP2.Version AND SSP.Nummer = SSP2.Nummer AND SSP.Semesterjahr = SSP2.Semesterjahr AND SSP.Sommersemester = SSP2.Sommersemester
-WHERE S.Pseudonym = 3970913
+WHERE S.Pseudonym = 2754842
 AND S.Pseudonym = SSP.Pseudonym
 AND SSP.Version = P.Version
 AND SSP.Nummer = P.Nummer
