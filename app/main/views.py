@@ -364,6 +364,22 @@ def prediction(db_id, query_id, model_id):
                            page_title=page_title)
 
 
+@main.route('/student-review/<int:session_id>/<int:row_id>')
+@login_required
+def student_review(session_id, row_id):
+    page_title = f"Student {row_id}"
+
+    # FIXME: Hardcoded Database replace with db_id from session_id
+    db = MLDatabase.query.get_or_404(session_id)
+    # FIXME: Hardcoded Query replace with query_id from session_id
+    query = Query.query.get_or_404(session_id)
+
+    pseudonym = query_database(db, query).iloc[row_id, 0]
+
+    return render_template('main/student-review.html', page_title=page_title, pseudonym=pseudonym,
+                           session_id=session_id)
+
+
 @main.route('/group_level_prediction/<int:db_id>/<int:query_id>/<int:model_id>')
 @login_required
 def group_prediction(db_id, query_id, model_id):
