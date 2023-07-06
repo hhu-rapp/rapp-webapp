@@ -443,7 +443,8 @@ def individual_performance(student_id):
     major = student_df['Major'].iloc[0]
     degree = student_df['Degree'].iloc[0]
     # group ECTS and sort by Num_Semester
-    student_df = student_df.groupby(by=['Num_Semester'], dropna=False).agg({'ECTS': 'sum'}).sort_values(by=['Num_Semester'])
+    student_df = student_df.groupby(by=['Num_Semester'], dropna=False).agg({'ECTS': 'sum'}).sort_values(
+        by=['Num_Semester'])
     # reset index to get Num_Semester as column
     student_df = student_df.reset_index()
 
@@ -534,7 +535,7 @@ def reset_password(id):
 @login_required
 def profile():
     page_title = "Profile"
-    return render_template('main/profile.html', page_title = page_title)
+    return render_template('main/profile.html', page_title=page_title)
 
 
 @main.route('/change_password', methods=['GET', 'POST'])
