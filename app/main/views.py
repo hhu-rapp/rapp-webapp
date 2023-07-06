@@ -335,6 +335,8 @@ def data(db_id, query_id):
 @login_required
 def prediction(db_id, query_id, model_id):
     page_title = "Student Predictions"
+    # Placeholder for session id
+    session_id = 1
 
     db = MLDatabase.query.get_or_404(db_id)
     query = Query.query.get_or_404(query_id)
@@ -343,15 +345,23 @@ def prediction(db_id, query_id, model_id):
     if db.user_id != current_user.id or not current_user.is_admin:
         abort(403)
 
-    df = query_database(db, query)
+    df = query_database(db, query).drop(['Pseudonym'], axis=1)
     label = query.name
 
     estimator = load(current_app.config['UPLOAD_FOLDER'] + '/' + model.filename)['model']
     pred_df = pipeline.predict(estimator, df, label)
 
+    df.insert(0, ' ', df.apply(lambda row: f'<a class="btn bg-gradient-secondary" '
+                                                     f'href="/student-review/{session_id}/{row.name}">Review</a>',
+                                         axis=1))
+
+    # Drop sensitive attributes, Geschlecht, Deutsch and AlterEinschreibung
+    df = df.drop(['Geschlecht', 'Deutsch', 'AlterEinschreibung'], axis=1)
+
     styled_df = df.style.apply(highlight_greaterthan, threshold_val=0.8, column=[pred_df.columns[-1]], axis=1)
 
-    return render_template('main/machine-learning.html', styled_df=styled_df, features=pred_df.columns[:-1], page_title=page_title)
+    return render_template('main/machine-learning.html', styled_df=styled_df, features=pred_df.columns[:-1],
+                           page_title=page_title)
 
 
 @main.route('/group_level_prediction/<int:db_id>/<int:query_id>/<int:model_id>')
