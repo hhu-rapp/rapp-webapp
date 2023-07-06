@@ -1,6 +1,6 @@
 SELECT
 -- Features
---
+S.Pseudonym,
 --
 -- protected attributes
 S.Geschlecht,
