@@ -116,3 +116,6 @@ body {
     scale: 1.2;
     transition: transform 150ms ease-in-out;
 }
+.dataTables_wrapper th {
+    font-size: 80%;
+}
