@@ -391,6 +391,16 @@ def student_review(session_id, row_id):
 
     student_data = query_database(db, query).to_dict(orient='records')[0]
 
+    # Get total ECTS
+    query = f"""
+    SELECT SUM(SSP.ECTS) AS total_ects
+    FROM Student_schreibt_Pruefung AS SSP
+    WHERE SSP.Pseudonym = {pseudonym}
+    GROUP BY SSP.Pseudonym;
+    """
+
+    student_data['total_ECTS'] = query_database(db, query).iloc[0, 0]
+
 
     return render_template('main/student-review.html', page_title=page_title, pseudonym=pseudonym,
                            session_id=session_id, student_data=student_data)
