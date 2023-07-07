@@ -345,7 +345,7 @@ def prediction(db_id, query_id, model_id):
     if db.user_id != current_user.id or not current_user.is_admin:
         abort(403)
 
-    df = query_database(db, query).drop(['Pseudonym'], axis=1)
+    df = query_database(db, query).drop(['Pseudonym', 'Fachsemester'], axis=1)
     label = query.name
 
     estimator = load(current_app.config['UPLOAD_FOLDER'] + '/' + model.filename)['model']
@@ -376,8 +376,24 @@ def student_review(session_id, row_id):
 
     pseudonym = query_database(db, query).iloc[row_id, 0]
 
+    # Add query for fachsemester
+    query = f"""
+    SELECT S.Pseudonym, MAX(SSP.Fachsemester) as Fachsemester, E.Studienfach, E.Abschluss
+    FROM
+      Student as S,
+      Student_schreibt_Pruefung as SSP,
+      Einschreibung as E
+    WHERE
+        S.Pseudonym = SSP.Pseudonym
+    AND E.Pseudonym = SSP.Pseudonym
+    AND S.Pseudonym = {pseudonym}
+    """
+
+    student_data = query_database(db, query).to_dict(orient='records')[0]
+
+
     return render_template('main/student-review.html', page_title=page_title, pseudonym=pseudonym,
-                           session_id=session_id)
+                           session_id=session_id, student_data=student_data)
 
 
 @main.route('/group_level_prediction/<int:db_id>/<int:query_id>/<int:model_id>')
