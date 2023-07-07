@@ -345,7 +345,7 @@ def prediction(db_id, query_id, model_id):
     if db.user_id != current_user.id or not current_user.is_admin:
         abort(403)
 
-    df = query_database(db, query).drop(['Pseudonym', 'Fachsemester'], axis=1)
+    df = query_database(db, query).drop(['Pseudonym'], axis=1)
     label = query.name
 
     estimator = load(current_app.config['UPLOAD_FOLDER'] + '/' + model.filename)['model']
@@ -394,6 +394,32 @@ def student_review(session_id, row_id):
 
     return render_template('main/student-review.html', page_title=page_title, pseudonym=pseudonym,
                            session_id=session_id, student_data=student_data)
+
+
+@main.route('/get-semester-data/<int:session_id>/<int:pseudonym>/<int:semester_id>')
+@login_required
+def student_semester_data(session_id, pseudonym, semester_id):
+    # FIXME: Hardcoded Database replace with db_id from session_id
+    db = MLDatabase.query.get_or_404(session_id)
+    # FIXME: Hardcoded Query replace with query_id for exams_performance from session_id
+    query = Query.query.get_or_404(2)
+
+    query_string = query.query_string.replace('%pseudonym%', str(pseudonym))
+    query_string = query_string.replace('%semester%', str(semester_id))
+
+    # Get semester data
+    semester_data = query_database(db, query_string)
+
+    # round all values to 2 decimal places
+    semester_data = semester_data.round(2)
+
+    # add new column ModulDurchschnitt with nan values
+    semester_data['ModulDurchschnitt'] = '-'
+
+    # fill missing values with '-'
+    semester_data = semester_data.fillna('-')
+
+    return jsonify(semester_data.to_dict(orient='records'))
 
 
 @main.route('/group_level_prediction/<int:db_id>/<int:query_id>/<int:model_id>')
