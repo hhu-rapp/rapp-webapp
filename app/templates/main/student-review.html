@@ -1,73 +1,123 @@
 {% extends "base.html" %}
+{% from 'components/semester_table.html' import semester_table %}
 
 {% block body %}
-<div class="container-fluid py-4">
+	
+	<div class="container-fluid">
 
-{#<div class="d-flex ">#}
-{#<ul class="me-auto nav nav-pills m-2" id="prediction-tabs" role="tablist">#}
-{#	<li class="nav-item pill">#}
-{#    <a class="nav-link active" id="individual-tab" href="#" data-toggle="tab" data-target=".individualPred">Individual-level</a>#}
-{#  </li>#}
-{#  <li class="nav-item pill">#}
-{#    <a class="nav-link" id="group-pill" href="#group-level" data-toggle="tab" data-target=".aggregationSelect, .featureSelect, .groupPred">Group-level</a>#}
-{#  </li>#}
-{#</ul>#}
-{#	#}
-{#<div class=" d-flex tab-content">#}
-{#	<div class="p-2 dropdown tab-pane fade featureSelect" role="tabpanel">#}
-{#  <button class="btn bg-gradient-primary dropdown-toggle" type="button" id="featureSelectButton" data-bs-toggle="dropdown" aria-expanded="false">#}
-{#    Feature#}
-{#  </button>#}
-{#  <div class="dropdown-menu dropdown-menu" aria-labelledby="dropdownMenuButton">#}
-{#    {% for feature in features %}#}
-{#	  <a class="dropdown-item feature-link" href="#">{{ feature }}</a>#}
-{#    {% endfor %}#}
-{#  </div>#}
-{#	</div>#}
-{##}
-{#	<div class="p-2 dropdown tab-pane fade aggregationSelect" role="tabpanel">#}
-{#  <button class="btn bg-gradient-secondary dropdown-toggle" type="button" id="aggregationSelectButton" data-bs-toggle="dropdown" aria-expanded="false">#}
-{#    Average#}
-{#  </button>#}
-{#  <div class="dropdown-menu dropdown-menu" aria-labelledby="dropdownMenuButton">#}
-{#    <a class="dropdown-item aggregation-link" href="#">Average</a>#}
-{#    <a class="dropdown-item aggregation-link" href="#">Count</a>#}
-{#    <a class="dropdown-item aggregation-link" href="#">Maximum</a>#}
-{#	<a class="dropdown-item aggregation-link" href="#">Minimum</a>#}
-{#    <a class="dropdown-item aggregation-link" href="#">Sum</a>#}
-{#  </div>#}
-{#	</div>#}
-{#</div>#}
-{#</div>#}
-
-	<div class="row">
-		<div class="col-12 tab-content">
-			{# Individual Tab#}
-			<div class="card mb-4 tab-pane fade show active individualPred" role="tabpanel" aria-labelledby="individual-tab">
-				<div class="card-header pb-0">
-
+		<!-- Top Numbers -->
+		<div class="container-fluid ml-2">
+		 <h4><a href="/prediction/1/1/1"><i class="ni ni-bold-left"> </i></a> </h4>
+			<div class="row">
+				<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+					<div class="card">
+						<div class="card-body p-3">
+							<div class="row">
+								<div class="col-8">
+									<div class="numbers">
+										<p class="text-sm mb-0 text-capitalize font-weight-bold">Fachsemester</p>
+										<h5 class="font-weight-bolder mb-0" id="totalStudents">
+											{{ student_data.Fachsemester }}
+										</h5>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
 				</div>
-				<div class="card-body px-0 pt-0 pb-2">
-					<div class="container" id="pred-table">
-
+				<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+					<div class="card">
+						<div class="card-body p-3">
+							<div class="row">
+								<div class="col-8">
+									<div class="numbers">
+										<p class="text-sm mb-0 text-capitalize font-weight-bold">Current ECTS</p>
+										<h5 class="font-weight-bolder mb-0" id="totalDropouts">
+											[ECTS]/{% if student_data.Abschluss == 'Bachelor' %}180{% else %}120{% endif %}
+										</h5>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+					<div class="card">
+						<div class="card-body p-3">
+							<div class="row">
+								<div class="col-8">
+									<div class="numbers">
+										<p class="text-sm mb-0 text-capitalize font-weight-bold">Abschluss</p>
+										<h5 class="font-weight-bolder mb-0" id="avgEctsStudyLength">
+											{{ student_data.Abschluss }}
+										</h5>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-xl-3 col-sm-6">
+					<div class="card">
+						<div class="card-body p-3">
+							<div class="row">
+								<div class="col-8">
+									<div class="numbers">
+										<p class="text-sm mb-0 text-capitalize font-weight-bold">Studienfach</p>
+										<h5 class="font-weight-bolder mb-0" id="avgEctsPerSemester">
+											{{ student_data.Studienfach }}
+										</h5>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
 
+		<!-- Flag Buttons-->
+
+			<div class="row m-4">
+				<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4">
+					<button type="button" class="btn bg-gradient-success w-100" id="showAll">Deflag</button>
+				</div>
+				<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4">
+					<button type="button" class="btn bg-gradient-danger w-100" id="showAll">Flag</button>
+				</div>
+			</div>
+		</div>
+
+		{#	Semester Data #}
+	<div class="container-fluid ml-1">
+	<h6 class="m-2"> WRITTEN EXAMS</h6>
+		{% for semester in range(student_data.Fachsemester) %}
+			{{ semester_table(session_id, student_data, semester) }}
+		{% endfor %}
+	</div>
+	
+		<!-- Flag Buttons-->
+		<div class="container-fluid py-4 ml-2">
+			<div class="row">
+				<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4">
+					<button type="button" class="btn bg-gradient-success w-100" id="showAll">Deflag</button>
+				</div>
+				<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4">
+					<button type="button" class="btn bg-gradient-danger w-100" id="showAll">Flag</button>
+				</div>
+			</div>
 		</div>
 	</div>
-</div>
-	
-<script>
-	let element = document.getElementById("predictionLink");
-	element.classList.add("active");
-    element = document.getElementById("predictionLinkMobile");
-	element.classList.add("active");
-		
-	{#var pathArray = window.location.pathname.split('/');#}
-	{#var db_id = pathArray[2];#}
-	{#var query_id = pathArray[3];#}
-	{#var model_id = pathArray[4];#}
-	{#$SCRIPT_PARAMS = '/' + db_id + '/' + query_id + '/' + model_id;#}
-</script>
+
+	<script>
+        let element = document.getElementById("predictionLink");
+        element.classList.add("active");
+        element = document.getElementById("predictionLinkMobile");
+        element.classList.add("active");
+
+        {#var pathArray = window.location.pathname.split('/');#}
+        {#var db_id = pathArray[2];#}
+        {#var query_id = pathArray[3];#}
+        {#var model_id = pathArray[4];#}
+        {#$SCRIPT_PARAMS = '/' + db_id + '/' + query_id + '/' + model_id;#}
+	</script>
 {% endblock %}
