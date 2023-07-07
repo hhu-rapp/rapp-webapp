@@ -26,7 +26,10 @@ def query_database(db, query):
     db_uri = 'sqlite:///' + current_app.config['UPLOAD_FOLDER'] + '/' + db.filename
     engine = sqlalchemy.create_engine(db_uri)
     with engine.connect() as conn:
-        query_string = sqlalchemy.text(query.query_string)
+        if isinstance(query, str):
+            query_string = sqlalchemy.text(query)
+        else:
+            query_string = sqlalchemy.text(query.query_string)
         df = pd.DataFrame(conn.execute(query_string).fetchall())
 
     return df
