@@ -2,23 +2,30 @@
 	<div class="row">
 		<div class="col-12 tab-content">
 			<div class="card mb-4 d">
-				<div class="card-header pb-0">
+				<div class="card-header">
 
 					<div class="row">
 						<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4 ">
 							<h5 class="font-weight-bolder mb-0 w-100">{{ semester + 1 }}. Fachsemester</h5>
 						</div>
 						<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4 text-right">
+							<!-- Add a button or trigger to toggle the collapsible section -->
+
 							<h5 class="font-weight-bolder mb-0 w-100 text-end">
-								[Semester] [Jahr]
+								[Semester] [Jahr] &nbsp; &nbsp;
+								<a id="toggleCollapse{{ semester + 1 }}" href="#" role="button"><i
+										class="ni ni-bold-up">
+								</i></a>
 							</h5>
+
+
 						</div>
 					</div>
 				</div>
 
 
 				<div class="card-body px-0 pt-0 pb-2 semesterTableContainer">
-					<div class="container">
+					<div class="container collapse" id="collapseCard{{ semester + 1 }}">
 
 						<table class="table semesterTable" id="semesterTable{{ semester + 1 }}">
 							<thead>
@@ -81,8 +88,21 @@
 	</div>
 	<script>
         $(function () {
-
+            // Initialize Tooltip
             $('[data-toggle="tooltip"]').tooltip();
+
+            // Initialize Collapsible
+			const collapseToggle = $("#toggleCollapse{{ semester + 1 }}");
+			const collapseCard = $("#collapseCard{{ semester + 1 }}");
+            
+            collapseToggle.click(function (e) {
+                e.preventDefault(); // Prevent the default behavior of the anchor tag
+                collapseCard.collapse('toggle');
+                $(this).find('i').toggleClass('rotate');
+            });
+            // Set the collapsible content to be initially shown
+            collapseCard.collapse('show');
+
             // AJAX call
             const url = "/get-semester-data/{{session_id}}/" + {{ student_data.Pseudonym }} +"/" + {{ semester + 1 }};
             const loadingDiv = $('#semesterTableLoading{{ semester + 1 }}');
@@ -173,6 +193,11 @@
             white-space: normal;
             overflow: visible;
             text-overflow: unset;
+        }
+		
+        .rotate {
+            transform: rotate(180deg);
+            transition: transform 0.3s ease, transition 0.3s ease;
         }
 
 	</style>
