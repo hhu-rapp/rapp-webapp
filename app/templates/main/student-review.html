@@ -88,13 +88,18 @@
 			</div>
 		</div>
 
-
-		{#	Semester Data #}
+	{#	Semester Data #}
+	{% set ns = namespace(year=first_exam.Semesterjahr, semester=first_exam.Sommersemester) %} 
 	<div class="container-fluid ml-1">
 	<h6 class="m-2"> WRITTEN EXAMS</h6>
-		{% for semester in range(student_data.Fachsemester) %}
-			{{ semester_table(session_id, student_data, semester) }}
-		{% endfor %}
+	{% for semester in range(student_data.Fachsemester) %}
+		{{ semester_table(session_id, student_data, semester, ns.year, ns.semester) }}
+
+		{% if ns.semester == 0 %}
+        {% set ns.year = ns.year + 1 %}
+    	{% endif %}
+		{% set ns.semester = (ns.semester + 1)%2 %}
+    {% endfor %}
 	</div>
 	
 		<!-- Flag Buttons-->

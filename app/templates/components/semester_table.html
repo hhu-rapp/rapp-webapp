@@ -1,4 +1,4 @@
-{% macro semester_table(session_id ,student_data, semester) %}
+{% macro semester_table(session_id ,student_data, num_semester, year, sommersemester) %}
 	<div class="row">
 		<div class="col-12 tab-content">
 			<div class="card mb-4 d">
@@ -6,14 +6,13 @@
 
 					<div class="row">
 						<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4 ">
-							<h5 class="font-weight-bolder mb-0 w-100">{{ semester + 1 }}. Fachsemester</h5>
+							<h5 class="font-weight-bolder mb-0 w-100">{{ num_semester + 1 }}. Fachsemester</h5>
 						</div>
 						<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4 text-right">
-							<!-- Add a button or trigger to toggle the collapsible section -->
 
 							<h5 class="font-weight-bolder mb-0 w-100 text-end">
-								[Semester] [Jahr] &nbsp; &nbsp;
-								<a id="toggleCollapse{{ semester + 1 }}" href="#" role="button"><i
+								{% if sommersemester %} Sommersemester {% else %} Wintersemester {% endif %} {{ year }} &nbsp; &nbsp;
+								<a id="toggleCollapse{{ num_semester + 1 }}" href="#" role="button"><i
 										class="ni ni-bold-up">
 								</i></a>
 							</h5>
@@ -25,9 +24,9 @@
 
 
 				<div class="card-body px-0 pt-0 pb-2 semesterTableContainer">
-					<div class="container collapse" id="collapseCard{{ semester + 1 }}">
+					<div class="container collapse" id="collapseCard{{ num_semester + 1 }}">
 
-						<table class="table semesterTable" id="semesterTable{{ semester + 1 }}">
+						<table class="table semesterTable" id="semesterTable{{ num_semester + 1 }}">
 							<thead>
 							<tr>
 								<th scope="col">Modul</th>
@@ -75,7 +74,7 @@
 							</thead>
 						</table>
 						<div class="d-flex justify-content-center align-items-centers fade"
-							 id="semesterTableLoading{{ semester + 1 }}">
+							 id="semesterTableLoading{{ num_semester + 1 }}">
 							<div class="spinner-border text-secondary" role="status">
 								<span class="sr-only">Loading...</span>
 							</div>
@@ -92,8 +91,8 @@
             $('[data-toggle="tooltip"]').tooltip();
 
             // Initialize Collapsible
-			const collapseToggle = $("#toggleCollapse{{ semester + 1 }}");
-			const collapseCard = $("#collapseCard{{ semester + 1 }}");
+			const collapseToggle = $("#toggleCollapse{{ num_semester + 1 }}");
+			const collapseCard = $("#collapseCard{{ num_semester + 1 }}");
             
             collapseToggle.click(function (e) {
                 e.preventDefault(); // Prevent the default behavior of the anchor tag
@@ -104,8 +103,8 @@
             collapseCard.collapse('show');
 
             // AJAX call
-            const url = "/get-semester-data/{{session_id}}/" + {{ student_data.Pseudonym }} +"/" + {{ semester + 1 }};
-            const loadingDiv = $('#semesterTableLoading{{ semester + 1 }}');
+            const url = "/get-semester-data/{{session_id}}/" + {{ student_data.Pseudonym }} +"/" + {{ num_semester + 1 }};
+            const loadingDiv = $('#semesterTableLoading{{ num_semester + 1 }}');
 
             const columnOrder = ['Modul', 'ECTS', 'Status', 'Versuch', 'Note', 'Durchschnittsnote', 'ModulDurchschnitt'];
 
@@ -117,7 +116,7 @@
                     loadingDiv.removeClass('fade');
                 },
                 success: function (data) {
-                    var myTable = document.getElementById('semesterTable{{ semester + 1 }}');
+                    var myTable = document.getElementById('semesterTable{{ num_semester + 1 }}');
 
                     for (i in data) {
                         var tr = myTable.appendChild(document.createElement('tr'));

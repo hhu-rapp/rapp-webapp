@@ -401,9 +401,19 @@ def student_review(session_id, row_id):
 
     student_data['total_ECTS'] = query_database(db, query).iloc[0, 0]
 
+    # Get Year and Semester of first exam
+    query = f"""
+    SELECT Pseudonym, Semesterjahr, Sommersemester
+    FROM Student_schreibt_Pruefung
+    WHERE Pseudonym = {pseudonym}
+    ORDER BY Semesterjahr ASC, Sommersemester DESC
+    LIMIT 1;
+    """
+
+    first_exam = query_database(db, query).to_dict(orient='records')[0]
 
     return render_template('main/student-review.html', page_title=page_title, pseudonym=pseudonym,
-                           session_id=session_id, student_data=student_data)
+                           session_id=session_id, student_data=student_data, first_exam=first_exam)
 
 
 @main.route('/get-semester-data/<int:session_id>/<int:pseudonym>/<int:semester_id>')
