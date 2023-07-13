@@ -37,9 +37,9 @@ def index():
 @login_required
 def dashboard_data(major_id, degree_id):
     # generate dummy performance data
-    performance_df = generate_performance_history(200)
+    performance_df = generate_performance_history(100)
     # generate dummy risk analysis data
-    dropout_df = generate_risk_analysis(200)
+    dropout_df = generate_risk_analysis(100)
 
     avg_bachelor_semesters = '-'
     avg_master_semesters = '-'
