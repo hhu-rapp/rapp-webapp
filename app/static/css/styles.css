@@ -85,9 +85,11 @@ body {
 
 .nav-pills .nav-link.active,
 .nav-pills .show > .nav-link {
-  color: var(--bs-nav-pills-link-active-color);
+    
+  /*color: var(--bs-nav-pills-link-active-color);*/
   background-color: var(--bs-nav-pills-link-active-bg);
-    box-shadow: 0 0 0 0.1rem rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 0 0.1rem rgba(0, 0, 0, 0.25);
+}
 
 .nav-link:not(.active):hover .icon-shape{
     transform: scale(1.1);
@@ -107,6 +109,14 @@ body {
     transform: translate(-50%, -50%);
 }
 
+.card-body.container:not(.fade){
+    opacity: 0.5;
+}
+
+.log-out-link:hover i{
+    transform: translate(10%);
+    transition: transform 150ms ease-in-out;
+}
 .log-out-link:hover{
     text-decoration: underline;
     text-decoration-thickness: 1px;
