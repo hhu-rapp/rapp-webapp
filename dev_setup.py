@@ -51,6 +51,19 @@ def setup_queries_and_models(uploads: str, db_id: int) -> None:
 
     print(f'exams_performance query added at {query.id}')
 
+    # Add module average grade
+    sql_string = """
+                SELECT P.Modul, AVG(SSP.Note) AS Durchschnittsnote
+                FROM Student_schreibt_Pruefung AS SSP, Pruefung AS P
+                WHERE P.Modul = "Matching"
+				AND SSP.Note IS NOT NULL
+                   """
+
+    query = Query(name='module_average_grade', query_string=sql_string)
+    query.save()
+
+    print(f'module_average_grade query added at {query.id}')
+
 if __name__ == '__main__':
     app = create_app('development')
 

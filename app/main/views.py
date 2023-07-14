@@ -423,19 +423,26 @@ def student_semester_data(session_id, pseudonym, semester_id):
     # FIXME: Hardcoded Database replace with db_id from session_id
     db = MLDatabase.query.get_or_404(session_id)
     # FIXME: Hardcoded Query replace with query_id for exams_performance from session_id
-    query = Query.query.get_or_404(2)
-
-    query_string = query.query_string.replace('%pseudonym%', str(pseudonym))
-    query_string = query_string.replace('%semester%', str(semester_id))
+    query_string = Query.query.get_or_404(2)
 
     # Get semester data
-    semester_data = query_database(db, query_string)
+    bindparams = {'pseudonym': str(pseudonym), 'semester': str(semester_id)}
+    semester_data = query_database(db, query_string, bindparams=bindparams)
 
-    # round all values to 2 decimal places
-    semester_data = semester_data.round(2)
+    def get_modul_average(modul):
+        query_string = Query.query.get_or_404(3)
+        semester_data = query_database(db, query_string, bindparams={'module': str(modul)})
+        # print(semester_data)
+        return semester_data['Durchschnittsnote'][0]
 
-    # add new column ModulDurchschnitt with nan values
-    semester_data['ModulDurchschnitt'] = '-'
+    if semester_data.empty:
+        return jsonify([])
+    # concat Durchschnittsnote and Standardabweichung and add ± in between
+    semester_data['Durchschnittsnote'] = semester_data['Durchschnittsnote'].round(2).astype(str) + ' ± 0.1'
+
+    # add new column ModulDurchschnitt only if 
+    semester_data['ModulDurchschnitt'] = semester_data['Modul'].apply(lambda modul: get_modul_average(modul))
+    semester_data['ModulDurchschnitt'] = semester_data['ModulDurchschnitt'].round(2).astype(str) + ' ± 0.2'
 
     # fill missing values with '-'
     semester_data = semester_data.fillna('-')
