@@ -5,7 +5,7 @@ from ..models import MLDatabase, Query
 
 
 # get data from the database
-def query_database(db, query):
+def query_database(db, query, bindparams=None):
     """
     Returns the loaded features and target variable from the database.
 
@@ -25,12 +25,14 @@ def query_database(db, query):
     # TODO: remove hardcoded sqlite
     db_uri = 'sqlite:///' + current_app.config['UPLOAD_FOLDER'] + '/' + db.filename
     engine = sqlalchemy.create_engine(db_uri)
+
     with engine.connect() as conn:
         if isinstance(query, str):
             query_string = sqlalchemy.text(query)
         else:
             query_string = sqlalchemy.text(query.query_string)
-        df = pd.DataFrame(conn.execute(query_string).fetchall())
+        cursor = conn.execute(query_string, bindparams) if bindparams is not None else conn.execute(query_string)
+        df = pd.DataFrame(cursor.fetchall())
 
     return df
 
