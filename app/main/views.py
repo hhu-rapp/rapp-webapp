@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import sqlalchemy
 from joblib import load
@@ -76,12 +77,18 @@ def dashboard_data(major_id, degree_id):
         # get avg number of semesters for bachelor students
         avg_bachelor_semesters = round(bachelor_students['Num_Semester'].mean(), 0)
 
+        if np.isnan(avg_bachelor_semesters):
+            avg_bachelor_semesters = 6
+
     if degree_id != 'bachelor':
         # get students that have 120 ECTS and are in master
         master_students = group_performance[
             (group_performance['ECTS'] >= 120) & (group_performance['Degree'] == 'Master')]
         # get avg number of semesters for master students
         avg_master_semesters = round(master_students['Num_Semester'].mean(), 0)
+
+        if np.isnan(avg_master_semesters):
+            avg_master_semesters = 4
 
     # avg ects per semester
     group_performance = performance_df.groupby(['Matrikel_Nummer', 'Semester', 'Year']).agg(
