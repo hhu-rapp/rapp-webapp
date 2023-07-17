@@ -474,7 +474,7 @@ def group_prediction(db_id, query_id, model_id):
     if db.user_id != current_user.id or not current_user.is_admin:
         abort(403)
 
-    df = query_database(db, query)
+    df = query_database(db, query).drop(['Pseudonym'], axis=1)
     label = query.name
 
     estimator = load(current_app.config['UPLOAD_FOLDER'] + '/' + model.filename)['model']
