@@ -3,55 +3,82 @@
 {% block body %}
 	<div class="container-fluid py-4">
 
-	<div class="d-flex flex-row-reverse">
-		<div class="d-flex ">
-
-			<div id="risk-featureId-radio" class="input-group mb-3 mt-3">
-				<div class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="riskFeatureRadioOption" id="inlineRadio1"
-						   value="Sex" checked>
-					<label class="form-check-label" for="inlineRadio1">Sex</label>
-				</div>
-				<div class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="riskFeatureRadioOption" id="inlineRadio2"
-						   value="Nationality">
-					<label class="form-check-label" for="inlineRadio2">Nationality</label>
-				</div>
-				<div class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="riskFeatureRadioOption" id="inlineRadio3"
-						   value="Degree">
-					<label class="form-check-label" for="inlineRadio3">Degree</label>
-				</div>
-				<div class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="riskFeatureRadioOption" id="inlineRadio4"
-						   value="Major">
-					<label class="form-check-label" for="inlineRadio4">Major</label>
+		<div class="d-flex">
+			<!-- Major Dropdown -->
+			<div class="d-flex me-auto mt-3">
+				<div class="dropdown ">
+					<button class="btn bg-gradient-secondary dropdown-toggle" type="button" id="riskMajorSelect"
+							data-bs-toggle="dropdown" aria-expanded="false">
+						Major
+					</button>
+					<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+						{% for major in majors %}
+							<a class="dropdown-item major-link" href="#">{{ major }}</a>
+						{% endfor %}
+					</div>
 				</div>
 			</div>
 
-		</div>
-	</div>
-
-	<div class="row">
-		<div class="col-12">
-			<div class="card mb-4 tab-pane">
-				<div class="card-header pb-0">
-
+			<!-- Degree Checkboxes -->
+			<div class="d-flex mx-4 mb-3">
+				<div class="label-group">
+					<label class="group-label">Degree</label>
+					<div id="risk-degree-checkbox" class="input-group">
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" type="checkbox" name="riskDegreeCheckbox"
+								   id="inlineCheckbox1"
+								   value="Bachelor" checked>
+							<label class="form-check-label" for="inlineCheckbox1">Bachelor</label>
+						</div>
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" type="checkbox" name="riskDegreeCheckbox"
+								   id="inlineCheckbox2"
+								   value=">Master" checked>
+							<label class="form-check-label" for="inlineCheckbox2">Master</label>
+						</div>
+					</div>
 				</div>
-				<div class="card-body px-0 pt-0 pb-2">
-					<div class="container">
+			</div>
 
-						<div class="d-flex justify-content-center align-items-center riskLoading fade">
-							<div class="spinner-border text-secondary" role="status">
-								<span class="sr-only">Loading...</span>
+			<!-- Demographics Radio -->
+			<div class="d-flex mb-3">
+				<div class="label-group">
+					<label class="group-label">Demographics</label>
+					<div id="risk-demographic-radio" class="input-group">
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" type="radio" name="riskFeatureRadioOption" id="inlineRadio1"
+								   value="Sex" checked>
+							<label class="form-check-label" for="inlineRadio1">Sex</label>
+						</div>
+						<div class="form-check form-check-inline">
+							<input class="form-check-input" type="radio" name="riskFeatureRadioOption" id="inlineRadio2"
+								   value="Nationality">
+							<label class="form-check-label" for="inlineRadio2">Nationality</label>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-12">
+				<div class="card mb-4 tab-pane">
+					<div class="card-header pb-0">
+					</div>
+					<div class="card-body px-0 pt-0 pb-2">
+						<div class="container">
+
+							<div class="d-flex justify-content-center align-items-center riskLoading fade">
+								<div class="spinner-border text-secondary" role="status">
+									<span class="sr-only">Loading...</span>
+								</div>
 							</div>
+							
+							<div class="chart">
+								<canvas id="risk-chart" class="chart-canvas" height="100px"></canvas>
+							</div>
+
 						</div>
-
-
-						<div class="chart">
-							<canvas id="risk-chart" class="chart-canvas" height="100px"></canvas>
-						</div>
-
 					</div>
 				</div>
 			</div>
