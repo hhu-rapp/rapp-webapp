@@ -91,5 +91,57 @@
         element = document.getElementById("analysisLinkMobile");
         element.classList.add("active");
         
+        $(document).ready(function () {
+            var degreeId = 'all';
+            var majorId = 'all';
+            var demographicId = 'Sex';
+
+            fetchRiskAnalysis(majorId, degreeId, demographicId);
+
+            // Demographics radio buttons
+            $('input[name="riskFeatureRadioOption"]').change(function () {
+                const demographicId = $(this).val();
+                fetchRiskAnalysis(majorId, degreeId, demographicId);
+            });
+
+            // Degree Checkbox
+            $('input[name="riskDegreeCheckbox"]').on('change', function () {
+                const checkedCount = $('input[name="riskDegreeCheckbox"]:checked').length;
+
+                // If no checkbox is checked, set the first checkbox to be checked
+                if (checkedCount === 0) {
+                    $('input[name="riskDegreeCheckbox"]').first().prop('checked', true);
+                }
+            });
+
+            $('input[name="riskDegreeCheckbox"]').change(function () {
+                const bachelorChecked = $('#inlineCheckbox1').is(':checked');
+                const masterChecked = $('#inlineCheckbox2').is(':checked');
+
+                if (bachelorChecked && masterChecked) {
+                    degreeId = 'all';
+                } else if (bachelorChecked) {
+                    degreeId = 'Bachelor';
+                } else if (masterChecked) {
+                    degreeId = 'Master';
+                }
+
+                fetchRiskAnalysis(majorId, degreeId, demographicId);
+            });
+
+            // Major Dropdown
+            $('.major-link').click(function (event) {
+                event.preventDefault(); // prevent the link from following the href
+                majorId = $(this).text();
+
+                // Update the feature button text
+                var majorSelect = document.getElementById('riskMajorSelect');
+                majorSelect.innerHTML = majorId;
+
+                fetchRiskAnalysis(majorId, degreeId, demographicId);
+
+            });
+        });
+
 	</script>
 {% endblock %}

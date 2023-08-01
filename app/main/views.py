@@ -564,23 +564,31 @@ def group_performance(group_id):
 @login_required
 def risk_analysis():
     page_title = "Risk Analysis"
-    return render_template('main/risk_analysis.html', page_title=page_title)
+    majors = ['Informatik', 'Sozialwissenschaften', 'Wirtschaftswissenschaften', 'Rechtswissenschaften', 'all']
+    return render_template('main/risk_analysis.html', page_title=page_title, majors=majors)
 
 
 # Get risk analysis
-@main.route('/get_risk_analysis/<string:feature_id>')
+@main.route('/get_risk_analysis/<string:major_id>/<string:degree_id>/<string:demographics_id>')
 @login_required
-def get_risk_analysis(feature_id):
+def get_risk_analysis(major_id, degree_id, demographics_id):
     # generate dummy data
     df = generate_risk_analysis(500)
 
+    # filter by major and degree
+    if not major_id == 'all':
+        df = df.loc[df['Major'] == major_id]
+
+    if not degree_id == 'all':
+        df = df.loc[df['Degree'] == degree_id]
+
     # only use the feature that is selected as Feature and the Dropout column
-    df = df[[feature_id, 'Dropout']]
+    df = df[[demographics_id, 'Dropout']]
 
     # Perform group by and aggregation
-    df = df.groupby([feature_id, 'Dropout']).size().unstack(fill_value=0).reset_index()
+    df = df.groupby([demographics_id, 'Dropout']).size().unstack(fill_value=0).reset_index()
 
-    labels = df[feature_id].tolist()
+    labels = df[demographics_id].tolist()
     graduates = df['No'].tolist()
     dropouts = df['Yes'].tolist()
 
