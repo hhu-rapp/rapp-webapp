@@ -90,7 +90,93 @@
         element.classList.add("active");
         element = document.getElementById("analysisLinkMobile");
         element.classList.add("active");
-        
+
+        //Ajax 
+
+        var riskChart = null;
+
+        function fetchRiskAnalysis(majorId, degreeId, demographicId) {
+
+            const url = "/get_risk_analysis/" + majorId + '/' + degreeId + '/' + demographicId;
+            const loadingDiv = $('.riskLoading');
+
+            $.ajax({
+                url: url,
+                method: "GET",
+                beforeSend: function () {
+                    // Remove the "fade" class to show the loading <div>
+                    loadingDiv.removeClass('fade');
+                },
+                success: function (data) {
+                    // Parse the data received from the backend
+                    const jsonData = JSON.parse(data);
+
+                    const dataLabels = jsonData.labels;
+                    const graduateData = jsonData.graduate;
+                    const dropoutData = jsonData.dropout;
+
+                    // Check if the chart instance already exists
+                    if (riskChart) {
+                        // Update the chart's data
+                        riskChart.data.labels = dataLabels;
+                        riskChart.data.datasets[0].data = graduateData;
+                        riskChart.data.datasets[1].data = dropoutData;
+
+                        // Redraw the chart
+                        riskChart.update();
+                    } else {
+
+                        // Create the chart using Charts.js
+                        const ctx = document.getElementById('risk-chart').getContext('2d');
+                        riskChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: dataLabels,
+                                datasets: [{
+                                    label: 'Graduate',
+                                    data: graduateData,
+                                    borderColor: '#015f9f',
+                                    backgroundColor: '#006ab3',
+                                    borderWidth: 1,
+                                }, {
+                                    label: 'Dropout',
+                                    data: dropoutData,
+                                    borderColor: '#ea4a4a',
+                                    backgroundColor: '#ff5050',
+                                    borderWidth: 1,
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    y: {
+                                        stacked: true,
+                                    },
+                                    x: {
+                                        stacked: true,
+                                    },
+                                },
+                                plugins: {
+                                    title: {
+                                        display: true,
+                                        text: 'Dropout Analysis'
+                                    },
+                                }
+
+                            }
+                        });
+                    }
+
+                    loadingDiv.addClass('fade');
+                },
+                error: function () {
+                    console.error("Failed to fetch data from the backend.");
+                    loadingDiv.addClass('fade');
+                }
+            });
+
+        }
+
         $(document).ready(function () {
             var degreeId = 'all';
             var majorId = 'all';
