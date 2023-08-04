@@ -24,7 +24,7 @@ def generate_performance_history(n):
     # Define lists of possible values for each attribute
     majors = ['Informatik', 'Sozialwissenschaften', 'Wirtschaftswissenschaften', 'Rechtswissenschaften']
     degrees = ['Bachelor', 'Master']
-    ects_values = [5, 8, 10]
+    ects_values = [5.0, 8.0, 10.0]
     semesters = ['WS', 'SS']
     sexes = ['Male', 'Female', 'Other']
     nationalities = ['German', 'Non-German']
