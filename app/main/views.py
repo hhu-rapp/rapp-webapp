@@ -8,6 +8,8 @@ from flask import abort, current_app, flash, redirect, render_template, url_for,
 from flask_login import current_user, login_required
 from pathlib import Path
 from uuid import uuid4
+
+from scipy import stats
 from werkzeug.utils import secure_filename
 
 from . import main
@@ -514,25 +516,60 @@ def individual_performance(student_id):
     # student_id should always be valid
     student_id = 2000000 + student_id % 50
 
-    # get data of that student
-    student_df = df[df['Matrikel_Nummer'] == student_id]
-    # get Major and degree
-    major = student_df['Major'].iloc[0]
-    degree = student_df['Degree'].iloc[0]
-    # group ECTS and sort by Num_Semester
-    student_df = student_df.groupby(by=['Num_Semester'], dropna=False).agg({'ECTS': 'sum'}).sort_values(
-        by=['Num_Semester'])
-    # reset index to get Num_Semester as column
-    student_df = student_df.reset_index()
+    # Get the Major and degree of the specific student
+    major = df.loc[df['Matrikel_Nummer'] == student_id, 'Major'].iloc[0]
+    degree = df.loc[df['Matrikel_Nummer'] == student_id, 'Degree'].iloc[0]
 
-    # calculate ECTS cummulative based on Num_Semester
-    student_df['ECTS'] = student_df['ECTS'].cumsum()
+    # Filter to include only students with the same major and degree
+    degree_major_students_df = df.loc[(df['Major'] == major) & (df['Degree'] == degree)]
+    # Calculate the number of unique students
+    n_students = len(degree_major_students_df['Matrikel_Nummer'].unique())
 
-    response = student_df.to_json(orient='records')
-    # add major and degree to json response
-    response = json.loads(response)
-    # add major and degree to json response as separate object
-    response = {'data': response, 'major': major, 'degree': degree}
+    # Sum the ECTS gathered by each student per semester
+    all_students_grouped = degree_major_students_df.groupby(by=['Num_Semester', 'Matrikel_Nummer'], dropna=False).agg(
+        {'ECTS': 'sum'}).sort_values(
+        by=['Num_Semester', 'Matrikel_Nummer'])
+
+    # Reset the level of index 'Matrikel_Nummer' to convert it into a column
+    all_student_ects_df = all_students_grouped.reset_index(level=1)
+
+    # Calculate cumulative ECTS for each student 
+    all_student_ects_df['ECTS'] = all_student_ects_df.groupby('Matrikel_Nummer')['ECTS'].cumsum()
+
+    # Filter the specific student based on Matrikel_Nummer (to get the cumulative ECTS points for that student)
+    student_ects = all_student_ects_df[all_student_ects_df['Matrikel_Nummer'] == student_id]['ECTS']
+
+    # Calculate the average ECTS points for each semester across all students
+    average_ects = all_student_ects_df.groupby('Num_Semester')['ECTS'].mean().round(1)
+
+    # Calculate the standard error of the mean for each semester
+    sem_ects = all_student_ects_df.groupby('Num_Semester')['ECTS'].sem()
+
+    # Filter out semesters with NaN SEM values
+    valid_sem_ects = np.isfinite(sem_ects)
+    valid_average_ects = average_ects[valid_sem_ects]
+    valid_sem_ects = sem_ects[valid_sem_ects]
+    print('!!!'*100)
+    print(average_ects)
+    print('student:')
+    print(student_ects)
+    print('SEM:')
+    print(sem_ects)
+
+    # Calculate the confidence interval for the average ECTS points
+    lower_bound, upper_bound = stats.t.interval(0.95, df=n_students - 1, loc=valid_average_ects, scale=valid_sem_ects)
+
+    print(lower_bound)
+    print(upper_bound)
+
+    response = {
+        'single_student': student_ects.to_list(),
+        'all_students': json.loads(average_ects.reset_index().to_json(orient='records')),
+        'lower_int': list(np.around(np.array(lower_bound), 1)),
+        'upper_int': list(np.around(np.array(upper_bound), 1)),
+        'major': major,
+        'degree': degree
+    }
     response = json.dumps(response)
 
     return jsonify(response)

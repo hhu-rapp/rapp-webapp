@@ -124,12 +124,16 @@
                     const jsonData = JSON.parse(data);
 
                     // Extract the necessary columns from the data
-                    const numSemesterData = jsonData.data.map(function (item) {
+                    const numSemesterData = jsonData.all_students.map(function (item) {
                         return item.Num_Semester;
                     });
-                    const ectsData = jsonData.data.map(function (item) {
+                    const avgEcts = jsonData.all_students.map(function (item) {
                         return item.ECTS;
                     });
+                    const studentEcts = jsonData.single_student;
+                    const upperBound = jsonData.upper_int;
+                    const lowerBound = jsonData.lower_int;
+
                     const studentMajor = jsonData.major;
                     const studentDegree = jsonData.degree;
 
@@ -138,7 +142,11 @@
                     if (chart) {
                         // Update the chart's data
                         chart.data.labels = numSemesterData;
-                        chart.data.datasets[0].data = ectsData;
+                        chart.data.datasets[0].data = studentEcts;
+                        chart.data.datasets[1].data = avgEcts;
+                        chart.data.datasets[2].data = upperBound;
+                        chart.data.datasets[3].data = lowerBound;
+
                         chart.options.plugins.title.text = 'Matrikelnummer: ' + studentId;
                         chart.options.plugins.subtitle.text = studentMajor + ' (' + studentDegree + ')';
 
@@ -154,12 +162,45 @@
                             data: {
                                 labels: numSemesterData,
                                 datasets: [{
-                                    label: 'ECTS',
-                                    data: ectsData,
+                                    label: 'Student',
+                                    data: studentEcts,
+                                    borderColor: '#ff7f50',
+                                    backgroundColor: '#ff7f50',
+                                    borderWidth: 3,
+                                    fill: false,
+                                }, {
+                                    label: 'Average',
+                                    data: avgEcts,
                                     borderColor: '#006ab3',
                                     backgroundColor: '#006ab3',
-                                    borderWidth: 3,
-                                }]
+                                    borderWidth: 2,
+									pointRadius: 1,
+                                    fill: false,
+                                },
+                                    {
+                                        label: 'Upper Bound',
+                                        data: upperBound,
+                                        borderColor: 'transparent',
+                                        backgroundColor: 'rgb(0, 106, 179, 0.3)',
+                                        pointRadius: 0,
+                                        fill: 2,
+                                        tension: 0,
+                                        legend: {
+                                            display: false,
+                                        },
+                                    },
+                                    {
+                                        label: 'Lower Bound',
+                                        data: lowerBound,
+                                        borderColor: 'transparent',
+                                        backgroundColor: 'rgb(0, 106, 179, 0.3)',
+                                        pointRadius: 0,
+                                        fill: 2,
+                                        tension: 0,
+                                        legend: {
+                                            display: false,
+                                        },
+                                    }]
                             },
                             options: {
                                 responsive: true,
