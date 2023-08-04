@@ -178,7 +178,7 @@
                                     fill: false,
                                 },
                                     {
-                                        label: 'Upper Bound',
+                                        label: 'Average (Confidence Interval)',
                                         data: upperBound,
                                         borderColor: 'transparent',
                                         backgroundColor: 'rgb(0, 106, 179, 0.3)',
@@ -190,7 +190,7 @@
                                         },
                                     },
                                     {
-                                        label: 'Lower Bound',
+                                        label: 'None',
                                         data: lowerBound,
                                         borderColor: 'transparent',
                                         backgroundColor: 'rgb(0, 106, 179, 0.3)',
@@ -227,6 +227,17 @@
                                     subtitle: {
                                         display: true,
                                         text: studentMajor + ' (' + studentDegree + ')'
+                                    },
+									legend: {
+                                        labels: {
+                                            filter: function (item, chart) {
+                                                if (item.text == 'None') {
+                                                    return false;
+                                                } else {
+                                                    return item;
+                                                }
+                                            }
+                                        }
                                     },
 
                                 }
