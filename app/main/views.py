@@ -549,18 +549,9 @@ def individual_performance(student_id):
     valid_sem_ects = np.isfinite(sem_ects)
     valid_average_ects = average_ects[valid_sem_ects]
     valid_sem_ects = sem_ects[valid_sem_ects]
-    print('!!!'*100)
-    print(average_ects)
-    print('student:')
-    print(student_ects)
-    print('SEM:')
-    print(sem_ects)
 
     # Calculate the confidence interval for the average ECTS points
     lower_bound, upper_bound = stats.t.interval(0.95, df=n_students - 1, loc=valid_average_ects, scale=valid_sem_ects)
-
-    print(lower_bound)
-    print(upper_bound)
 
     response = {
         'single_student': student_ects.to_list(),
