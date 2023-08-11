@@ -368,6 +368,7 @@ def prediction(db_id, query_id, model_id):
     df = df.drop(['Geschlecht', 'Deutsch', 'AlterEinschreibung'], axis=1)
 
     styled_df = df.style.apply(highlight_greaterthan, threshold_val=0.8, column=[pred_df.columns[-1]], axis=1)
+    styled_df.format(precision=1)
 
     return render_template('main/machine-learning.html', styled_df=styled_df, features=pred_df.columns[:-1],
                            page_title=page_title)
@@ -493,6 +494,7 @@ def group_prediction(db_id, query_id, model_id):
     pred_df = pred_df.groupby(by=group, dropna=False).agg(aggregations[agg])
 
     styled_df = pred_df.style.apply(highlight_greaterthan, threshold_val=0.8, column=[pred_df.columns[-1]], axis=1)
+    styled_df.format(precision=1)
 
     return jsonify(styled_df=styled_df.to_html(table_uuid="group_prediction", classes='display'))
 
