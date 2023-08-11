@@ -47,9 +47,9 @@
 				<div class="card-header pb-0">
 
 				</div>
-				<div class="card-body px-0 pt-0 pb-2">
-					<div class="container" id="pred-table">
-						{{ styled_df.to_html(table_uuid="prediction", classes='display', escape=False) |
+				<div class="card-body px-0 pt-0 pb-2 ">
+					<div class="container table-responsive" id="pred-table">
+						{{ styled_df.to_html(table_uuid="prediction", table_attributes='class="w-100"', escape=False) |
 						safe}}
 					</div>
 				</div>
@@ -60,7 +60,7 @@
 
 				</div>
 				<div class="card-body px-0 pt-0 pb-2">
-					<div class="container" id="group-pred-table">
+					<div class="container table-responsive" id="group-pred-table">
 						<p style="text-align: center">
 						To view data at the group level, you can select a Feature and an Aggregation from the dropdown menus above. Once you've made a selection, your data will be displayed. 
 						</p>

@@ -496,7 +496,7 @@ def group_prediction(db_id, query_id, model_id):
     styled_df = pred_df.style.apply(highlight_greaterthan, threshold_val=0.8, column=[pred_df.columns[-1]], axis=1)
     styled_df.format(precision=1)
 
-    return jsonify(styled_df=styled_df.to_html(table_uuid="group_prediction", classes='display'))
+    return jsonify(styled_df=styled_df.to_html(table_uuid="group_prediction", table_attributes='class="w-100"'))
 
 
 # Performance history
