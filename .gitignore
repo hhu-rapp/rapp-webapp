@@ -6,7 +6,8 @@ __pycache__/
 data/database-dev.sqlite
 
 # Distribution
-dist/
+dist/*
+!dist/rapp
 build/
 *.egg-info/
 
