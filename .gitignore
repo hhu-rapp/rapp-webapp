@@ -8,6 +8,7 @@ data/database-dev.sqlite
 # Distribution
 dist/*
 !dist/rapp
+!dist/rapp.exe
 build/
 *.egg-info/
 
