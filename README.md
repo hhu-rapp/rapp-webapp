@@ -54,39 +54,30 @@ Python>=3.10
     ```
     (The file should be in the same folder this README.md file is in.)
     
-6. Initialize database
+6. Initialize database (development only):
 
-    Open flask shell:
-    ```bash
-    flask shell
-    ```
+    To populate the database with essential data for development purposes, follow these steps:
 
-    Within the shell execute the following commands to initialize the database:
-    ```bash
-    db.create_all()
-    ```
 
-7. Create first admin (development only):
-    While still in Flask Shell, run
+    1. Navigate to the project directory.
 
-    ```flask shell
-    user = User(email='admin@admin.com', password='admin', is_admin=True)
-    db.session.add(user)
-    db.session.commit()
-    ```
+    2. Run the following command:
 
-    To exit the flask shell, type:
-    ```flask shell
-    exit()
-    ```
+        ```bash
+        python dev_setup.py
+        ```
 
-    Email and password can be chosen arbitrarily.
+        This script will initialize the database with initial data required for development.
+
+    3. After running the script, the first admin user will be created with the following credentials:
+
+    - Email: admin@admin.com
+    - Password: admin
+    - Admin Privileges: Yes
+    
 
 ## Usage
-0. Create upload folder (stores the database and the machine learning models)
-    ```bash
-    mkdir uploads
-    ```
+
 1. Start local server (development only)
 
     ```bash
