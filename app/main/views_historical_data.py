@@ -16,8 +16,8 @@ from ..ml_backend.dummy_data import generate_performance_history, generate_risk_
 @login_required
 def performance_history():
     page_title = "Performance History"
-    filters = ['Filter 1', 'Filter 2', 'Filter 3']
-    return render_template('main/performance_history.html', page_title=page_title, filters=filters)
+    majors = ['Informatik', 'Sozialwissenschaften', 'Wirtschaftswissenschaften', 'Rechtswissenschaften', 'all']
+    return render_template('main/performance_history.html', page_title=page_title, majors=majors)
 
 
 # Get individual performance history
@@ -81,19 +81,21 @@ def individual_performance(student_id):
 
 
 # Get group performance history
-@main.route('/group_performance/<string:group_id>')
+@main.route('/group_performance/<string:major_id>/<string:degree_id>')
 @login_required
-def group_performance(group_id):
+def group_performance(major_id, degree_id):
     # generate dummy data
     df = generate_performance_history(100)
 
-    if group_id == 'degree':
-        # group by degree
-        grouped_df = df.groupby(by=['Num_Semester', 'Degree'], dropna=False).agg({'ECTS': 'mean'})
-    if group_id == 'major':
-        # group by studies
-        grouped_df = df.groupby(by=['Num_Semester', 'major'], dropna=False).agg({'ECTS': 'mean'}).sort_values(
-            by=['Num_Semester'])
+    # filter by major and degree
+    if not major_id == 'all':
+        df = df.loc[df['Major'] == major_id]
+
+    if not degree_id == 'all':
+        df = df.loc[df['Degree'] == degree_id]
+
+    # group by degree
+    grouped_df = df.groupby(by=['Num_Semester', 'Degree'], dropna=False).agg({'ECTS': 'mean'})
 
     # reset index to get Num_Semester and group as column
     grouped_df = grouped_df.reset_index(0).reset_index()

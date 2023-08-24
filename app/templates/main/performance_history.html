@@ -3,46 +3,72 @@
 {% block body %}
 	<div class="container-fluid py-4">
 
-	<div class="d-flex ">
-		<ul class="me-auto nav nav-pills m-2" id="performance-tabs" role="tablist">
-			<li class="nav-item pill">
-				<a class="nav-link" id="ind-perf-tab" href="#" data-toggle="tab"
-				   data-target=".individualPerf, .studentIdFilter, .filterSelect, .studentFilter">Individual-level</a>
-			</li>
-			<li class="nav-item pill active">
-				<a class="nav-link active" id="group-perf-tab" href="#group-level" data-toggle="tab"
-				   data-target=".groupPerf, .filterSelect, .perfGrouping">Group-level</a>
-			</li>
-		</ul>
-
 		<div class="d-flex ">
-			<div class="input-group mb-4 mt-2 tab-pane fade studentFilter">
-				<input id="perf-studentId-input" type="number" class="form-control" placeholder="Matrikelnummer"
-					   aria-label="Search Matrikelnummer" aria-describedby="Matrikelnummer">
-				<button class="btn btn-outline-secondary mb-0" type="button" id="perf-studentId-btn">
-					<i class="fa fa-search"></i>
-				</button>
+			<ul class="mr-auto nav nav-pills m-2" id="performance-tabs" role="tablist">
+				<li class="nav-item pill">
+					<a class="nav-link" id="ind-perf-tab" href="#" data-toggle="tab"
+					   data-target=".individualPerf, .studentIdFilter, .filterSelect, .studentFilter">Individual-level</a>
+				</li>
+				<li class="nav-item pill active">
+					<a class="nav-link active" id="group-perf-tab" href="#group-level" data-toggle="tab"
+					   data-target=".groupPerf, .filterSelect, .perfGrouping">Group-level</a>
+				</li>
+			</ul>
+			<!-- Major Dropdown -->
+			<div class="me-auto m-2 tab-pane fade show active perfGrouping">
+				<div class="dropdown ">
+					<button class="btn bg-gradient-secondary dropdown-toggle" type="button" id="perfMajorSelect"
+							data-bs-toggle="dropdown" aria-expanded="false">
+						Major
+					</button>
+					<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+						{% for major in majors %}
+							<a class="dropdown-item major-link" href="#">{{ major }}</a>
+						{% endfor %}
+					</div>
+				</div>
 			</div>
 
-			<div class="input-group mb-3 mt-3 tab-pane fade show active perfGrouping">
-				<div class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2"
-						   value="option2" checked>
-					<label class="form-check-label" for="inlineRadio2">Degree</label>
+			<div class="d-flex tab-pane fade studentFilter">
+				<!-- Matrikelnummer search -->
+				<div class="input-group pb-3 ">
+					<input id="perf-studentId-input" type="number" class="form-control" placeholder="Matrikelnummer"
+						   aria-label="Search Matrikelnummer" aria-describedby="Matrikelnummer">
+					<button class="btn btn-outline-secondary mb-0" type="button" id="perf-studentId-btn">
+						<i class="fa fa-search"></i>
+					</button>
 				</div>
-				<div class="form-check form-check-inline">
-					<input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3"
-						   value="option3" disabled>
-					<label class="form-check-label" for="inlineRadio3">Studies</label>
+			</div>
+
+			<div class="d-flex tab-pane fade show active perfGrouping">
+				<!-- Degree Checkboxes -->
+				<div class="input-group pb-3">
+					<div class="label-group">
+						<label class="group-label">Degree</label>
+						<div id="perf-degree-checkbox" class="input-group">
+							<div class="form-check form-check-inline">
+								<input class="form-check-input" type="checkbox" name="perfDegreeCheckbox"
+									   id="inlineCheckbox1"
+									   value="Bachelor" checked>
+								<label class="form-check-label" for="inlineCheckbox1">Bachelor</label>
+							</div>
+							<div class="form-check form-check-inline">
+								<input class="form-check-input" type="checkbox" name="perfDegreeCheckbox"
+									   id="inlineCheckbox2"
+									   value=">Master" checked>
+								<label class="form-check-label" for="inlineCheckbox2">Master</label>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 
 		</div>
-	</div>
 
-	<div class="row">
-		<div class="col-12 tab-content">
-			{# Individual Tab#}
+
+		<div class="row">
+			<div class="col-12 tab-content">
+				{# Individual Tab#}
 			<div class="card mb-4 tab-pane fade individualPerf" role="tabpanel"
 				 aria-labelledby="individual-tab">
 				<div class="card-header pb-0">
@@ -82,6 +108,7 @@
 						</div>
 					</div>
 				</div>
+			</div>
 			</div>
 		</div>
 	</div>
@@ -268,10 +295,11 @@
 
         // Ajax Group Performance
 
-        function fetchGroupPerformance(groupId) {
+        function fetchGroupPerformance(majorId, degreeId) {
 
-            const url = "/group_performance/" + groupId;
+            const url = "/group_performance/" + majorId + '/' + degreeId;
             const loadingDiv = $('.perfLoading');
+            var labels = [];
 
             $.ajax({
                 url: url,
@@ -309,10 +337,17 @@
                         return item.ECTS;
                     });
 
+                    // Set labels to the longest array
+                    if (bachelorNumSemesterData > masterNumSemesterData) {
+                        labels = bachelorNumSemesterData;
+                    } else {
+                        labels = masterNumSemesterData;
+                    }
+
                     // Check if the chart instance already exists
                     if (groupChart) {
                         // Update the chart's data
-                        groupChart.data.labels = bachelorNumSemesterData;
+                        groupChart.data.labels = labels;
                         groupChart.data.datasets[0].data = masterEctsData;
                         groupChart.data.datasets[1].data = bachelorEctsData;
 
@@ -325,13 +360,14 @@
                         groupChart = new Chart(ctx, {
                             type: 'line',
                             data: {
-                                labels: bachelorNumSemesterData,
+                                labels: labels,
                                 datasets: [{
                                     label: 'Master',
                                     data: masterEctsData,
                                     borderColor: '#006ab3',
                                     backgroundColor: '#006ab3',
                                     borderWidth: 3,
+
                                 }, {
                                     label: 'Bachelor',
                                     data: bachelorEctsData,
@@ -372,15 +408,38 @@
 
 
         $(document).ready(function () {
-                const groupId = 'degree';
-                fetchGroupPerformance(groupId);
+                let degreeId = 'all';
+                let majorId = 'all';
+                fetchGroupPerformance(majorId, degreeId);
 
-                //  $('#perf-groupId-btn').click(function() {
-                //     
-                //     const groupId = $('#perf-groupId-input').val();
-                //
-                //     fetchGroupPerformance(groupId);
-                // });
+                // Major dropdown
+                $('.major-link').click(function (event) {
+                    event.preventDefault(); // prevent the link from following the href
+                    majorId = $(this).text();
+
+                    // Update the feature button text
+                    let majorSelect = document.getElementById('perfMajorSelect');
+                    majorSelect.innerHTML = majorId;
+
+                    fetchGroupPerformance(majorId, degreeId);
+
+                });
+
+                // Degree checkbox
+                $('input[name="perfDegreeCheckbox"]').change(function () {
+                    const bachelorChecked = $('#inlineCheckbox1').is(':checked');
+                    const masterChecked = $('#inlineCheckbox2').is(':checked');
+
+                    if (bachelorChecked && masterChecked) {
+                        degreeId = 'all';
+                    } else if (bachelorChecked) {
+                        degreeId = 'Bachelor';
+                    } else if (masterChecked) {
+                        degreeId = 'Master';
+                    }
+
+                    fetchGroupPerformance(majorId, degreeId);
+                });
             }
         );
 	</script>
