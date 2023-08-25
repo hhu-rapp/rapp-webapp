@@ -45,7 +45,7 @@
 			</li>
 			{# Student Predictions #}
 			<li class="nav-item">
-				<a id="predictionLink{% if is_mobile %}Mobile{% endif %}" class="nav-link" href="/prediction/1/1/1">
+				<a id="predictionLink{% if is_mobile %}Mobile{% endif %}" class="nav-link" href="{{url_for('main.select_prediction_query', db_id=1)}}">
 					<div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
 						<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
 							<g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
@@ -75,7 +75,7 @@
 
 			{#	Prevention	#}
 			<li class="nav-item">
-				<a id="preventionLink{% if is_mobile %}Mobile{% endif %}" class="nav-link"
+				<a id="preventionLink{% if is_mobile %}Mobile{% endif %}" class="nav-link disabled"
 				   href="{{ url_for('main.index') }}">
 					<div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
 						<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
