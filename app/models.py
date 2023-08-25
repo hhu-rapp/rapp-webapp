@@ -189,6 +189,7 @@ class Query(db.Model):      # type: ignore
 
     id: db.Column = db.Column(db.Integer(), primary_key=True)
     name: db.Column = db.Column(db.String(255))
+    description: db.Column = db.Column(db.Text())
     query_string: db.Column = db.Column(db.Text())
     timestamp: db.Column = db.Column(db.DateTime(), default=datetime.utcnow)
     is_target: db.Column = db.Column(db.Boolean(), default=True)

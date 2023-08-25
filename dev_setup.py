@@ -11,11 +11,18 @@ def setup_queries_and_models(uploads: str, db_id: int) -> None:
     for target in targets:
         model_paths = glob(os.path.join(target, '*.joblib'))
         sql_path = glob(os.path.join(target, '*.sql'))[0]
+        description_path = os.path.join(target, 'description.txt')
 
         # Add query
         with open(sql_path, 'r') as f:
             sql_string = f.read()
         query = Query(name=os.path.relpath(target, uploads), query_string=sql_string)
+
+        # Add description
+        with open(description_path, 'r') as f:
+            description_text = f.read()
+        query.description = description_text
+
         query.save()
         print(f'{os.path.relpath(target, uploads)} query added at {query.id}')
 
