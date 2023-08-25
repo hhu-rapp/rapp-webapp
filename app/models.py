@@ -191,6 +191,7 @@ class Query(db.Model):      # type: ignore
     name: db.Column = db.Column(db.String(255))
     query_string: db.Column = db.Column(db.Text())
     timestamp: db.Column = db.Column(db.DateTime(), default=datetime.utcnow)
+    is_target: db.Column = db.Column(db.Boolean(), default=True)
     model_id: relationship = db.relationship(
         'Model',
         backref='models',

@@ -132,17 +132,20 @@ def student_review(session_id, row_id):
 def student_semester_data(session_id, pseudonym, semester_id):
     # FIXME: Hardcoded Database replace with db_id from session_id
     db = MLDatabase.query.get_or_404(session_id)
-    # FIXME: Hardcoded Query replace with query_id for exams_performance from session_id
-    query_string = Query.query.get_or_404(2)
+    # FIXME: Hardcoded functional query name
+    QUERY_NAME = 'exams_performance'
+    query_string = Query.query.filter_by(name=QUERY_NAME).first_or_404()
 
     # Get semester data
     bindparams = {'pseudonym': str(pseudonym), 'semester': str(semester_id)}
     semester_data = query_database(db, query_string, bindparams=bindparams)
 
     def get_modul_average(modul):
-        query_string = Query.query.get_or_404(3)
-        semester_data = query_database(db, query_string, bindparams={'module': str(modul)})
-        # print(semester_data)
+        # FIXME: Hardcoded functional query name
+        QUERY_NAME = 'modul_average_grade'
+        query_string = Query.query.filter_by(name=QUERY_NAME).first_or_404()
+        semester_data = query_database(db, query_string, bindparams={'modul': str(modul)})
+
         return semester_data['Durchschnittsnote'][0]
 
     if semester_data.empty:
