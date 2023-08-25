@@ -54,8 +54,13 @@ def prediction(db_id, query_id, model_id):
     if db.user_id != current_user.id or not current_user.is_admin:
         abort(403)
 
-    df = query_database(db, query).drop(['Pseudonym'], axis=1)
-    label = query.name
+    df = query_database(db, query)
+    pseudonym = df.pop('Pseudonym')
+    label = query.name.split('_')[0]
+
+    # FIXME: Seems like FourthTermCP and MasterZulassung were trained without the divers category in geschlecht
+    if label == 'FourthTermCP' or label == 'MasterZulassung':
+        df = df.loc[df['Geschlecht'] != 'divers']
 
     estimator = load(current_app.config['UPLOAD_FOLDER'] + '/' + model.filename)['model']
     pred_df = pipeline.predict(estimator, df, label)
@@ -66,6 +71,7 @@ def prediction(db_id, query_id, model_id):
 
     # Drop sensitive attributes, Geschlecht, Deutsch and AlterEinschreibung
     df = df.drop(['Geschlecht', 'Deutsch', 'AlterEinschreibung'], axis=1)
+    df.insert(1, 'Pseudonym', pseudonym)
 
     styled_df = df.style.apply(highlight_greaterthan, threshold_val=0.8, column=[pred_df.columns[-1]], axis=1)
     styled_df.format(precision=1)
@@ -151,10 +157,12 @@ def student_semester_data(session_id, pseudonym, semester_id):
     if semester_data.empty:
         return jsonify([])
     # concat Durchschnittsnote and Standardabweichung and add ± in between
+    # FIXME: Hardcoded standard deviation
     semester_data['Durchschnittsnote'] = semester_data['Durchschnittsnote'].round(2).astype(str) + ' ± 0.1'
 
     # add new column ModulDurchschnitt only if 
     semester_data['ModulDurchschnitt'] = semester_data['Modul'].apply(lambda modul: get_modul_average(modul))
+    # FIXME: Hardcoded standard deviation
     semester_data['ModulDurchschnitt'] = semester_data['ModulDurchschnitt'].round(2).astype(str) + ' ± 0.2'
 
     # fill missing values with '-'
@@ -181,7 +189,11 @@ def group_prediction(db_id, query_id, model_id):
         abort(403)
 
     df = query_database(db, query).drop(['Pseudonym'], axis=1)
-    label = query.name
+    label = query.name.split('_')[0]
+
+    # FIXME: Seems like FourthTermCP and MasterZulassung were trained without the diverse category in geschlecht
+    if label == 'FourthTermCP' or label == 'MasterZulassung':
+        df = df.loc[df['Geschlecht'] != 'divers']
 
     estimator = load(current_app.config['UPLOAD_FOLDER'] + '/' + model.filename)['model']
     pred_df = pipeline.predict(estimator, df, label)
