@@ -55,8 +55,6 @@ def prediction(db_id, query_id, model_id):
     query = Query.query.get_or_404(query_id)
     model = Model.query.get_or_404(model_id)
 
-    page_title += f": {query.name}"
-
     if db.user_id != current_user.id or not current_user.is_admin:
         abort(403)
 
@@ -83,7 +81,7 @@ def prediction(db_id, query_id, model_id):
     styled_df.format(precision=1)
 
     return render_template('main/machine-learning.html', styled_df=styled_df, features=pred_df.columns[:-1],
-                           page_title=page_title)
+                           page_title=page_title, query=query)
 
 
 @main.route('/student-review/<int:session_id>/<int:row_id>')
