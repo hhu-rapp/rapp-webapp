@@ -1,29 +1,75 @@
-{% macro query_card(query) %}
+{% macro query_card(query, clickable=True) %}
 	<div class="row">
 		<div class="col-12">
-				<div class="card mb-4 d">
-					<div class="card-header">
+			<div class="card mb-4 d">
+				<div class="card-header">
 
-						<div class="row">
-							<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4 ">
-								<h5 class="font-weight-bolder mb-0 w-100">{{ query.name }}</h5>
-							</div>
-
+					<div class="row">
+						<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4 ">
+							<h5 class="font-weight-bolder mb-0 w-100 ">{{ query.name }}
+							</h5>
 						</div>
-					</div>
-
-
-					<div class="card-body px-0 pt-0 pb-2 semesterTableContainer">
-						<div class="container" id="collapseCard{{ query.id }}">
-							<p>{{ query.description }}</p>
-						
-							<div class="flex d-flex flex-row-reverse">
-							<a href="{{url_for('main.prediction', db_id=1, query_id=query.id, model_id=query.id)}}" class="btn btn-secondary">Select Target</a>
-								</div>
+						<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4 text-right">
+							<h5 class="font-weight-bolder mb-0 w-100 text-end">
+								<a id="toggleCollapseQuery{{ query.id }}" href="#" role="button"><i
+										class="ni ni-bold-up">
+								</i></a>
+							</h5>
 						</div>
+
+
 					</div>
 				</div>
+
+
+				<div class="card-body px-0 pt-0 pb-2 semesterTableContainer">
+					<div class="container collapse" id="collapseCardQuery{{ query.id }}">
+						<p>{{ query.description }}</p>
+
+						{% if clickable %}
+							<div class="flex d-flex flex-row-reverse">
+								<a href="{{ url_for('main.prediction', db_id=1, query_id=query.id, model_id=query.id) }}"
+								   class="btn btn-secondary">Select Target</a>
+							</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
-	
+
+	<script>
+
+        $(function () {
+            // Initialize Collapsible
+            const collapseToggle = $("#toggleCollapseQuery{{ query.id }}");
+            const collapseCard = $("#collapseCardQuery{{ query.id }}");
+
+            collapseToggle.click(function (e) {
+                e.preventDefault(); // Prevent the default behavior of the anchor tag
+                collapseCard.collapse('toggle');
+                $(this).find('i').toggleClass('rotate');
+            });
+            {% if clickable %}
+            // Set the collapsible content to be initially shown
+            collapseCard.collapse('show');
+            {% endif %}
+			{% if not clickable %}
+            // Set the collapsible content to be initially shown
+            collapseToggle.find('i').toggleClass('rotate');
+            {% endif %}
+		
+			
+        });
+
+
+	</script>
+
+	<style>
+        .rotate {
+            transform: rotate(180deg);
+            transition: transform 0.3s ease, transition 0.3s ease;
+        }
+	</style>
+
 {% endmacro %}
