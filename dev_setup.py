@@ -17,6 +17,7 @@ def setup_queries_and_models(uploads: str, db_id: int) -> None:
             sql_string = f.read()
         query = Query(name=os.path.relpath(target, uploads), query_string=sql_string)
         query.save()
+        print(f'{os.path.relpath(target, uploads)} query added at {query.id}')
 
         # Add query and db to relationship
         db.session.execute(queried_by.insert().values(database_id=db_id, query_id=query.id))
@@ -24,9 +25,10 @@ def setup_queries_and_models(uploads: str, db_id: int) -> None:
 
         # Add models
         for model_path in model_paths:
-            model_name = os.path.splitext(os.path.basename(model_path))[0]
+            model_name = os.path.splitext(os.path.basename(model_path))[0].split('_')[-1]
             model = Model(name=model_name, filename=os.path.relpath(model_path, uploads), query_id=query.id)
             model.save()
+            print(f'{model_name} model added at {query.id}')
 
     # Add exams performance query
     # Add module average grade
