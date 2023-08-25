@@ -13,11 +13,15 @@ from ..ml_backend import pipeline, highlight_greaterthan, query_database
 @main.route('/machine-learning/<int:db_id>')
 @login_required
 def select_prediction_query(db_id):
-    queries = Query.query.all()
+    page_title = "Student Predictions: Target Selection"
+
+    queries = Query.query.filter_by(is_target=True).all()
+
     return render_template(
         'main/machine_learning_query_selection.html',
         queries=queries,
-        db_id=db_id
+        db_id=db_id,
+        page_title=page_title
     )
 
 
@@ -50,6 +54,8 @@ def prediction(db_id, query_id, model_id):
     db = MLDatabase.query.get_or_404(db_id)
     query = Query.query.get_or_404(query_id)
     model = Model.query.get_or_404(model_id)
+
+    page_title += f": {query.name}"
 
     if db.user_id != current_user.id or not current_user.is_admin:
         abort(403)
