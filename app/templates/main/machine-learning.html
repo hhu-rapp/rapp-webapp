@@ -1,24 +1,27 @@
 {% extends "base.html" %}
 
 {% block body %}
-<div class="container-fluid py-4">
+	<div class="container-fluid py-4">
 
-<div class="d-flex ">
-<ul class="me-auto nav nav-pills m-2" id="prediction-tabs" role="tablist">
-	<li class="nav-item">
-    <a class="nav-link active" id="individual-tab" href="#" data-toggle="tab" data-target=".individualPred">Individual-level</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link" id="group-pill" href="#group-level" data-toggle="tab" data-target=".aggregationSelect, .featureSelect, .groupPred">Group-level</a>
-  </li>
-</ul>
-	
-<div class=" d-flex tab-content">
-	<div class="p-2 dropdown tab-pane fade featureSelect" role="tabpanel">
-  <button class="btn bg-gradient-primary dropdown-toggle" type="button" id="featureSelectButton" data-bs-toggle="dropdown" aria-expanded="false">
-    Feature
-  </button>
-  <div class="dropdown-menu dropdown-menu" aria-labelledby="dropdownMenuButton">
+		<div class="d-flex ">
+			<ul class="me-auto nav nav-pills m-2" id="prediction-tabs" role="tablist">
+				<li class="nav-item pill">
+					<a class="nav-link active" id="individual-tab" href="#" data-toggle="tab"
+					   data-target=".individualPred">Individual-level</a>
+				</li>
+				<li class="nav-item pill">
+					<a class="nav-link" id="group-pill" href="#group-level" data-toggle="tab"
+					   data-target=".aggregationSelect, .featureSelect, .groupPred">Group-level</a>
+				</li>
+			</ul>
+
+			<div class=" d-flex tab-content">
+				<div class="p-2 dropdown tab-pane fade featureSelect" role="tabpanel">
+					<button class="btn bg-gradient-primary dropdown-toggle" type="button" id="featureSelectButton"
+							data-bs-toggle="dropdown" aria-expanded="false">
+						Feature
+					</button>
+					<div class="dropdown-menu dropdown-menu" aria-labelledby="dropdownMenuButton">
     {% for feature in features %}
 	  <a class="dropdown-item feature-link" href="#">{{ feature }}</a>
     {% endfor %}
@@ -82,18 +85,30 @@
     var query_id = pathArray[3];
     var model_id = pathArray[4];
     $SCRIPT_PARAMS = '/' + db_id + '/' + query_id + '/' + model_id;
-	
-    // Prediction Tabs
-    $('#prediction-tabs a').on('click', function (e) {
-        e.preventDefault()
-        $(this).tab('show')
-    })
 
-    $('#prediction-tabs a[data-toggle="tab"]').on('show.bs.tab', function (e) {
-        let target = $(e.target).data('target');
-        $('.tab-pane').not(target).removeClass('active show');
-        $(target)
-            .addClass('active show')
+    $(function () {
+        let indexLastColumn = $("#T_prediction").find('tr')[0].cells.length - 1;
+        $('#T_prediction').DataTable({
+            "scrollX": true,
+            "classes": {
+                "table": "pred_table",
+            },
+            "order": [[indexLastColumn, "desc"]],
+
+        });
+
+        // Prediction Tabs
+        $('#prediction-tabs a').on('click', function (e) {
+            e.preventDefault()
+            $(this).tab('show')
+        })
+
+        $('#prediction-tabs a[data-toggle="tab"]').on('show.bs.tab', function (e) {
+            let target = $(e.target).data('target');
+            $('.tab-pane').not(target).removeClass('active show');
+            $(target)
+                .addClass('active show')
+        });
     });
 
 

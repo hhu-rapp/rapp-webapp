@@ -1,13 +1,6 @@
 $(document).ready(function () {
     // $('#query-results').DataTable();
-    $('#T_prediction').DataTable({
-        "scrollX": true,
-        "classes": { 
-            "table": "pred_table",
-        },
-        "order": [[8, "desc"]],
-        
-    });
+
     var modals = document.querySelectorAll('.modal');
     var modalOptions = {
         backdrop: true,
