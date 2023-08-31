@@ -133,35 +133,58 @@ def group_performance(major_id, degree_id):
 @login_required
 def risk_analysis():
     page_title = "Risk Analysis"
-    majors = ['Informatik', 'Sozialwissenschaften', 'Wirtschaftswissenschaften', 'Rechtswissenschaften', 'all']
-    return render_template('main/risk_analysis.html', page_title=page_title, majors=majors)
+    majors = ['Informatik', 'Sozialwissenschaften', 'all']
+    return render_template('main/risk_analysis.html', page_title=page_title, majors=majors, query_id=1)
 
 
 # Get risk analysis
-@main.route('/get_risk_analysis/<string:major_id>/<string:degree_id>/<string:demographics_id>')
+@main.route('/get_risk_analysis/<string:query_id>/<string:major_id>/<string:degree_id>/<string:demographics_id>')
 @login_required
-def get_risk_analysis(major_id, degree_id, demographics_id):
-    # generate dummy data
-    df = generate_risk_analysis(500)
+def get_risk_analysis(query_id, major_id, degree_id, demographics_id):
+    # get the data from the database
+    db = MLDatabase.query.get_or_404(1)
+    query_name = "risk_analysis"
+    query_string = Query.query.filter_by(name=query_name).first_or_404()
+    df = query_database(db, query_string)
+
+    # FIXME: db dependent
+    df['Deutsch'] = df['Deutsch'].replace([1, 0], ['Deutsch', 'Nicht-Deutsch'])
+
+    # get target data based on query_id
+    query = Query.query.get_or_404(query_id)
+    target_df = query_database(db, query)
+    target = target_df.columns[-1]
+
+    df = df.merge(target_df[['Pseudonym', target]], on='Pseudonym', how='left')
+
+    # Drop rows with nan values
+    df = df.dropna()
 
     # filter by major and degree
     if not major_id == 'all':
-        df = df.loc[df['Major'] == major_id]
+        df = df.loc[df['Studienfach'] == major_id]
 
     if not degree_id == 'all':
-        df = df.loc[df['Degree'] == degree_id]
+        df = df.loc[df['Abschluss'] == degree_id]
 
-    # only use the feature that is selected as Feature and the Dropout column
-    df = df[[demographics_id, 'Dropout']]
+
+    # FIXME: hardcoded demographic_id translation
+    if demographics_id == 'Sex':
+        demographics_id = 'Geschlecht'
+    elif demographics_id == 'Nationality':
+        demographics_id = 'Deutsch'
+
+    df = df[[demographics_id, target]]
 
     # Perform group by and aggregation
-    df = df.groupby([demographics_id, 'Dropout']).size().unstack(fill_value=0).reset_index()
+    df = df.groupby([demographics_id, target]).size().unstack(fill_value=0).reset_index()
 
     labels = df[demographics_id].tolist()
-    graduates = df['No'].tolist()
-    dropouts = df['Yes'].tolist()
 
-    response = {'labels': labels, 'graduate': graduates, 'dropout': dropouts}
+    positives = df[0].tolist()
+    negatives = df[1].tolist()
+
+    response = {'labels': labels, 'positives': positives, 'negatives': negatives, 'target': target}
     response = json.dumps(response)
 
     return jsonify(response)

@@ -97,7 +97,7 @@
 
         function fetchRiskAnalysis(majorId, degreeId, demographicId) {
 
-            const url = "/get_risk_analysis/" + majorId + '/' + degreeId + '/' + demographicId;
+            const url = "/get_risk_analysis/" + '{{ query_id }}' + '/' + majorId + '/' + degreeId + '/' + demographicId;
             const loadingDiv = $('.riskLoading');
 
             $.ajax({
@@ -112,15 +112,16 @@
                     const jsonData = JSON.parse(data);
 
                     const dataLabels = jsonData.labels;
-                    const graduateData = jsonData.graduate;
-                    const dropoutData = jsonData.dropout;
+                    const positivesData = jsonData.positives;
+                    const negativesData = jsonData.negatives;
+                    const target = jsonData.target;
 
                     // Check if the chart instance already exists
                     if (riskChart) {
                         // Update the chart's data
                         riskChart.data.labels = dataLabels;
-                        riskChart.data.datasets[0].data = graduateData;
-                        riskChart.data.datasets[1].data = dropoutData;
+                        riskChart.data.datasets[0].data = positivesData;
+                        riskChart.data.datasets[1].data = negativesData;
 
                         // Redraw the chart
                         riskChart.update();
@@ -133,14 +134,14 @@
                             data: {
                                 labels: dataLabels,
                                 datasets: [{
-                                    label: 'Graduate',
-                                    data: graduateData,
+                                    label: 'Not ' + target,
+                                    data: positivesData,
                                     borderColor: '#015f9f',
                                     backgroundColor: '#006ab3',
                                     borderWidth: 1,
                                 }, {
-                                    label: 'Dropout',
-                                    data: dropoutData,
+                                    label: target,
+                                    data: negativesData,
                                     borderColor: '#ea4a4a',
                                     backgroundColor: '#ff5050',
                                     borderWidth: 1,
@@ -159,7 +160,7 @@
                                 plugins: {
                                     title: {
                                         display: true,
-                                        text: 'Dropout Analysis'
+                                        text: target + ' Analysis'
                                     },
                                 }
 
