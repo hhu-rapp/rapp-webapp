@@ -8,7 +8,9 @@ from flask_login import login_required
 from scipy import stats
 
 from . import main
-from ..ml_backend.dummy_data import generate_performance_history, generate_risk_analysis
+from ..ml_backend import query_database
+from ..ml_backend.dummy_data import generate_risk_analysis
+from ..models import Query, MLDatabase
 
 
 # Performance history
@@ -16,7 +18,7 @@ from ..ml_backend.dummy_data import generate_performance_history, generate_risk_
 @login_required
 def performance_history():
     page_title = "Performance History"
-    majors = ['Informatik', 'Sozialwissenschaften', 'Wirtschaftswissenschaften', 'Rechtswissenschaften', 'all']
+    majors = ['Informatik', 'Sozialwissenschaften', 'all']
     return render_template('main/performance_history.html', page_title=page_title, majors=majors)
 
 
@@ -24,40 +26,46 @@ def performance_history():
 @main.route('/individual_performance/<int:student_id>')
 @login_required
 def individual_performance(student_id):
-    # generate dummy data
-    df = generate_performance_history(50)
+    # FIXME: Hardcoded Database replace with db_id from session_id
+    db = MLDatabase.query.get_or_404(1)
+    # FIXME: Hardcoded functional query name
+    query_name = "performance_history"
+    query_string = Query.query.filter_by(name=query_name).first_or_404()
+    performance_df = query_database(db, query_string)
 
-    # student_id should always be valid
-    student_id = 2000000 + student_id % 50
+    df = performance_df
 
     # Get the Major and degree of the specific student
-    major = df.loc[df['Matrikel_Nummer'] == student_id, 'Major'].iloc[0]
-    degree = df.loc[df['Matrikel_Nummer'] == student_id, 'Degree'].iloc[0]
+    student = df.loc[df['Pseudonym'] == student_id]
+
+    major = student['Studienfach'].iloc[0]
+    degree = student['Abschluss'].iloc[0]
+
 
     # Filter to include only students with the same major and degree
-    degree_major_students_df = df.loc[(df['Major'] == major) & (df['Degree'] == degree)]
+    degree_major_students_df = df.loc[(df['Studienfach'] == major) & (df['Abschluss'] == degree)]
     # Calculate the number of unique students
-    n_students = len(degree_major_students_df['Matrikel_Nummer'].unique())
+    n_students = len(degree_major_students_df['Pseudonym'].unique())
 
     # Sum the ECTS gathered by each student per semester
-    all_students_grouped = degree_major_students_df.groupby(by=['Num_Semester', 'Matrikel_Nummer'], dropna=False).agg(
+    all_students_grouped = degree_major_students_df.groupby(by=['Fachsemester', 'Pseudonym'], dropna=False).agg(
         {'ECTS': 'sum'}).sort_values(
-        by=['Num_Semester', 'Matrikel_Nummer'])
+        by=['Fachsemester', 'Pseudonym'])
 
-    # Reset the level of index 'Matrikel_Nummer' to convert it into a column
+    # Reset the level of index to convert it into a column
     all_student_ects_df = all_students_grouped.reset_index(level=1)
 
-    # Calculate cumulative ECTS for each student 
-    all_student_ects_df['ECTS'] = all_student_ects_df.groupby('Matrikel_Nummer')['ECTS'].cumsum()
+    # Calculate cumulative ECTS for each student
+    all_student_ects_df['ECTS'] = all_student_ects_df.groupby('Pseudonym')['ECTS'].cumsum()
 
     # Filter the specific student based on Matrikel_Nummer (to get the cumulative ECTS points for that student)
-    student_ects = all_student_ects_df[all_student_ects_df['Matrikel_Nummer'] == student_id]['ECTS']
+    student_ects = all_student_ects_df[all_student_ects_df['Pseudonym'] == student_id]['ECTS']
 
     # Calculate the average ECTS points for each semester across all students
-    average_ects = all_student_ects_df.groupby('Num_Semester')['ECTS'].mean().round(1)
+    average_ects = all_student_ects_df.groupby('Fachsemester')['ECTS'].mean().round(1)
 
     # Calculate the standard error of the mean for each semester
-    sem_ects = all_student_ects_df.groupby('Num_Semester')['ECTS'].sem()
+    sem_ects = all_student_ects_df.groupby('Fachsemester')['ECTS'].sem()
 
     # Filter out semesters with NaN SEM values
     valid_sem_ects = np.isfinite(sem_ects)
@@ -66,7 +74,6 @@ def individual_performance(student_id):
 
     # Calculate the confidence interval for the average ECTS points
     lower_bound, upper_bound = stats.t.interval(0.95, df=n_students - 1, loc=valid_average_ects, scale=valid_sem_ects)
-
     response = {
         'single_student': student_ects.to_list(),
         'all_students': json.loads(average_ects.reset_index().to_json(orient='records')),
@@ -84,18 +91,22 @@ def individual_performance(student_id):
 @main.route('/group_performance/<string:major_id>/<string:degree_id>')
 @login_required
 def group_performance(major_id, degree_id):
-    # generate dummy data
-    df = generate_performance_history(100)
+    # FIXME: Hardcoded Database replace with db_id from session_id
+    db = MLDatabase.query.get_or_404(1)
+    # FIXME: Hardcoded functional query name
+    query_name = "performance_history"
+    query_string = Query.query.filter_by(name=query_name).first_or_404()
+    df = query_database(db, query_string)
 
     # filter by major and degree
     if not major_id == 'all':
-        df = df.loc[df['Major'] == major_id]
+        df = df.loc[df['Studienfach'] == major_id]
 
     if not degree_id == 'all':
-        df = df.loc[df['Degree'] == degree_id]
+        df = df.loc[df['Abschluss'] == degree_id]
 
     # group by degree
-    grouped_df = df.groupby(by=['Num_Semester', 'Degree'], dropna=False).agg({'ECTS': 'mean'})
+    grouped_df = df.groupby(by=['Fachsemester', 'Abschluss'], dropna=False).agg({'ECTS': 'mean'}).round(1)
 
     # reset index to get Num_Semester and group as column
     grouped_df = grouped_df.reset_index(0).reset_index()

@@ -152,7 +152,7 @@
 
                     // Extract the necessary columns from the data
                     const numSemesterData = jsonData.all_students.map(function (item) {
-                        return item.Num_Semester;
+                        return item.Fachsemester;
                     });
                     const avgEcts = jsonData.all_students.map(function (item) {
                         return item.ECTS;
@@ -313,12 +313,12 @@
                     const jsonData = JSON.parse(data);
 
                     var masterData = jsonData.filter(function (item) {
-                        return item.Degree === 'Master';
+                        return item.Abschluss === 'Master';
                     });
 
                     // Extract the necessary columns for Master degree
                     var masterNumSemesterData = masterData.map(function (item) {
-                        return item.Num_Semester;
+                        return item.Fachsemester;
                     });
                     var masterEctsData = masterData.map(function (item) {
                         return item.ECTS;
@@ -326,12 +326,12 @@
 
                     // Filter the data for Bachelor degree
                     const bachelorData = jsonData.filter(function (item) {
-                        return item.Degree === 'Bachelor';
+                        return item.Abschluss === 'Bachelor';
                     });
 
                     // Extract the necessary columns for Bachelor degree
                     const bachelorNumSemesterData = bachelorData.map(function (item) {
-                        return item.Num_Semester;
+                        return item.Fachsemester;
                     });
                     const bachelorEctsData = bachelorData.map(function (item) {
                         return item.ECTS;
