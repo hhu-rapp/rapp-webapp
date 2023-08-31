@@ -43,6 +43,8 @@ def individual_performance(student_id):
     major = student['Studienfach'].iloc[0]
     degree = student['Abschluss'].iloc[0]
 
+    # Drop rows with no passed exams
+    df = df[df['ECTS'] > 0]
 
     # Filter to include only students with the same major and degree
     degree_major_students_df = df.loc[(df['Studienfach'] == major) & (df['Abschluss'] == degree)]
@@ -99,6 +101,9 @@ def group_performance(major_id, degree_id):
     query_name = "performance_history"
     query_string = Query.query.filter_by(name=query_name).first_or_404()
     df = query_database(db, query_string)
+
+    # Drop rows with no passed exams
+    df = df[df['ECTS'] > 0]
 
     # filter by major and degree
     if not major_id == 'all':
