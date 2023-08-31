@@ -2,6 +2,7 @@ import numpy as np
 
 import json
 
+import pandas as pd
 from flask import render_template, jsonify, abort
 from flask_login import login_required
 
@@ -43,9 +44,6 @@ def individual_performance(student_id):
     major = student['Studienfach'].iloc[0]
     degree = student['Abschluss'].iloc[0]
 
-    # Drop rows with no passed exams
-    df = df[df['ECTS'] > 0]
-
     # Filter to include only students with the same major and degree
     degree_major_students_df = df.loc[(df['Studienfach'] == major) & (df['Abschluss'] == degree)]
     # Calculate the number of unique students
@@ -62,8 +60,14 @@ def individual_performance(student_id):
     # Calculate cumulative ECTS for each student
     all_student_ects_df['ECTS'] = all_student_ects_df.groupby('Pseudonym')['ECTS'].cumsum()
 
-    # Filter the specific student based on Matrikel_Nummer (to get the cumulative ECTS points for that student)
-    student_ects = all_student_ects_df[all_student_ects_df['Pseudonym'] == student_id]['ECTS']
+    # Create a continuous range of 'Fachsemester' values
+    student_df = all_student_ects_df[all_student_ects_df['Pseudonym'] == student_id].reset_index()
+    # Create a continuous range of 'Fachsemester' values
+    continuous_fachsemester = pd.DataFrame({'Fachsemester': range(1, student_df['Fachsemester'].max() + 1)})
+    # Merge the continuous range with the student's ECTS points
+    student_ects = pd.merge(continuous_fachsemester, student_df, on='Fachsemester', how='left')['ECTS']
+    # Fill NaN values with previous ECTS points
+    student_ects = student_ects.fillna(method='ffill')
 
     # Calculate the average ECTS points for each semester across all students
     average_ects = all_student_ects_df.groupby('Fachsemester')['ECTS'].mean().round(1)
