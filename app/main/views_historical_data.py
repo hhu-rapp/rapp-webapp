@@ -178,13 +178,17 @@ def get_risk_analysis(query_id, major_id, degree_id, demographics_id):
 
     df = df[[demographics_id, target]]
 
+    # Replace target values 1 and 0 with 'Ja' and 'Nein'
+    df[target] = df[target].replace([1, 0], ['Yes', 'No'])
+
     # Perform group by and aggregation
     df = df.groupby([demographics_id, target]).size().unstack(fill_value=0).reset_index()
 
     labels = df[demographics_id].tolist()
 
-    positives = df[0].tolist()
-    negatives = df[1].tolist()
+    positives = df['Yes'].tolist() if 'Yes' in df.columns else []
+    negatives = df['No'].tolist() if 'No' in df.columns else []
+
 
     response = {'labels': labels, 'positives': positives, 'negatives': negatives, 'target': target}
     response = json.dumps(response)
