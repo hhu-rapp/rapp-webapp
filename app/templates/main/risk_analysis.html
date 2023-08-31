@@ -184,13 +184,13 @@
         $(document).ready(function () {
             var degreeId = 'all';
             var majorId = 'all';
-            var demographicId = 'Sex';
+            var demographicId = $('input[name="riskFeatureRadioOption"]:checked').val();
 
             fetchRiskAnalysis(majorId, degreeId, demographicId);
 
             // Demographics radio buttons
             $('input[name="riskFeatureRadioOption"]').change(function () {
-                const demographicId = $(this).val();
+                demographicId = $(this).val();
                 fetchRiskAnalysis(majorId, degreeId, demographicId);
             });
 
