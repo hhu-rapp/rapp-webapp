@@ -33,7 +33,7 @@
 				<!-- Matrikelnummer search -->
 				<div class="input-group pb-3 ">
 					<input id="perf-studentId-input" type="number" class="form-control" placeholder="Matrikelnummer"
-						   aria-label="Search Matrikelnummer" aria-describedby="Matrikelnummer">
+						   aria-label="Search Matrikelnummer" aria-describedby="Matrikelnummer" value="104366">
 					<button class="btn btn-outline-secondary mb-0" type="button" id="perf-studentId-btn">
 						<i class="fa fa-search"></i>
 					</button>
@@ -72,7 +72,7 @@
 			<div class="card mb-4 tab-pane fade individualPerf" role="tabpanel"
 				 aria-labelledby="individual-tab">
 				<div class="card-header pb-0">
-
+					<span class=" text-danger" id="ind-perf-error-msg"></span>
 				</div>
 				<div class="card-body px-0 pt-0 pb-2">
 					<div class="container" id="individual-perf">
@@ -94,7 +94,9 @@
 			{# Group Tab#}
 			<div class="card mb-4 tab-pane fade show active groupPerf" role="tabpanel" aria-labelledby="group-tab">
 				<div class="card-header pb-0">
-
+					<div class="card-header pb-0">
+					<span class=" text-danger" id="group-perf-error-msg"></span>
+				</div>
 				</div>
 				<div class="card-body px-0 pt-0 pb-2">
 					<div class="container" id="group-perf">
@@ -145,6 +147,7 @@
                 beforeSend: function () {
                     // Remove the "fade" class to show the loading <div>
                     loadingDiv.removeClass('fade');
+                    $('#ind-perf-error-msg').text(' ');
                 },
                 success: function (data) {
                     // Parse the data received from the backend
@@ -275,6 +278,7 @@
                     loadingDiv.addClass('fade');
                 },
                 error: function () {
+					$('#ind-perf-error-msg').text('Error: Failed to fetch data from the backend. Does the student exist in the database?');
                     console.error("Failed to fetch data from the backend.");
                     loadingDiv.addClass('fade');
                 }
@@ -282,7 +286,7 @@
         }
 
         $(document).ready(function () {
-            const studentId = 0;
+            const studentId = $('#perf-studentId-input').val();
             fetchIndividualPerformance(studentId);
 
             $('#perf-studentId-btn').click(function () {
@@ -305,6 +309,7 @@
                 url: url,
                 method: "GET",
                 beforeSend: function () {
+                    $('#group-perf-error-msg').text('');
                     // Remove the "fade" class to show the loading <div>
                     loadingDiv.removeClass('fade');
                 },
@@ -400,6 +405,7 @@
                     loadingDiv.addClass('fade');
                 },
                 error: function () {
+                    $('#group-perf-error-msg').text('Error: Failed to fetch data from the backend. Does the major exist in the database?');
                     console.error("Failed to fetch data from the backend.");
                     loadingDiv.addClass('fade');
                 }

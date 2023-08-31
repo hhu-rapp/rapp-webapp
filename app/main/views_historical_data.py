@@ -2,7 +2,7 @@ import numpy as np
 
 import json
 
-from flask import render_template, jsonify
+from flask import render_template, jsonify, abort
 from flask_login import login_required
 
 from scipy import stats
@@ -37,6 +37,8 @@ def individual_performance(student_id):
 
     # Get the Major and degree of the specific student
     student = df.loc[df['Pseudonym'] == student_id]
+    if student.empty:
+        abort(404)
 
     major = student['Studienfach'].iloc[0]
     degree = student['Abschluss'].iloc[0]
@@ -104,6 +106,9 @@ def group_performance(major_id, degree_id):
 
     if not degree_id == 'all':
         df = df.loc[df['Abschluss'] == degree_id]
+
+    if df.empty:
+        abort(404)
 
     # group by degree
     grouped_df = df.groupby(by=['Fachsemester', 'Abschluss'], dropna=False).agg({'ECTS': 'mean'}).round(1)
