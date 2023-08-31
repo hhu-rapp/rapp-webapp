@@ -278,7 +278,7 @@
                     loadingDiv.addClass('fade');
                 },
                 error: function () {
-					$('#ind-perf-error-msg').text('Error: Failed to fetch data from the backend. Does the student exist in the database?');
+					$('#ind-perf-error-msg').text('No data available for the selected student. Is the Matrikelnummer correct?');
                     console.error("Failed to fetch data from the backend.");
                     loadingDiv.addClass('fade');
                 }
@@ -405,7 +405,7 @@
                     loadingDiv.addClass('fade');
                 },
                 error: function () {
-                    $('#group-perf-error-msg').text('Error: Failed to fetch data from the backend. Does the major exist in the database?');
+                    $('#group-perf-error-msg').text('No data available for the selected filters.');
                     console.error("Failed to fetch data from the backend.");
                     loadingDiv.addClass('fade');
                 }
