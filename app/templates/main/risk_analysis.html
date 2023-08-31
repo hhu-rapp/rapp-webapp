@@ -64,6 +64,7 @@
 			<div class="col-12">
 				<div class="card mb-4 tab-pane">
 					<div class="card-header pb-0">
+						<span class=" text-danger" id="risk-error-msg"></span>
 					</div>
 					<div class="card-body px-0 pt-0 pb-2">
 						<div class="container">
@@ -104,6 +105,7 @@
                 url: url,
                 method: "GET",
                 beforeSend: function () {
+                    $('#risk-error-msg').text('');
                     // Remove the "fade" class to show the loading <div>
                     loadingDiv.removeClass('fade');
                 },
@@ -171,6 +173,7 @@
                     loadingDiv.addClass('fade');
                 },
                 error: function () {
+                    $('#risk-error-msg').text("No data available for the selected filters.");
                     console.error("Failed to fetch data from the backend.");
                     loadingDiv.addClass('fade');
                 }

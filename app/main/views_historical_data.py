@@ -167,6 +167,8 @@ def get_risk_analysis(query_id, major_id, degree_id, demographics_id):
     if not degree_id == 'all':
         df = df.loc[df['Abschluss'] == degree_id]
 
+    if df.empty:
+        abort(404)
 
     # FIXME: hardcoded demographic_id translation
     if demographics_id == 'Sex':
