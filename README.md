@@ -70,9 +70,9 @@ Python>=3.10
         This script will initialize the database with initial data required for development.
 
 
-        - To load a custom database, add the argument database.db with the name of your database file, including the .db extension.
+        - To load a custom database, add the argument `database.db` with the name of your database file, including the .db extension.
 
-        - Ensure that the .db file is located in the uploads/ directory before running the command.
+        - Ensure that the .db file is located in the `uploads/` directory before running the command.
 
         This command enables dynamic selection of the database. If you don't provide a specific database filename, the script will use the first .db file found in the uploads/ directory by default.
 
