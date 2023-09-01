@@ -134,7 +134,7 @@ def risk_analysis(db_id, query_id):
     page_title = "Risk Analysis"
     majors = ['Informatik', 'Sozialwissenschaften', 'all']
     query = Query.query.get_or_404(query_id)
-    
+
     return render_template('main/risk_analysis.html', page_title=page_title, majors=majors, query_id=query_id, query=query)
 
 
