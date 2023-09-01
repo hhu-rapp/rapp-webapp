@@ -10,7 +10,6 @@ from scipy import stats
 
 from . import main
 from ..ml_backend import query_database
-from ..ml_backend.dummy_data import generate_risk_analysis
 from ..models import Query, MLDatabase
 
 
@@ -129,12 +128,29 @@ def group_performance(major_id, degree_id):
 
 
 # Risk Analysis
-@main.route('/risk_analysis/')
+@main.route('/risk_analysis/<int:db_id>/<string:query_id>')
 @login_required
-def risk_analysis():
+def risk_analysis(db_id, query_id):
     page_title = "Risk Analysis"
     majors = ['Informatik', 'Sozialwissenschaften', 'all']
-    return render_template('main/risk_analysis.html', page_title=page_title, majors=majors, query_id=1)
+    query = Query.query.get_or_404(query_id)
+    
+    return render_template('main/risk_analysis.html', page_title=page_title, majors=majors, query_id=query_id, query=query)
+
+
+@main.route('/risk_analysis/<int:db_id>')
+@login_required
+def select_risk_query(db_id):
+    page_title = "Risk Analysis: Target Selection"
+
+    queries = Query.query.filter_by(is_target=True).all()
+
+    return render_template(
+        'main/risk_analysis_query_selection.html',
+        queries=queries,
+        db_id=db_id,
+        page_title=page_title
+    )
 
 
 # Get risk analysis
@@ -188,7 +204,6 @@ def get_risk_analysis(query_id, major_id, degree_id, demographics_id):
 
     positives = df['Yes'].tolist() if 'Yes' in df.columns else []
     negatives = df['No'].tolist() if 'No' in df.columns else []
-
 
     response = {'labels': labels, 'positives': positives, 'negatives': negatives, 'target': target}
     response = json.dumps(response)

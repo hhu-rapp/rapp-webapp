@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% from 'components/query_card.html' import query_card %}
+
+{% block body %}
+	<div class="container-fluid py-4">
+		{% for query in queries %}
+			{{ query_card(query, route='main.risk_analysis') }}
+		{% endfor %}
+	</div>
+	<script>
+        let element = document.getElementById("predictionLink");
+        element.classList.add("active");
+        element = document.getElementById("predictionLinkMobile");
+        element.classList.add("active");
+	</script>
+
+{% endblock %}

@@ -1,4 +1,4 @@
-{% macro query_card(query, clickable=True) %}
+{% macro query_card(query, clickable=True, route='main.prediction') %}
 	<div class="row">
 		<div class="col-12">
 			<div class="card mb-4 d">
@@ -28,7 +28,7 @@
 
 						{% if clickable %}
 							<div class="flex d-flex flex-row-reverse">
-								<a href="{{ url_for('main.prediction', db_id=1, query_id=query.id, model_id=query.id) }}"
+								<a href="{{ url_for(route, db_id=1, query_id=query.id, model_id=query.id) }}"
 								   class="btn btn-secondary">Select Target</a>
 							</div>
 						{% endif %}
