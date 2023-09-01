@@ -35,25 +35,33 @@ def dashboard_data(major_id, degree_id):
     query_string = Query.query.filter_by(name=query_name).first_or_404()
     performance_df = query_database(db, query_string)
 
+    # get total number of students
+    query_string = """
+        Select E.Pseudonym, E.Abschluss, E.Studienfach
+        FROM Einschreibung E
+        Where Exmatrikulationsdatum is ''
+        """
+    registered_students_df = query_database(db, query_string)
+
     avg_bachelor_semesters = '-'
     avg_master_semesters = '-'
 
-        dropout_df = dropout_df[dropout_df['Major'] == major_id]
+    if major_id != 'all':
+        performance_df = performance_df[performance_df['Studienfach'] == major_id]
+        registered_students_df = registered_students_df[registered_students_df['Studienfach'] == major_id]
 
     if degree_id == 'bachelor':
         performance_df = performance_df[performance_df['Abschluss'] == 'Bachelor']
+        registered_students_df = registered_students_df[registered_students_df['Abschluss'] == 'Bachelor']
 
     elif degree_id == 'master':
-    if performance_df.empty:
+        performance_df = performance_df[performance_df['Abschluss'] == 'Master']
+        registered_students_df = registered_students_df[registered_students_df['Abschluss'] == 'Master']
+
+    if performance_df.empty or registered_students_df.empty:
         abort(404)
 
-    # get total number of students
-    total_students = len(performance_df['Matrikel_Nummer'].unique())
-    query_string = """
-    Select Count(*) as total_students
-    FROM Einschreibung E
-    Where Exmatrikulationsdatum is ''
-    total_students = query_database(db, query_string)['total_students'][0]
+    total_students = registered_students_df['Pseudonym'].nunique()
 
     # avg number of semesters for all students
     # group by student id and get sum of ECTS, max number of semesters and degree
@@ -63,7 +71,6 @@ def dashboard_data(major_id, degree_id):
     if degree_id != 'master':
         # get students that have 180 ECTS and are in bachelor
         bachelor_students = group_performance[
-            (group_performance['ECTS'] >= 180) & (group_performance['Degree'] == 'Bachelor')]
             (group_performance['ECTS'] >= 180) & (group_performance['Abschluss'] == 'Bachelor')]
         # get avg number of semesters for bachelor students
         avg_bachelor_semesters = round(bachelor_students['Fachsemester'].mean(), 0)
@@ -76,26 +83,28 @@ def dashboard_data(major_id, degree_id):
         master_students = group_performance[
             (group_performance['ECTS'] >= 120) & (group_performance['Abschluss'] == 'Master')]
         # get avg number of semesters for master students
-        avg_master_semesters = round(master_students['Num_Semester'].mean(), 0)
+        avg_master_semesters = round(master_students['Fachsemester'].mean(), 0)
 
         if np.isnan(avg_master_semesters):
             avg_master_semesters = 4
 
     # avg ects per semester
+    group_performance = performance_df.groupby(['Pseudonym', 'Sommersemester', 'Semesterjahr']).agg(
         {'ECTS': 'sum'}).reset_index()
     avg_ects_per_semester = round(group_performance['ECTS'].mean(), 0)
 
     # get data for plots get only unique Matrikel_Nummer
-    group_performance = performance_df.groupby('Matrikel_Nummer').agg(
-        {'Sex': 'max', 'Nationality': 'max'}).reset_index()
+    group_performance = performance_df.groupby('Pseudonym').agg(
         {'Geschlecht': 'max', 'Deutsch': 'max'}).reset_index()
 
+    sex_plot = group_performance['Geschlecht'].value_counts().reset_index().sort_values(by='Geschlecht',
+                                                                                        ascending=False).rename(
+        columns={'index': 'labels', 'Geschlecht': 'data'})
 
     # replace binary labels with actual values
     group_performance['Deutsch'] = group_performance['Deutsch'].replace(
         {0: 'Nicht-Deutsch', 1: 'Deutsch'})
 
-        columns={'index': 'labels', 'Nationality': 'data'})
     nat_plot = group_performance['Deutsch'].value_counts().reset_index().sort_values(by='Deutsch',
                                                                                      ascending=False).rename(
         columns={'index': 'labels', 'Deutsch': 'data'})
@@ -108,7 +117,7 @@ def dashboard_data(major_id, degree_id):
                 'sexPlot': json.dumps(sex_plot.to_dict('list')),
                 'natPlot': json.dumps(nat_plot.to_dict('list'))}
 
-    response = json.dumps(response)
+    response = json.dumps(response, default=str)
 
     return jsonify(response)
 
