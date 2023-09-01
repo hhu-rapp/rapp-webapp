@@ -1,4 +1,5 @@
 import os
+import sys
 from glob import glob
 
 from app import db, create_app
@@ -52,6 +53,17 @@ def setup_queries_and_models(uploads: str, db_id: int) -> None:
 if __name__ == '__main__':
     app = create_app('development')
 
+    uploads_path = app.config['UPLOAD_FOLDER']
+
+    # if no database was inputted, use the first one
+    if sys.argv[1] is None:
+        db_path = glob(os.path.join(uploads_path, '*.db'))[0]
+        db_name = os.path.splitext(os.path.basename(db_path))[0]
+    else:
+        assert os.path.splitext(sys.argv[1])[1] == '.db', 'Database must be a .db file'
+        db_path = os.path.join(uploads_path, sys.argv[1])
+        db_name = os.path.splitext(sys.argv[1])[0]
+
     with app.app_context():
         # Delete all tables
         db.drop_all()
@@ -65,8 +77,7 @@ if __name__ == '__main__':
         uploads_path = app.config['UPLOAD_FOLDER']
 
         # Add main database
-        db_path = glob(os.path.join(uploads_path, '*.db'))[0]
-        db_name = os.path.splitext(os.path.basename(db_path))[0]
+        
         ml_db = MLDatabase(name=db_name, filename=os.path.relpath(db_path, uploads_path), user_id=user.id)
         ml_db.save()
 
