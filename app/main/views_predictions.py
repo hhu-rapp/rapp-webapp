@@ -60,7 +60,7 @@ def prediction(db_id, query_id, model_id):
 
     df = query_database(db, query)
     pseudonym = df.pop('Pseudonym')
-    label = query.name.split('_')[0]
+    label = query.name
 
     # FIXME: Seems like FourthTermCP and MasterZulassung were trained without the divers category in geschlecht
     if label == 'FourthTermCP' or label == 'MasterZulassung':
