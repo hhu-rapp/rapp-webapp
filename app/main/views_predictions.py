@@ -2,7 +2,7 @@ import pandas as pd
 import sqlalchemy
 from joblib import load
 
-from flask import abort, current_app, render_template, request, jsonify
+from flask import abort, current_app, render_template, request, jsonify, session, redirect, url_for
 from flask_login import current_user, login_required
 
 from . import main
@@ -61,6 +61,8 @@ def prediction(db_id, query_id, model_id):
     df = query_database(db, query)
     pseudonym = df.pop('Pseudonym')
     label = query.name
+    # Save label in the session
+    session['target'] = label
 
     # FIXME: Seems like FourthTermCP and MasterZulassung were trained without the divers category in geschlecht
     if label == 'FourthTermCP' or label == 'MasterZulassung':
@@ -87,7 +89,6 @@ def prediction(db_id, query_id, model_id):
 @main.route('/student-review/<int:session_id>/<int:row_id>')
 @login_required
 def student_review(session_id, row_id):
-    page_title = f"Student {row_id}"
 
     # FIXME: Hardcoded Database replace with db_id from session_id
     db = MLDatabase.query.get_or_404(session_id)
@@ -95,6 +96,8 @@ def student_review(session_id, row_id):
     query = Query.query.get_or_404(session_id)
 
     pseudonym = query_database(db, query).iloc[row_id, 0]
+
+    page_title = f"Student {pseudonym}"
 
     # Add query for fachsemester
     query = f"""
@@ -135,6 +138,51 @@ def student_review(session_id, row_id):
     return render_template('main/student-review.html', page_title=page_title, pseudonym=pseudonym,
                            session_id=session_id, student_data=student_data,
                            total_ects=total_ects, first_exam=first_exam)
+
+
+@main.route('/prediction/flag-student/', methods=['POST'])
+@login_required
+def flag_student():
+    # FIXME: Temporary solution: save flagged students in the session as dictionary
+    # Get pseudonym and flagged from data sent by ajax
+    pseudonym = int(request.form['pseudonym'])
+    flagged = request.form['flag'] == 'at-risk'
+
+    if 'flagged_students' not in session:
+        session['flagged_students'] = {}
+
+    target = session['target']
+
+    if target not in session['flagged_students']:
+        session['flagged_students'][target] = []
+
+    if flagged:
+        if pseudonym not in session['flagged_students'][target]:
+            session['flagged_students'][target].append(pseudonym)
+    else:
+        if pseudonym in session['flagged_students'][target]:
+            session['flagged_students'][target].remove(pseudonym)
+
+    # Indicate that the session has been modified
+    session.modified = True
+    return 'ok'
+
+
+@main.route('/prediction/get-flag-status/', methods=['POST'])
+@login_required
+def get_flag_status():
+    # get pseudonym from data sent by ajax
+    pseudonym = int(request.form['pseudonym'])
+    target = session['target']
+
+    if target not in session['flagged_students']:
+        status = 'not-at-risk'
+    elif pseudonym in session['flagged_students'][target]:
+        status = 'at-risk'
+    else:
+        status = 'not-at-risk'
+
+    return status
 
 
 @main.route('/get-semester-data/<int:session_id>/<int:pseudonym>/<int:semester_id>')
