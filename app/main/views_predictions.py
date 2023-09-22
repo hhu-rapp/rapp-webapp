@@ -48,12 +48,13 @@ def data(db_id, query_id):
 @login_required
 def prediction(db_id, query_id, model_id):
     page_title = "Student Predictions"
-    # Placeholder for session id
-    session_id = 1
 
     db = MLDatabase.query.get_or_404(db_id)
     query = Query.query.get_or_404(query_id)
     model = Model.query.get_or_404(model_id)
+
+    # Placeholder for session id
+    session_id = query_id
 
     if db.user_id != current_user.id or not current_user.is_admin:
         abort(403)
@@ -91,9 +92,10 @@ def prediction(db_id, query_id, model_id):
 def student_review(session_id, row_id):
 
     # FIXME: Hardcoded Database replace with db_id from session_id
-    db = MLDatabase.query.get_or_404(session_id)
+    db = MLDatabase.query.get_or_404(1)
     # FIXME: Hardcoded Query replace with query_id from session_id
     query = Query.query.get_or_404(session_id)
+    query_id = query.id
 
     pseudonym = query_database(db, query).iloc[row_id, 0]
 
@@ -123,7 +125,6 @@ def student_review(session_id, row_id):
     """
 
     total_ects = query_database(db, query).iloc[0, 0]
-
     # Get Year and Semester of first exam
     query = f"""
     SELECT Pseudonym, Semesterjahr, Sommersemester
@@ -134,10 +135,9 @@ def student_review(session_id, row_id):
     """
 
     first_exam = query_database(db, query).to_dict(orient='records')[0]
-
     return render_template('main/student-review.html', page_title=page_title, pseudonym=pseudonym,
                            session_id=session_id, student_data=student_data,
-                           total_ects=total_ects, first_exam=first_exam)
+                           total_ects=total_ects, first_exam=first_exam, query_id=query_id)
 
 
 @main.route('/prediction/flag-student/', methods=['POST'])
@@ -189,7 +189,7 @@ def get_flag_status():
 @login_required
 def student_semester_data(session_id, pseudonym, semester_id):
     # FIXME: Hardcoded Database replace with db_id from session_id
-    db = MLDatabase.query.get_or_404(session_id)
+    db = MLDatabase.query.get_or_404(1)
     # FIXME: Hardcoded functional query name
     QUERY_NAME = 'exams_performance'
     query_string = Query.query.filter_by(name=QUERY_NAME).first_or_404()
