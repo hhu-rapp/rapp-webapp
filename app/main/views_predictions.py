@@ -264,3 +264,19 @@ def group_prediction(db_id, query_id, model_id):
     styled_df.format(precision=1)
 
     return jsonify(styled_df=styled_df.to_html(table_uuid="group_prediction", table_attributes='class="w-100"'))
+
+
+@main.route('/prevention')
+@login_required
+def prevention():
+    page_title = 'Prevention'
+    flagged_students = session['flagged_students']
+
+    return render_template('main/prevention.html', page_title=page_title, flagged_students=flagged_students)
+
+
+@main.route('/delete-flags/')
+@login_required
+def delete_flags():
+    session['flagged_students'] = {}
+    return redirect(url_for('main.prevention'))

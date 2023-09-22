@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-12">
+				<div class="card mb-4">
+					<div class="card-header pb-0">
+						<h6 class="m-2"> Flagged Students </h6>
+
+					</div>
+					<div class="card-body px-0 pt-0 pb-2 ">
+						<div class="container">
+							{{ flagged_students}}
+							
+							<div class="row mt-5">
+								<div class="col-12">
+									<a href="{{ url_for('main.delete_flags') }}" type="button" class="btn btn-danger {{ 'disabled' if flagged_students|length == 0 }}">
+										Delete Flagged Students
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	
+	<script>
+		let element = document.getElementById("preventionLink");
+        element.classList.add("active");
+        element = document.getElementById("preventionLinkLinkMobile");
+        element.classList.add("active");
+	</script>
+{% endblock %}
