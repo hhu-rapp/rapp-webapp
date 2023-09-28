@@ -1,9 +1,17 @@
 {% extends "base.html" %}
-
+{% from 'components/flagged_student_card.html' import flagged_student_card %}
+		
 {% block title %}{{ title }}{% endblock %}
 
 {% block body %}
 	<div class="container-fluid">
+		<div class="row">
+			<div class="d-flex justify-content-around align-items-center">
+				{{ flagged_student_card(1) }}
+				{{ flagged_student_card(2) }}
+				{{ flagged_student_card(3) }}{{ flagged_student_card(4) }}
+			</div>
+		</div>
 		<div class="row">
 			<div class="col-12">
 				<div class="card mb-4">
@@ -33,7 +41,7 @@
 	<script>
 		let element = document.getElementById("preventionLink");
         element.classList.add("active");
-        element = document.getElementById("preventionLinkLinkMobile");
+        element = document.getElementById("preventionLinkMobile");
         element.classList.add("active");
 	</script>
 {% endblock %}
