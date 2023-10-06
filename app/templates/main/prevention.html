@@ -5,14 +5,14 @@
 
 {% block body %}
 	<div class="container-fluid">
+	
 		<h6 class="m-2"> Flagged Students </h6>
-		<div class="row">
-			<div class="d-flex justify-content-around align-items-center flex-wrap">
+			<div class="d-flex flex-wrap">
 				{% for pseudonym in flagged_students %}
 					{{ flagged_student_card(pseudonym, flagged_students[pseudonym], loop.index) }}
 				{% endfor %}
 			</div>
-		</div>
+
 		<div class="row mx-2">
 			<div class="col-12">
 				<a href="{{ url_for('main.delete_flags') }}" type="button"
