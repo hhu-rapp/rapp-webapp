@@ -2,12 +2,17 @@
 {% from 'components/semester_table.html' import semester_table %}
 
 {% block body %}
-	
+
 	<div class="container-fluid">
 
 		<!-- Top Numbers -->
 		<div class="container-fluid ml-2">
-		 <h4><a href="/prediction/1/1/1"><i class="ni ni-bold-left"> </i></a> </h4>
+			<h4><a href="/prediction/1/{{ query_id }}/{{ query_id }}"><i class="ni ni-bold-left"> </i></a></h4>
+			<div class="row mb-4 justify-content-end">
+				<div class="col-md-auto">
+					<span class="badge bg-gradient-secondary" id="status-badge">Not Flagged</span>
+				</div>
+			</div>
 			<div class="row">
 				<div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
 					<div class="card">
@@ -80,36 +85,39 @@
 		<div class="container-fluid py-4 ml-2">
 			<div class="row">
 				<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4">
-					<button type="button" class="btn bg-gradient-success w-100">Not at Risk</button>
+					<button type="button" class="btn bg-gradient-success w-100" id="deflag-button-1">Not at Risk
+					</button>
 				</div>
 				<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4">
-					<button type="button" class="btn bg-gradient-danger w-100">at risk</button>
+					<button type="button" class="btn bg-gradient-danger w-100" id="flag-button-1">at risk</button>
 				</div>
 			</div>
+
 		</div>
 
-	{#	Semester Data #}
-	{% set ns = namespace(year=first_exam.Semesterjahr, semester=first_exam.Sommersemester) %} 
-	<div class="container-fluid ml-1">
-	<h6 class="m-2"> WRITTEN EXAMS</h6>
-	{% for semester in range(student_data.Fachsemester) %}
-		{{ semester_table(session_id, student_data, semester, ns.year, ns.semester) }}
+		{#	Semester Data #}
+		{% set ns = namespace(year=first_exam.Semesterjahr, semester=first_exam.Sommersemester) %}
+		<div class="container-fluid ml-1">
+			<h6 class="m-2"> WRITTEN EXAMS</h6>
+			{% for semester in range(student_data.Fachsemester) %}
+				{{ semester_table(session_id, student_data, semester, ns.year, ns.semester) }}
 
-		{% if ns.semester == 0 %}
-        {% set ns.year = ns.year + 1 %}
-    	{% endif %}
-		{% set ns.semester = (ns.semester + 1)%2 %}
-    {% endfor %}
-	</div>
-	
+				{% if ns.semester == 0 %}
+					{% set ns.year = ns.year + 1 %}
+				{% endif %}
+				{% set ns.semester = (ns.semester + 1)%2 %}
+			{% endfor %}
+		</div>
+
 		<!-- Flag Buttons-->
 		<div class="container-fluid py-4 ml-2">
 			<div class="row">
 				<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4">
-					<button type="button" class="btn bg-gradient-success w-100">not at risk</button>
+					<button type="button" class="btn bg-gradient-success w-100" id="deflag-button-2">not at risk
+					</button>
 				</div>
 				<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4">
-					<button type="button" class="btn bg-gradient-danger w-100">at risk</button>
+					<button type="button" class="btn bg-gradient-danger w-100" id="flag-button-2">at risk</button>
 				</div>
 			</div>
 		</div>
@@ -120,6 +128,89 @@
         element.classList.add("active");
         element = document.getElementById("predictionLinkMobile");
         element.classList.add("active");
+
+        $(document).ready(function () {
+        {#Connect at Risk buttons to ajax call#}
+        document.getElementById("flag-button-1").addEventListener("click", function () {
+            flagStudent('at-risk');
+        });
+        document.getElementById("flag-button-2").addEventListener("click", function () {
+            flagStudent('at-risk');
+        });
+        document.getElementById("deflag-button-1").addEventListener("click", function () {
+            flagStudent('not-at-risk');
+        });
+        document.getElementById("deflag-button-2").addEventListener("click", function () {
+            flagStudent('not-at-risk');
+        });
+
+        function flagStudent(flag) {
+            const url = '/prediction/flag-student/';
+
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: {
+                    'pseudonym': {{ pseudonym }},
+                    'flag': flag,
+                },
+                success: function () {
+                    if (flag === 'at-risk') {
+                        flagStudentAtRisk();
+                    } else {
+                        flagStudentNotAtRisk();
+                    }
+                }
+            });
+
+        }
+        
+	
+        function flagStudentAtRisk() {
+            document.getElementById("flag-button-1").classList.add("disabled");
+            document.getElementById("flag-button-2").classList.add("disabled");
+            document.getElementById("deflag-button-1").classList.remove("disabled");
+            document.getElementById("deflag-button-2").classList.remove("disabled");
+
+            document.getElementById("status-badge").classList.remove("bg-gradient-success");
+            document.getElementById("status-badge").classList.remove("bg-gradient-secondary");
+            document.getElementById("status-badge").classList.add("bg-gradient-danger");
+            document.getElementById("status-badge").innerHTML = "at risk";
+
+        }
+        
+        function flagStudentNotAtRisk() {
+			document.getElementById("flag-button-1").classList.remove("disabled");
+			document.getElementById("flag-button-2").classList.remove("disabled");
+			document.getElementById("deflag-button-1").classList.add("disabled");
+			document.getElementById("deflag-button-2").classList.add("disabled");
+
+			document.getElementById("status-badge").classList.remove("bg-gradient-danger");
+            document.getElementById("status-badge").classList.remove("bg-gradient-secondary");
+			document.getElementById("status-badge").classList.add("bg-gradient-success");
+			document.getElementById("status-badge").innerHTML = "not at risk";
+
+		}
+        
+        {#Check if student is flagged#}
+		const url = '/prediction/get-flag-status/';
+
+		$.ajax({
+			url: url,
+			type: 'POST',
+			data: {
+				'pseudonym': {{ pseudonym }},
+			},
+			success: function (data) {
+				if (data === 'at-risk') {
+					flagStudentAtRisk();
+				} else {
+					flagStudentNotAtRisk();
+				}
+			}
+		});
+	});
+
 
         {#var pathArray = window.location.pathname.split('/');#}
         {#var db_id = pathArray[2];#}
