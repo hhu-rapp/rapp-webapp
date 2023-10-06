@@ -286,3 +286,39 @@ def prevention():
 def delete_flags():
     session['flagged_students'] = {}
     return redirect(url_for('main.prevention'))
+
+
+@main.route('/get-student-data/<int:pseudonym>')
+@login_required
+def get_student_data(pseudonym):
+    # FIXME: Hardcoded Database replace with db_id from session_id
+    db = MLDatabase.query.get_or_404(1)
+
+    # Add query for fachsemester
+    query = f"""
+        SELECT MAX(SSP.Fachsemester) as Fachsemester, E.Studienfach, E.Abschluss
+        FROM
+          Student as S,
+          Student_schreibt_Pruefung as SSP,
+          Einschreibung as E
+        WHERE
+            S.Pseudonym = SSP.Pseudonym
+        AND E.Pseudonym = SSP.Pseudonym
+        AND S.Pseudonym = {pseudonym}
+        """
+
+    student_data = query_database(db, query).to_dict(orient='records')[0]
+    # convert Fachsemester to int
+    student_data['Fachsemester'] = int(student_data['Fachsemester'])
+
+    # Get total ECTS
+    query = f"""
+        SELECT SUM(SSP.ECTS) AS total_ects
+        FROM Student_schreibt_Pruefung AS SSP
+        WHERE SSP.Pseudonym = {pseudonym}
+        GROUP BY SSP.Pseudonym;
+        """
+
+    student_data['total_ects'] = int(query_database(db, query).iloc[0, 0])
+
+    return jsonify(student_data)

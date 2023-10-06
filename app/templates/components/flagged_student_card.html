@@ -63,6 +63,22 @@
                 console.log("Contact Student {{ id }}");
             });
 
+            $.ajax({
+                url: "/get-student-data/{{ pseudonym }}",
+                type: "GET",
+                success: function (data) {
+					
+                    $('#major-{{ id }}').html(data.Studienfach);
+                    $('#degree-{{ id }}').html(data.Abschluss);
+                    $('#semester-{{ id }}').html(data.Fachsemester + ". Semester");
+                    let ects = data.Abschluss === "Master" ? 120 : 180;
+                    $('#ects-{{ id }}').html(data.total_ects + " / " + ects + " ECTS");
+                },
+                error: function (error_data) {
+                    console.log("error");
+                    console.log(error_data);
+                }
+            });
         });
 
 
