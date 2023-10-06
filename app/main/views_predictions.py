@@ -273,6 +273,9 @@ def group_prediction(db_id, query_id, model_id):
 @login_required
 def prevention():
     page_title = 'Prevention'
+
+    if 'flagged_students' not in session:
+        session['flagged_students'] = {}
     flagged_students = session['flagged_students']
 
     return render_template('main/prevention.html', page_title=page_title, flagged_students=flagged_students)
