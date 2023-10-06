@@ -145,7 +145,8 @@ def student_review(session_id, row_id):
 def flag_student():
     # FIXME: Temporary solution: save flagged students in the session as dictionary
     # Get pseudonym and flagged from data sent by ajax
-    pseudonym = int(request.form['pseudonym'])
+    # pseudonym has to be a string for session dictionary
+    pseudonym = request.form['pseudonym']
     flagged = request.form['flag'] == 'at-risk'
 
     if 'flagged_students' not in session:
@@ -153,15 +154,19 @@ def flag_student():
 
     target = session['target']
 
-    if target not in session['flagged_students']:
-        session['flagged_students'][target] = []
-
+    # Add or remove student from flagged students
     if flagged:
-        if pseudonym not in session['flagged_students'][target]:
-            session['flagged_students'][target].append(pseudonym)
-    else:
-        if pseudonym in session['flagged_students'][target]:
-            session['flagged_students'][target].remove(pseudonym)
+        if pseudonym not in session['flagged_students']:
+            session['flagged_students'][pseudonym] = []
+        # Only add student if not already flagged
+        if target not in session['flagged_students'][pseudonym]:
+            session['flagged_students'][pseudonym].append(target)
+    if not flagged:
+        if pseudonym in session['flagged_students']:
+            session['flagged_students'][pseudonym].remove(target)
+        # Remove student from flagged students if no more targets are flagged
+        if pseudonym in session['flagged_students'] and len(session['flagged_students'][pseudonym]) == 0:
+            session['flagged_students'].pop(pseudonym)
 
     # Indicate that the session has been modified
     session.modified = True
@@ -172,12 +177,10 @@ def flag_student():
 @login_required
 def get_flag_status():
     # get pseudonym from data sent by ajax
-    pseudonym = int(request.form['pseudonym'])
+    pseudonym = request.form['pseudonym']
     target = session['target']
 
-    if target not in session['flagged_students']:
-        status = 'not-at-risk'
-    elif pseudonym in session['flagged_students'][target]:
+    if pseudonym in session['flagged_students'] and target in session['flagged_students'][pseudonym]:
         status = 'at-risk'
     else:
         status = 'not-at-risk'
