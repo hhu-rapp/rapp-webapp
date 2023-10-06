@@ -1,4 +1,4 @@
-{% macro flagged_student_card(id) %}
+{% macro flagged_student_card(pseudonym, targets, id) %}
 	<div class="row">
 		<div class="card mb-4">
 			<div class="card-header">
@@ -11,32 +11,30 @@
 
 					<div class="d-flex flex-column mb-3">
 						<h6 class="">MatrikelNr.</h6>
-						<h5 class="">2486952</h5>
+						<h5 class="">{{ pseudonym }}</h5>
 					</div>
-					
+
 				</div>
 
 				<div class="d-flex flex-column mb-3 mx-2">
-					<span class="badge bg-danger mb-2" data-toggle="tooltip" data-bs-placement="top"
-						  title="Risk Score: <b>1,0</b>" data-bs-html="true">Target</span>
-					<span class="badge bg-success mb-2" data-toggle="tooltip" data-bs-placement="top"
-						  title="Risk Score: <b>1,0</b>" data-bs-html="true">Other Target</span>
-					<span class="badge bg-info mb-2" data-toggle="tooltip" data-bs-placement="top"
-						  title="Risk Score: <b>1,0</b>" data-bs-html="true">Target with long Name</span>
+					{% for target in targets %}
+						<span class="badge bg-danger mb-2" data-toggle="tooltip" data-bs-placement="top"
+							  title="Risk Score: <b>1,0</b>" data-bs-html="true">{{ target }}</span>
+					{% endfor %}
 				</div>
 			</div>
 
 			<div class="card-body px-0 pt-0 my-0">
-				
+
 				<div class="d-flex justify-content-around align-items-center m-0">
 					<div class="d-flex flex-column mb-2">
-						<div class="p-2">Informatik</div>
-						<div class="p-2">Bachelor</div>
+						<div id="major-{{ id }}" class="p-2"></div>
+						<div id="degree-{{ id }}" class="p-2"></div>
 					</div>
 
 					<div class="d-flex flex-column mb-2">
-						<div class="p-2">5 Semester</div>
-						<div class="p-2">150/120 CPS</div>
+						<div id="semester-{{ id }}" class="p-2"></div>
+						<div id="ects-{{ id }}" class="p-2"></div>
 					</div>
 				</div>
 
