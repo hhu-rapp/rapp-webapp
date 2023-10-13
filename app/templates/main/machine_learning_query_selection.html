@@ -3,6 +3,22 @@
 
 {% block body %}
 	<div class="container-fluid py-4">
+	<div class="row">
+		<div class="col-12">
+			<div class="card mb-4 d">
+
+
+
+				<div class="card-body">
+						<p>Auf dieser Seite können Sie auswählen, auf welche Zielgruppe (Ziel) die Prognosen angewendet werden sollen. Ein "Ziel" entspricht einer bestimmten Prognose, wie beispielsweise Studienabbruch oder die Zulassung zum Master (MasterZulassung). Der "Risk Score" (Risikobewertung) gibt an, wie wahrscheinlich es ist, dass ein Student dieses Ziel erreicht oder nicht erreicht.
+
+Nachdem Sie "Ziel auswählen" anklicken, werden die Studierenden auf der nächsten Seite basierend auf ihrem "Risk Score" sortiert. Die Studierenden mit dem höchsten "Risk Score" werden zuerst angezeigt.
+						</p>
+				</div>
+			</div>
+		</div>
+	</div>
+			
 		{% for query in queries %}
 			{{ query_card(query) }}
 		{% endfor %}
