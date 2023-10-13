@@ -267,12 +267,163 @@
                 return chart;
             }
 
-            function populateStatistics(totalStudents, avgBachelorSemesters, avgMasterSemesters, avgEctsPerSemester) {
-                $('#totalStudents').text(totalStudents);
-                $('#avgEctsStudyLength').text(avgBachelorSemesters + '/' + avgMasterSemesters + ' semesters');
-                $('#avgEctsPerSemester').text(avgEctsPerSemester + ' ECTS');
-            }
+        function populateStatistics(totalStudents, avgBachelorSemesters, avgMasterSemesters, avgEctsPerSemester) {
+            $('#totalStudents').text(totalStudents);
+            $('#avgEctsStudyLength').text(avgBachelorSemesters + '/' + avgMasterSemesters + ' semesters');
+            $('#avgEctsPerSemester').text(avgEctsPerSemester + ' ECTS');
+        }
 
+        $(document).ready(function () {
+            const dashboardTour = new Shepherd.Tour({
+                defaultStepOptions: {
+                    cancelIcon: {
+                        enabled: true
+                    },
+                    classes: 'shadow-md bg-purple-dark',
+                    scrollTo: {behavior: 'smooth', block: 'center'},
+                    useModalOverlay: true,
+                }
+            });
+
+            dashboardTour.addStep({
+                title: 'Übersicht ',
+                text: `Hier finden Sie allgemeine Daten zu den Studierenden, wie die Gesamtzahl, 
+  		durchschnittliche Studiendauer, und durchschnittliche ECTS pro Semester. 
+  		Außerdem sehen Sie Verteilungsdiagramme zu sensiblen Attributen wie Geschlecht und Nationalität.`,
+                attachTo: {
+                    element: '#dashboardLink',
+                    on: 'bottom'
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        classes: 'shepherd-button-secondary',
+                        text: 'Zurück'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Weiter'
+                    }
+                ],
+                id: 'dashboardStep'
+            });
+
+            dashboardTour.addStep({
+                title: 'Studentenprognosen',
+                text: `Hier können Sie Prognosen für verschiedene Ziele auswählen,
+   		wie beispielsweise Studienabbruch oder die Zulassung zum Master.
+    	Nach der Auswahl eines Ziels werden auf der nächsten Seite die Studierenden nach ihrem Risikoscore sortiert.`,
+                attachTo: {
+                    element: '#predictionLink',
+                    on: 'bottom'
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        classes: 'shepherd-button-secondary',
+                        text: 'Zurück'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Weiter'
+                    }
+                ],
+                id: 'predictionStep'
+            });
+
+            dashboardTour.start();
+
+
+            dashboardTour.addStep({
+                title: 'Prävention',
+                text: `Auf dieser Seite werden alle von Menschen markierten Studierenden angezeigt, zusammen mit dem Grund der Markierung. 
+  		Sie haben die Möglichkeit, die markierten Studierenden direkt zu kontaktieren und Maßnahmen zur Prävention zu ergreifen.`,
+                attachTo: {
+                    element: '#preventionLink',
+                    on: 'bottom'
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        classes: 'shepherd-button-secondary',
+                        text: 'Zurück'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Weiter'
+                    }
+                ],
+                id: 'preventionStep'
+            });
+
+            dashboardTour.addStep({
+                title: 'Leistungshistorie',
+                text: `Auf dieser Seite können Sie die Leistung von Studierenden in verschiedenen Studienfächern auf Gruppenebene betrachten.
+   		Außerdem haben Sie die Möglichkeit, die individuelle Leistung eines bestimmten Studierenden einzusehen.`,
+                attachTo: {
+                    element: '#performanceLink',
+                    on: 'bottom'
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        classes: 'shepherd-button-secondary',
+                        text: 'Zurück'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Weiter'
+                    }
+                ],
+                id: 'performanceStep'
+            });
+            dashboardTour.addStep({
+                title: 'Risikoanalyse',
+                text: `In diesem Bereich haben Sie die Möglichkeit, eine umfassende Risikoanalyse durchzuführen. 
+  		Sie können die Risikobewertungen für verschiedene Zielgruppen betrachten und verstehen, 
+  		wie sich verschiedene Gruppen in Bezug auf ihre Risikoscores unterscheiden. Diese Analyse hilft Ihnen, 
+  		präventive Maßnahmen gezielt zu planen und umzusetzen.`,
+                attachTo: {
+                    element: '#analysisLink',
+                    on: 'bottom'
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        classes: 'shepherd-button-secondary',
+                        text: 'Zurück'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Fertig'
+                    }
+                ],
+                id: 'analysisStep'
+            });
+
+            dashboardTour.start();
+
+        });
 
 	</script>
 {% endblock %}
