@@ -230,11 +230,9 @@ def student_semester_data(session_id, pseudonym, semester_id):
 @login_required
 def group_prediction(db_id, query_id, model_id):
     aggregations = {
-        'Average': 'mean',
-        'Count': 'count',
-        'Sum': 'sum',
-        'Maximum': 'max',
-        'Minimum': 'min'
+        '25%' : lambda x: x.quantile(0.25),
+        '50%' : lambda x: x.quantile(0.5),
+        '75%' : lambda x: x.quantile(0.75)
     }
     db = MLDatabase.query.get_or_404(db_id)
     query = Query.query.get_or_404(query_id)
