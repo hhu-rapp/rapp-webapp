@@ -17,8 +17,8 @@ from ..models import Query, MLDatabase
 @main.route('/performance_history/')
 @login_required
 def performance_history():
-    page_title = "Performance History"
-    majors = ['Informatik', 'Sozialwissenschaften', 'all']
+    page_title = "Leistungshistorie"
+    majors = ['Informatik', 'Sozialwissenschaften', 'Alle']
     return render_template('main/performance_history.html', page_title=page_title, majors=majors)
 
 
@@ -109,7 +109,7 @@ def group_performance(major_id, degree_id):
     df = df[df['ECTS'] > 0]
 
     # filter by major and degree
-    if not major_id == 'all':
+    if not major_id == 'Alle':
         df = df.loc[df['Studienfach'] == major_id]
 
     if not degree_id == 'all':
