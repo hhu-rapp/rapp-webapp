@@ -6,7 +6,7 @@
 {% block body %}
 	<div class="container-fluid">
 	
-		<h6 class="m-2"> Flagged Students </h6>
+		<h6 class="m-2"> Gefährdete Studenten </h6>
 			<div class="d-flex flex-wrap">
 				{% for pseudonym in flagged_students %}
 					{{ flagged_student_card(pseudonym, flagged_students[pseudonym], loop.index) }}

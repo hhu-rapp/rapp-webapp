@@ -270,7 +270,7 @@ def group_prediction(db_id, query_id, model_id):
 @main.route('/prevention')
 @login_required
 def prevention():
-    page_title = 'Prevention'
+    page_title = 'Prävention'
 
     if 'flagged_students' not in session:
         session['flagged_students'] = {}
