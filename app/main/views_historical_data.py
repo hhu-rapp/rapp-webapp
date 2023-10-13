@@ -132,7 +132,7 @@ def group_performance(major_id, degree_id):
 @login_required
 def risk_analysis(db_id, query_id):
     page_title = "Risk Analysis"
-    majors = ['Informatik', 'Sozialwissenschaften', 'all']
+    majors = ['Informatik', 'Sozialwissenschaften', 'Alle']
     query = Query.query.get_or_404(query_id)
 
     return render_template('main/risk_analysis.html', page_title=page_title, majors=majors, query_id=query_id, query=query)
@@ -141,7 +141,7 @@ def risk_analysis(db_id, query_id):
 @main.route('/risk_analysis/<int:db_id>')
 @login_required
 def select_risk_query(db_id):
-    page_title = "Risk Analysis: Target Selection"
+    page_title = "Risikoanalyse: Zielwahl"
 
     queries = Query.query.filter_by(is_target=True).all()
 
@@ -177,7 +177,7 @@ def get_risk_analysis(query_id, major_id, degree_id, demographics_id):
     df = df.dropna()
 
     # filter by major and degree
-    if not major_id == 'all':
+    if not major_id == 'Alle':
         df = df.loc[df['Studienfach'] == major_id]
 
     if not degree_id == 'all':

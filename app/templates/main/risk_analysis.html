@@ -16,10 +16,13 @@
 				<div class="dropdown ">
 					<button class="btn bg-gradient-secondary dropdown-toggle" type="button" id="riskMajorSelect"
 							data-bs-toggle="dropdown" aria-expanded="false">
-						Major
+						Studienfach
 					</button>
 					<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 						{% for major in majors %}
+							{% if loop.last %}
+							<hr class="dropdown-divider">
+							{% endif %}
 							<a class="dropdown-item major-link" href="#">{{ major }}</a>
 						{% endfor %}
 					</div>
@@ -29,7 +32,7 @@
 			<!-- Degree Checkboxes -->
 			<div class="d-flex mx-4 mb-3">
 				<div class="label-group">
-					<label class="group-label">Degree</label>
+					<label class="group-label">Abschluss</label>
 					<div id="risk-degree-checkbox" class="input-group">
 						<div class="form-check form-check-inline">
 							<input class="form-check-input" type="checkbox" name="riskDegreeCheckbox"
@@ -50,17 +53,17 @@
 			<!-- Demographics Radio -->
 			<div class="d-flex mb-3">
 				<div class="label-group">
-					<label class="group-label">Demographics</label>
+					<label class="group-label">Demographie</label>
 					<div id="risk-demographic-radio" class="input-group">
 						<div class="form-check form-check-inline">
 							<input class="form-check-input" type="radio" name="riskFeatureRadioOption" id="inlineRadio1"
 								   value="Sex" checked>
-							<label class="form-check-label" for="inlineRadio1">Sex</label>
+							<label class="form-check-label" for="inlineRadio1">Geschlecht</label>
 						</div>
 						<div class="form-check form-check-inline">
 							<input class="form-check-input" type="radio" name="riskFeatureRadioOption" id="inlineRadio2"
 								   value="Nationality">
-							<label class="form-check-label" for="inlineRadio2">Nationality</label>
+							<label class="form-check-label" for="inlineRadio2">Nationalität</label>
 						</div>
 					</div>
 				</div>
@@ -170,7 +173,7 @@
                                 plugins: {
                                     title: {
                                         display: true,
-                                        text: target + ' Analysis'
+                                        text: target + ' Risikoanalyse',
                                     },
                                 }
 
@@ -181,7 +184,7 @@
                     loadingDiv.addClass('fade');
                 },
                 error: function () {
-                    $('#risk-error-msg').text("No data available for the selected filters.");
+                    $('#risk-error-msg').text('Keine Daten verfügbar für die ausgewählte Studiengruppe.');
                     console.error("Failed to fetch data from the backend.");
                     loadingDiv.addClass('fade');
                 }
@@ -191,7 +194,7 @@
 
         $(document).ready(function () {
             var degreeId = 'all';
-            var majorId = 'all';
+            var majorId = 'Alle';
             var demographicId = $('input[name="riskFeatureRadioOption"]:checked').val();
 
             fetchRiskAnalysis(majorId, degreeId, demographicId);
