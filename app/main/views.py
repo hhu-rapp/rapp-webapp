@@ -6,7 +6,6 @@ from flask_login import current_user, login_required
 
 from . import main
 from ..ml_backend import query_database
-from ..ml_backend.dummy_data import generate_performance_history, generate_risk_analysis
 from ..models import News, Query, MLDatabase
 
 from . import views_predictions, views_admin, views_historical_data, views_account
@@ -15,12 +14,12 @@ from . import views_predictions, views_admin, views_historical_data, views_accou
 @main.route('/')
 @login_required
 def index():
-    page_title = "Dashboard"
+    page_title = "Übersicht"
     news: News = News.query.order_by(News.timestamp.desc()).all()
 
     notifications = [{"link": '/prediction/1/1/1', "title": 'New Prediction', "mins_ago": 10},
                      {"link": '/performance_history', "title": 'New Performance History', "mins_ago": 15}]
-    majors = ['Informatik', 'Sozialwissenschaften', 'all']
+    majors = ['Informatik', 'Sozialwissenschaften', 'Alle']
     return render_template('main/dashboard.html', news=news, notifications=notifications, page_title=page_title,
                            majors=majors)
 
