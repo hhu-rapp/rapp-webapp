@@ -33,7 +33,7 @@ def setup_targets(uploads: str, db_id: int) -> None:
             continue
 
         config = configparser.ConfigParser()
-        config.read(config_path)
+        config.read(config_path, encoding='utf-8')
 
         try:
             target_name = config['DEFAULT']['label']
