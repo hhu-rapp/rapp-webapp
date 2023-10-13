@@ -13,7 +13,7 @@ from ..ml_backend import pipeline, highlight_greaterthan, query_database
 @main.route('/machine-learning/<int:db_id>')
 @login_required
 def select_prediction_query(db_id):
-    page_title = "Student Predictions: Target Selection"
+    page_title = "Studentenprognosen: Zielwahl"
 
     queries = Query.query.filter_by(is_target=True).all()
 
@@ -47,7 +47,7 @@ def data(db_id, query_id):
 @main.route('/prediction/<int:db_id>/<int:query_id>/<int:model_id>')
 @login_required
 def prediction(db_id, query_id, model_id):
-    page_title = "Student Predictions"
+    page_title = "Studentenprognosen: Vorhersage"
 
     db = MLDatabase.query.get_or_404(db_id)
     query = Query.query.get_or_404(query_id)
@@ -73,7 +73,7 @@ def prediction(db_id, query_id, model_id):
     pred_df = pipeline.predict(estimator, df, label)
 
     df.insert(0, ' ', df.apply(lambda row: f'<a class="btn bg-gradient-secondary" '
-                                                     f'href="/student-review/{session_id}/{row.name}">Review</a>',
+                                                     f'href="/student-review/{session_id}/{row.name}">Überprüfen</a>',
                                          axis=1))
 
     # Drop sensitive attributes, Geschlecht, Deutsch and AlterEinschreibung
@@ -99,7 +99,7 @@ def student_review(session_id, row_id):
 
     pseudonym = query_database(db, query).iloc[row_id, 0]
 
-    page_title = f"Student {pseudonym}"
+    page_title = f"Studentenprognosen: Überprüfung Student: {pseudonym}"
 
     # Add query for fachsemester
     query = f"""

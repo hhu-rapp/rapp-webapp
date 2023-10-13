@@ -10,7 +10,7 @@
 			<h4><a href="/prediction/1/{{ query_id }}/{{ query_id }}"><i class="ni ni-bold-left"> </i></a></h4>
 			<div class="row mb-4 justify-content-end">
 				<div class="col-md-auto">
-					<span class="badge bg-gradient-secondary" id="status-badge">Not Flagged</span>
+					<span class="badge bg-gradient-secondary" id="status-badge">Nicht bearbeitet</span>
 				</div>
 			</div>
 			<div class="row">
@@ -36,7 +36,7 @@
 							<div class="row">
 								<div class="col-8">
 									<div class="numbers">
-										<p class="text-sm mb-0 text-capitalize font-weight-bold">Current ECTS</p>
+										<p class="text-sm mb-0 text-capitalize font-weight-bold">ECTS</p>
 										<h5 class="font-weight-bolder mb-0" id="totalDropouts">
 											{{ total_ects }}/{% if student_data.Abschluss == 'Bachelor' %}180{% else %}120{% endif %}
 										</h5>
@@ -85,11 +85,13 @@
 		<div class="container-fluid py-4 ml-2">
 			<div class="row">
 				<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4">
-					<button type="button" class="btn bg-gradient-success w-100" id="deflag-button-1">Not at Risk
+					<button type="button" class="btn bg-gradient-success w-100" id="deflag-button-1">Nicht gefährdet
 					</button>
 				</div>
 				<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4">
-					<button type="button" class="btn bg-gradient-danger w-100" id="flag-button-1">at risk</button>
+					<button type="button" class="btn bg-gradient-danger w-100" id="flag-button-1">
+						Gefährdet
+					</button>
 				</div>
 			</div>
 
@@ -98,7 +100,9 @@
 		{#	Semester Data #}
 		{% set ns = namespace(year=first_exam.Semesterjahr, semester=first_exam.Sommersemester) %}
 		<div class="container-fluid ml-1">
-			<h6 class="m-2"> WRITTEN EXAMS</h6>
+			<h6 class="m-2"> 
+			Geschriebene Prüfungen
+			</h6>
 			{% for semester in range(student_data.Fachsemester) %}
 				{{ semester_table(session_id, student_data, semester, ns.year, ns.semester) }}
 
@@ -113,11 +117,13 @@
 		<div class="container-fluid py-4 ml-2">
 			<div class="row">
 				<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4">
-					<button type="button" class="btn bg-gradient-success w-100" id="deflag-button-2">not at risk
+					<button type="button" class="btn bg-gradient-success w-100" id="deflag-button-2">Nicht gefährdet
 					</button>
 				</div>
 				<div class="col-xl-6 col-sm-6 mb-xl-0 mb-4">
-					<button type="button" class="btn bg-gradient-danger w-100" id="flag-button-2">at risk</button>
+					<button type="button" class="btn bg-gradient-danger w-100" id="flag-button-2">
+						Gefährdet
+					</button>
 				</div>
 			</div>
 		</div>
@@ -175,7 +181,7 @@
             document.getElementById("status-badge").classList.remove("bg-gradient-success");
             document.getElementById("status-badge").classList.remove("bg-gradient-secondary");
             document.getElementById("status-badge").classList.add("bg-gradient-danger");
-            document.getElementById("status-badge").innerHTML = "at risk";
+            document.getElementById("status-badge").innerHTML = "Gefährdet";
 
         }
         
@@ -188,7 +194,7 @@
 			document.getElementById("status-badge").classList.remove("bg-gradient-danger");
             document.getElementById("status-badge").classList.remove("bg-gradient-secondary");
 			document.getElementById("status-badge").classList.add("bg-gradient-success");
-			document.getElementById("status-badge").innerHTML = "not at risk";
+			document.getElementById("status-badge").innerHTML = "Nicht gefährdet";
 
 		}
         
