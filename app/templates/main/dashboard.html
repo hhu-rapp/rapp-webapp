@@ -148,7 +148,7 @@
 
         $(document).ready(function () {
             var degreeId = 'all';
-            var majorId = 'all';
+            var majorId = 'Alle';
 
             fetchDashboardData(majorId, degreeId);
 
@@ -220,7 +220,7 @@
                         loadingDiv.addClass('fade');
                     },
                     error: function () {
-						$('#dashboard-error-msg').text('No data available for the selected filters.');
+						$('#dashboard-error-msg').text('Keine Daten verfügbar für die ausgewählte Studiengruppe.');
                         console.error("Failed to fetch data from the backend.");
                         loadingDiv.addClass('fade');
                     }

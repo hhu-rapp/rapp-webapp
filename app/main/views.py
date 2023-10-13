@@ -45,7 +45,7 @@ def dashboard_data(major_id, degree_id):
     avg_bachelor_semesters = '-'
     avg_master_semesters = '-'
 
-    if major_id != 'all':
+    if major_id != 'Alle':
         performance_df = performance_df[performance_df['Studienfach'] == major_id]
         registered_students_df = registered_students_df[registered_students_df['Studienfach'] == major_id]
 
