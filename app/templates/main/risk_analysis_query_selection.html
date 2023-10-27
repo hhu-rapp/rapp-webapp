@@ -24,6 +24,45 @@
         element.classList.add("active");
         element = document.getElementById("analysisLink");
         element.classList.add("active");
+
+        $(document).ready(function () {
+
+            const analysisTour = new Shepherd.Tour({
+                defaultStepOptions: {
+                    cancelIcon: {
+                        enabled: true
+                    },
+                    classes: 'shadow-md bg-purple-dark',
+                    scrollTo: {behavior: 'smooth', block: 'center'},
+                    useModalOverlay: true,
+                }
+            });
+
+            analysisTour.addStep({
+                title: 'Risikoanalyse',
+                text: `In diesem Bereich haben Sie die Möglichkeit, eine umfassende Risikoanalyse durchzuführen. 
+				Sie können die Risikobewertungen für verschiedene Zielgruppen betrachten und verstehen, 
+				wie sich verschiedene Gruppen in Bezug auf ihre Risikoscores unterscheiden. 
+				Diese Analyse hilft Ihnen präventive Maßnahmen gezielt zu planen und umzusetzen.`,
+                attachTo: {
+                    element: '#analysisLink',
+                    on: 'right'
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Fertig'
+                    },
+
+                ],
+				id: 'analysisTour'
+            });
+
+            analysisTour.start();
+
+        });
 	</script>
 
 {% endblock %}

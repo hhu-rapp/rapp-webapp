@@ -44,5 +44,41 @@
         element.classList.add("active");
         element = document.getElementById("preventionLinkMobile");
         element.classList.add("active");
+
+        $(document).ready(function () {
+            const preventionTour = new Shepherd.Tour({
+                defaultStepOptions: {
+                    cancelIcon: {
+                        enabled: true
+                    },
+                    classes: 'shadow-md bg-purple-dark',
+                    scrollTo: {behavior: 'smooth', block: 'center'},
+                    useModalOverlay: true,
+                }
+            });
+
+            preventionTour.addStep({
+                title: 'Prävention',
+                text: `Auf dieser Seite werden alle von Menschen markierten Studierenden angezeigt, zusammen mit dem Grund der Markierung. 
+  		Sie haben die Möglichkeit, die markierten Studierenden direkt zu kontaktieren und Maßnahmen zur Prävention zu ergreifen.`,
+                attachTo: {
+                    element: '#preventionLink',
+                    on: 'right'
+                },
+                buttons: [
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Fertig'
+                    }
+
+                ],
+				id: 'preventionTour'
+            });
+
+            preventionTour.start();
+
+        });
 	</script>
 {% endblock %}
