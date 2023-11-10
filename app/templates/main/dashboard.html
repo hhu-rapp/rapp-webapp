@@ -275,29 +275,24 @@
 
         $(document).ready(function () {
             const dashboardTour = new Shepherd.Tour({
+                useModalOverlay: true,
                 defaultStepOptions: {
                     cancelIcon: {
                         enabled: true
                     },
                     classes: 'shadow-md bg-purple-dark',
-                    scrollTo: {behavior: 'smooth', block: 'center'},
-                    useModalOverlay: true,
                 }
             });
 
             dashboardTour.addStep({
-                title: 'Übersicht ',
+                title: {{ page_title | tojson }},
                 text: `Hier finden Sie allgemeine Daten zu den Studierenden, wie die Gesamtzahl, 
   		durchschnittliche Studiendauer, und durchschnittliche ECTS pro Semester. 
   		Außerdem sehen Sie Verteilungsdiagramme zu sensiblen Attributen wie Geschlecht und Nationalität.`,
-                attachTo: {
-                    element: '#dashboardLink',
-                    on: 'right'
-                },
                 buttons: [
                     {
                         action() {
-                            return this.next();
+                            return this.complete();
                         },
                         text: 'Fertig'
                     }
