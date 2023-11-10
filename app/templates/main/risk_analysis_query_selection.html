@@ -4,16 +4,6 @@
 {% block body %}
 	<div class="container-fluid py-4">
 	
-		<div class="row">
-		<div class="col-12">
-			<div class="card mb-4 d">
-				<div class="card-body">
-						<p>Auf dieser Seite können Sie das Ziel (Zielwahl) für die Risikoanalyse auswählen, ähnlich wie bei den Studentenprognosen. 
-							Nachdem Sie Ihr Ziel ausgewählt haben, werden auf der nächsten Seite die Statistiken für das ausgewählte Ziel angezeigt.</p>
-				</div>
-			</div>
-		</div>
-	</div>
 	
 		{% for query in queries %}
 			{{ query_card(query, route='main.risk_analysis') }}
