@@ -28,13 +28,13 @@
         $(document).ready(function () {
 
             const analysisTour = new Shepherd.Tour({
+				useModalOverlay: true,
                 defaultStepOptions: {
                     cancelIcon: {
                         enabled: true
                     },
                     classes: 'shadow-md bg-purple-dark',
                     scrollTo: {behavior: 'smooth', block: 'center'},
-                    useModalOverlay: true,
                 }
             });
 
@@ -44,10 +44,6 @@
 				Sie können die Risikobewertungen für verschiedene Zielgruppen betrachten und verstehen, 
 				wie sich verschiedene Gruppen in Bezug auf ihre Risikoscores unterscheiden. 
 				Diese Analyse hilft Ihnen präventive Maßnahmen gezielt zu planen und umzusetzen.`,
-                attachTo: {
-                    element: '#analysisLink',
-                    on: 'right'
-                },
                 buttons: [
                     {
                         action() {
