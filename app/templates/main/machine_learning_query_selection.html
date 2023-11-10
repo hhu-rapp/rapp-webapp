@@ -31,30 +31,24 @@ Nachdem Sie "Ziel auswählen" anklicken, werden die Studierenden auf der nächst
 
         $(document).ready(function () {
             const predictionTour = new Shepherd.Tour({
+				useModalOverlay: true,
                 defaultStepOptions: {
                     cancelIcon: {
                         enabled: true
                     },
                     classes: 'shadow-md bg-purple-dark',
                     scrollTo: {behavior: 'smooth', block: 'center'},
-                    useModalOverlay: true,
                 }
             });
 
             predictionTour.addStep({
                 title: 'Studentenprognosen',
-                text: `Hier können Sie Prognosen für verschiedene Ziele auswählen. 
-                Die Prognosen werden basierend auf die risikoabhängigen Merkmale der Studierenden berechnet. 
-                Die Prognosen werden in der Reihenfolge des "Risk Score" (Risikobewertung) angezeigt. 
-                Die Studierenden mit dem höchsten "Risk Score" werden zuerst angezeigt.`,
-                attachTo: {
-                    element: '#predictionLink',
-                    on: 'right'
-                },
+                text: `Legen Sie den Fokus auf individuelle Studienziele, indem Sie ein Ziel auswählen. 
+                Sie erhalten detaillierte Vorhersagen und können direkt zu den Prognosedaten gelangen.`,
                 buttons: [
                     {
                         action() {
-                            return this.next();
+                            return this.complete();
                         },
                         text: 'Fertig'
                     }
