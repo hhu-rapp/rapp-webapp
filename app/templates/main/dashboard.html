@@ -292,12 +292,62 @@
                 buttons: [
                     {
                         action() {
-                            return this.complete();
+                            return this.next();
                         },
-                        text: 'Fertig'
+                        text: 'Weiter'
                     }
                 ],
                 id: 'dashboardTour'
+            });
+            
+            dashboardTour.addStep({
+                title: 'Fachrichtung auswählen',
+                text: `Hier können Sie die Daten filtern, um nur Studentendaten aus den relevanten Fachrichtungen anzuzeigen.`,
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        text: 'Zurück'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Weiter'
+                    },
+
+                ],
+				attachTo :{
+                    element : "#majorSelectButton",
+					on :"right"
+				},
+				id : 'dashboardTour'
+            });
+            
+            dashboardTour.addStep({
+                title: 'Abschluss auswählen',
+                text: `Hier können Sie die Daten filtern, um nur Studenten aus den relevanten Studiengängen anzuzeigen.`,
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        text: 'Zurück'
+                    },
+                    {
+                        action() {
+                            return this.complete();
+                        },
+                        text: 'Fertig'
+                    },
+
+                ],
+				attachTo :{
+                    element : "#dashboard-degree-checkbox",
+					on :"left"
+				},
+				id : 'dashboardTour'
             });
 
             dashboardTour.start();
