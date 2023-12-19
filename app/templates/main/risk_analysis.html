@@ -243,6 +243,39 @@
 
             });
         });
+        
+         $(document).ready(function () {
+        const analysisTour = new Shepherd.Tour({
+				useModalOverlay: true,
+                defaultStepOptions: {
+                    cancelIcon: {
+                        enabled: true
+                    },
+                    classes: 'shadow-md bg-purple-dark',
+                    scrollTo: {behavior: 'smooth', block: 'center'},
+                }
+            });
 
+            analysisTour.addStep({
+                title: 'Risikoanalyse',
+                text: `Hier zeigt das Diagramm Studierende nach Demografie und Risikoanalyse, wie wahrscheinlich sie gefährdet sind.`,
+                buttons: [
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Fertig'
+                    },
+
+                ],
+				attachTo: {
+                    element:'#risk-chart',
+					on:'top',
+				},
+				id: 'analysisTour'
+            });
+
+            analysisTour.start();
+});
 	</script>
 {% endblock %}
