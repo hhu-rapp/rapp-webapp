@@ -3,21 +3,7 @@
 
 {% block body %}
 	<div class="container-fluid py-4">
-	<div class="row">
-		<div class="col-12">
-			<div class="card mb-4 d">
-
-
-
-				<div class="card-body">
-						<p>Auf dieser Seite können Sie auswählen, auf welche Zielgruppe (Ziel) die Prognosen angewendet werden sollen. Ein "Ziel" entspricht einer bestimmten Prognose, wie beispielsweise Studienabbruch oder die Zulassung zum Master (MasterZulassung). Der "Risk Score" (Risikobewertung) gibt an, wie wahrscheinlich es ist, dass ein Student dieses Ziel erreicht oder nicht erreicht.
-
-Nachdem Sie "Ziel auswählen" anklicken, werden die Studierenden auf der nächsten Seite basierend auf ihrem "Risk Score" sortiert. Die Studierenden mit dem höchsten "Risk Score" werden zuerst angezeigt.
-						</p>
-				</div>
-			</div>
-		</div>
-	</div>
+	
 			
 		{% for query in queries %}
 			{{ query_card(query) }}
@@ -28,6 +14,37 @@ Nachdem Sie "Ziel auswählen" anklicken, werden die Studierenden auf der nächst
         element.classList.add("active");
         element = document.getElementById("predictionLinkMobile");
         element.classList.add("active");
+
+        $(document).ready(function () {
+            const predictionTour = new Shepherd.Tour({
+				useModalOverlay: true,
+                defaultStepOptions: {
+                    cancelIcon: {
+                        enabled: true
+                    },
+                    classes: 'shadow-md bg-purple-dark',
+                    scrollTo: {behavior: 'smooth', block: 'center'},
+                }
+            });
+
+            predictionTour.addStep({
+                title: 'Studentenprognosen',
+                text: `Legen Sie den Fokus auf individuelle Studienziele, indem Sie ein Ziel auswählen. 
+                Sie erhalten detaillierte Vorhersagen und können direkt zu den Prognosedaten gelangen.`,
+                buttons: [
+                    {
+                        action() {
+                            return this.complete();
+                        },
+                        text: 'Fertig'
+                    }
+                ],
+                id: 'predictionTour'
+            });
+
+            predictionTour.start();
+
+        });
 	</script>
 
 {% endblock %}

@@ -75,6 +75,10 @@ def prediction(db_id, query_id, model_id):
     df.insert(0, ' ', df.apply(lambda row: f'<a class="btn bg-gradient-secondary" '
                                                      f'href="/student-review/{session_id}/{row.name}">Überprüfen</a>',
                                          axis=1))
+    
+    # Sort by prediction and add Id to first review button to attach the tour
+    df = df.sort_values(by=[pred_df.columns[-1]], ascending=False)
+    df.iloc[0, 0] = f'<a class="btn bg-gradient-secondary" id="tour-button" href="/student-review/{session_id}/{df.index[0]}">Überprüfen</a>'
 
     # Drop sensitive attributes, Geschlecht, Deutsch and AlterEinschreibung
     df = df.drop(['Geschlecht', 'Deutsch', 'AlterEinschreibung'], axis=1)

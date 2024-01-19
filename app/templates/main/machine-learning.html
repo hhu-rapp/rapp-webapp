@@ -50,7 +50,7 @@
 	<div class="row">
 		<div class="col-12 tab-content">
 			{# Individual Tab#}
-			<div class="card mb-4 tab-pane fade show active individualPred" role="tabpanel" aria-labelledby="individual-tab">
+			<div class="card mb-4 tab-pane fade show active individualPred" role="tabpanel" aria-labelledby="individual-tab" id="individual-card">
 				<div class="card-header pb-0">
 
 				</div>
@@ -171,6 +171,102 @@
 
             return false;
         });
+    });
+
+    $(document).ready(function () {
+        const predictionTour = new Shepherd.Tour({
+            useModalOverlay: true,
+            defaultStepOptions: {
+                cancelIcon: {
+                    enabled: true
+                },
+                classes: 'shadow-md bg-purple-dark',
+            }
+        });
+
+        predictionTour.addStep({
+            title: 'Zieleinstellungen',
+            text: `Wählen Sie zwischen "Einzelniveau" und "Gruppenniveau", 
+                um entweder die Vorhersagen für einzelne Studierende oder aggregierte Vorhersagenergebnisse auf der 
+                Grundlage eines Merkmals (Spalte) und eines Perzentils anzuzeigen.`,
+            buttons: [
+                {
+                    action() {
+                        return this.next();
+                    },
+                    text: 'Weiter'
+                }
+            ],
+			attachTo: {
+				element: '#prediction-tabs',
+				on: 'right'
+
+			}
+        });
+
+        predictionTour.addStep({
+            title: 'Studierendenliste',
+            text: `Hier werden die Studierenden angezeigt, die nach einem "Risk Score" farblich sortiert ist, 
+                wobei die gefährdeten Studierenden zuerst angezeigt werden. 
+                Die Tabelle kann nach Spalten sortiert werden und enthält eine Suchleiste.`,
+            buttons: [
+                {
+                    action() {
+                        return this.back()
+                    },
+                    text: 'Zurück',
+                },
+                {
+                    action() {
+                        return this.next();
+                    },
+                    text: 'Weiter'
+                }
+            ],
+            attachTo: {
+                element: '#individual-card',
+                on: 'top'
+
+            }
+        });
+        
+        predictionTour.addStep({
+            title: 'Überprüfung',
+            text: `Jede Zeile enthält eine Schaltfläche "Überprüfen", mit der Sie zu einer Seite gelangen,
+             auf der die Details des Studienfortschritts des Studierenden angezeigt werden (zur manuellen Überprüfung der Studierenden).`,
+            buttons: [
+                {
+                    action() {
+                        return this.back()
+                    },
+                    text: 'Zurück',
+                },
+                {
+                    action() {
+                        return this.complete();
+                    },
+                    text: 'Fertig'
+                },
+            ],
+            attachTo: {
+                element: '#tour-button',
+                on: 'right'
+
+            }
+        });
+        
+         function startTour() {
+                // waiting for the page to load
+                setTimeout(function () {
+                    predictionTour.start();
+                }, 500);
+            }
+
+		if (!localStorage.getItem('prediction-tour')) {
+				startTour();
+			}
+ 
+
     });
 </script>
 {% endblock %}

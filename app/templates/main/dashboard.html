@@ -267,12 +267,92 @@
                 return chart;
             }
 
-            function populateStatistics(totalStudents, avgBachelorSemesters, avgMasterSemesters, avgEctsPerSemester) {
-                $('#totalStudents').text(totalStudents);
-                $('#avgEctsStudyLength').text(avgBachelorSemesters + '/' + avgMasterSemesters + ' semesters');
-                $('#avgEctsPerSemester').text(avgEctsPerSemester + ' ECTS');
-            }
+        function populateStatistics(totalStudents, avgBachelorSemesters, avgMasterSemesters, avgEctsPerSemester) {
+            $('#totalStudents').text(totalStudents);
+            $('#avgEctsStudyLength').text(avgBachelorSemesters + '/' + avgMasterSemesters + ' semesters');
+            $('#avgEctsPerSemester').text(avgEctsPerSemester + ' ECTS');
+        }
 
+        $(document).ready(function () {
+            const dashboardTour = new Shepherd.Tour({
+                useModalOverlay: true,
+                defaultStepOptions: {
+                    cancelIcon: {
+                        enabled: true
+                    },
+                    classes: 'shadow-md bg-purple-dark',
+                }
+            });
+
+            dashboardTour.addStep({
+                title: {{ page_title | tojson }},
+                text: `Hier finden Sie allgemeine Daten zu den Studierenden, wie die Gesamtzahl, 
+  		durchschnittliche Studiendauer, und durchschnittliche ECTS pro Semester. 
+  		Außerdem sehen Sie Verteilungsdiagramme zu sensiblen Attributen wie Geschlecht und Nationalität.`,
+                buttons: [
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Weiter'
+                    }
+                ],
+                id: 'dashboardTour'
+            });
+            
+            dashboardTour.addStep({
+                title: 'Fachrichtung auswählen',
+                text: `Hier können Sie die Daten filtern, um nur Studentendaten aus den relevanten Fachrichtungen anzuzeigen.`,
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        text: 'Zurück'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Weiter'
+                    },
+
+                ],
+				attachTo :{
+                    element : "#majorSelectButton",
+					on :"right"
+				},
+				id : 'dashboardTour'
+            });
+            
+            dashboardTour.addStep({
+                title: 'Abschluss auswählen',
+                text: `Hier können Sie die Daten filtern, um nur Studenten aus den relevanten Studiengängen anzuzeigen.`,
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        text: 'Zurück'
+                    },
+                    {
+                        action() {
+                            return this.complete();
+                        },
+                        text: 'Fertig'
+                    },
+
+                ],
+				attachTo :{
+                    element : "#dashboard-degree-checkbox",
+					on :"left"
+				},
+				id : 'dashboardTour'
+            });
+
+            dashboardTour.start();
+
+        });
 
 	</script>
 {% endblock %}

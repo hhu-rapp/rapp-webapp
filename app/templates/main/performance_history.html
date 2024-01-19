@@ -451,5 +451,61 @@
                 });
             }
         );
+
+        $(document).ready(function () {
+            const performanceTour = new Shepherd.Tour({
+				useModalOverlay: true,
+                defaultStepOptions: {
+                    cancelIcon: {
+                        enabled: true
+                    },
+                    classes: 'shadow-md bg-purple-dark',
+                    scrollTo: {behavior: 'smooth', block: 'center'},
+                }
+            });
+
+            performanceTour.addStep({
+                title: 'Leistungshistorie',
+                text: `Auf dieser Seite können Sie die Leistung von Studierenden in verschiedenen Studienfächern auf Gruppenebene betrachten.`,
+                buttons: [
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Weiter'
+                    },
+
+                ],
+				id : 'performanceTour'
+            });
+            
+            performanceTour.addStep({
+                title: 'Individuelle Leistung',
+                text: `Hier können Sie die Leistung einzelner Studierender im Vergleich zu anderen Studierenden einsehen.`,
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        text: 'Zurück'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Fertig'
+                    },
+
+                ],
+				attachTo :{
+                    element : "#ind-perf-tab",
+					on :"right"
+				},
+				id : 'performanceTour'
+            });
+
+            performanceTour.start();
+
+        });
 	</script>
 {% endblock %}

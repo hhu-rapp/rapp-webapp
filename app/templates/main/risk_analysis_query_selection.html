@@ -4,16 +4,6 @@
 {% block body %}
 	<div class="container-fluid py-4">
 	
-		<div class="row">
-		<div class="col-12">
-			<div class="card mb-4 d">
-				<div class="card-body">
-						<p>Auf dieser Seite können Sie das Ziel (Zielwahl) für die Risikoanalyse auswählen, ähnlich wie bei den Studentenprognosen. 
-							Nachdem Sie Ihr Ziel ausgewählt haben, werden auf der nächsten Seite die Statistiken für das ausgewählte Ziel angezeigt.</p>
-				</div>
-			</div>
-		</div>
-	</div>
 	
 		{% for query in queries %}
 			{{ query_card(query, route='main.risk_analysis') }}
@@ -24,6 +14,41 @@
         element.classList.add("active");
         element = document.getElementById("analysisLink");
         element.classList.add("active");
+
+        $(document).ready(function () {
+
+            const analysisTour = new Shepherd.Tour({
+				useModalOverlay: true,
+                defaultStepOptions: {
+                    cancelIcon: {
+                        enabled: true
+                    },
+                    classes: 'shadow-md bg-purple-dark',
+                    scrollTo: {behavior: 'smooth', block: 'center'},
+                }
+            });
+
+            analysisTour.addStep({
+                title: 'Risikoanalyse',
+                text: `In diesem Bereich haben Sie die Möglichkeit, eine umfassende Risikoanalyse durchzuführen. 
+				Sie können die Risikobewertungen für verschiedene Zielgruppen betrachten und verstehen, 
+				wie sich verschiedene Gruppen in Bezug auf ihre Risikoscores unterscheiden. 
+				Diese Analyse hilft Ihnen präventive Maßnahmen gezielt zu planen und umzusetzen.`,
+                buttons: [
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Fertig'
+                    },
+
+                ],
+				id: 'analysisTour'
+            });
+
+            analysisTour.start();
+
+        });
 	</script>
 
 {% endblock %}

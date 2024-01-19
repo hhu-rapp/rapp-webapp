@@ -6,22 +6,6 @@
 {% block body %}
 	<div class="container-fluid">
 	
-		<div class="row">
-		<div class="col-12">
-			<div class="card mb-4 d">
-
-
-
-				<div class="card-body">
-						<p>Auf dieser Seite werden alle von Menschen markierten Studierenden angezeigt, sowie das spezifische Ziel, 
-							für das sie markiert wurden. Hier haben Sie die Möglichkeit, 
-							die markierten Studierenden schnell zu kontaktieren und Maßnahmen zur Prävention zu ergreifen.</p> 
-						</p>
-				</div>
-			</div>
-		</div>
-	</div>
-	
 		<h6 class="m-2"> Gefährdete Studenten </h6>
 			<div class="d-flex flex-wrap">
 				{% for pseudonym in flagged_students %}
@@ -44,5 +28,37 @@
         element.classList.add("active");
         element = document.getElementById("preventionLinkMobile");
         element.classList.add("active");
+
+        $(document).ready(function () {
+            const preventionTour = new Shepherd.Tour({
+				useModalOverlay: true,
+                defaultStepOptions: {
+                    cancelIcon: {
+                        enabled: true
+                    },
+                    classes: 'shadow-md bg-purple-dark',
+                    scrollTo: {behavior: 'smooth', block: 'center'},
+                }
+            });
+
+            preventionTour.addStep({
+                title: 'Prävention',
+                text: `Auf dieser Seite werden alle von Menschen markierten Studierenden angezeigt, zusammen mit dem Grund der Markierung. 
+  		Sie haben die Möglichkeit, die markierten Studierenden direkt zu kontaktieren und Maßnahmen zur Prävention zu ergreifen.`,
+                buttons: [
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Fertig'
+                    }
+
+                ],
+				id: 'preventionTour'
+            });
+
+            preventionTour.start();
+
+        });
 	</script>
 {% endblock %}

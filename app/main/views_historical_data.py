@@ -59,7 +59,7 @@ def individual_performance(student_id):
     # Calculate cumulative ECTS for each student
     all_student_ects_df['ECTS'] = all_student_ects_df.groupby('Pseudonym')['ECTS'].cumsum()
 
-    # Create a continuous range of 'Fachsemester' values
+    # Filter to include only the specific student
     student_df = all_student_ects_df[all_student_ects_df['Pseudonym'] == student_id].reset_index()
     # Create a continuous range of 'Fachsemester' values
     continuous_fachsemester = pd.DataFrame({'Fachsemester': range(1, student_df['Fachsemester'].max() + 1)})
