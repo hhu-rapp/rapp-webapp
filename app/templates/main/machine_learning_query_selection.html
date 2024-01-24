@@ -1,10 +1,50 @@
 {% extends "base.html" %}
+{% from 'components/query_card.html' import query_card %}
 
 {% block body %}
-    Select Query
-    <br>
-    {% for query in queries %}
-        {{ query.name }}
-        <a href={{ url_for('main.prediction', db_id=db_id, query_id=query.id)}}>select</a>
-    {% endfor %}
+	<div class="container-fluid py-4">
+	
+			
+		{% for query in queries %}
+			{{ query_card(query) }}
+		{% endfor %}
+	</div>
+	<script>
+        let element = document.getElementById("predictionLink");
+        element.classList.add("active");
+        element = document.getElementById("predictionLinkMobile");
+        element.classList.add("active");
+
+        $(document).ready(function () {
+            const predictionTour = new Shepherd.Tour({
+				useModalOverlay: true,
+                defaultStepOptions: {
+                    cancelIcon: {
+                        enabled: true
+                    },
+                    classes: 'shadow-md bg-purple-dark',
+                    scrollTo: {behavior: 'smooth', block: 'center'},
+                }
+            });
+
+            predictionTour.addStep({
+                title: 'Studentenprognosen',
+                text: `Legen Sie den Fokus auf individuelle Studienziele, indem Sie ein Ziel auswählen. 
+                Sie erhalten detaillierte Vorhersagen und können direkt zu den Prognosedaten gelangen.`,
+                buttons: [
+                    {
+                        action() {
+                            return this.complete();
+                        },
+                        text: 'Fertig'
+                    }
+                ],
+                id: 'predictionTour'
+            });
+
+            predictionTour.start();
+
+        });
+	</script>
+
 {% endblock %}

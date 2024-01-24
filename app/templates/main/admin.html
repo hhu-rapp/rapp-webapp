@@ -1,12 +1,33 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<h1>Admin</h1>
-    <a href={{ url_for('main.manage_users') }}>manage Users</a>
-    <br>
-    <a href={{ url_for('main.news') }}>manage News</a>
-    <br>
-    <a href={{ url_for('main.manage_queries') }}>manage Queries</a>
-    <br>
-    <a href={{ url_for('main.manage_models') }}>manage Models</a>
+<div class="container-fluid py-4">
+	<div class="row">
+		<div class="col-12">
+			<div class="card mb-4">
+				<div class="card-header pb-0">
+					<h6>Admin Panel</h6>
+				</div>
+				<div class="card-body px-0 pt-0 pb-2">
+					<div class="container">
+						<a href={{ url_for('main.manage_users') }}>manage Users</a>
+						<br>
+						<a href={{ url_for('main.news') }}>manage News</a>
+						<br>
+						<a href={{ url_for('main.manage_queries') }}>manage Queries</a>
+						<br>
+						<a href={{ url_for('main.manage_models') }}>manage Models</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	let element = document.getElementById("adminLink");
+	element.classList.add("active");
+    element = document.getElementById("adminLinkMobile");
+	element.classList.add("active");
+</script>
 {% endblock %}

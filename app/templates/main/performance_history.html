@@ -1,0 +1,511 @@
+{% extends "base.html" %}
+
+{% block body %}
+	<div class="container-fluid py-4">
+
+		<div class="d-flex ">
+			<ul class="mr-auto nav nav-pills m-2" id="performance-tabs" role="tablist">
+				<li class="nav-item pill">
+					<a class="nav-link" id="ind-perf-tab" href="#" data-toggle="tab"
+					   data-target=".individualPerf, .studentIdFilter, .filterSelect, .studentFilter">Einzelleistung</a>
+				</li>
+				<li class="nav-item pill active">
+					<a class="nav-link active" id="group-perf-tab" href="#group-level" data-toggle="tab"
+					   data-target=".groupPerf, .filterSelect, .perfGrouping">Gruppenleistung</a>
+				</li>
+			</ul>
+			<!-- Major Dropdown -->
+			<div class="me-auto m-2 tab-pane fade show active perfGrouping">
+				<div class="dropdown ">
+					<button class="btn bg-gradient-secondary dropdown-toggle" type="button" id="perfMajorSelect"
+							data-bs-toggle="dropdown" aria-expanded="false">
+						Studienfach
+					</button>
+					<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+						{% for major in majors %}
+							{% if loop.last %}
+							<hr class="dropdown-divider">
+							{% endif %}
+							<a class="dropdown-item major-link" href="#">{{ major }}</a>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+
+			<div class="d-flex tab-pane fade studentFilter">
+				<!-- Matrikelnummer search -->
+				<div class="input-group pb-3 ">
+					<input id="perf-studentId-input" type="number" class="form-control" placeholder="Matrikelnummer"
+						   aria-label="Search Matrikelnummer" aria-describedby="Matrikelnummer" value="104366">
+					<button class="btn btn-outline-secondary mb-0" type="button" id="perf-studentId-btn">
+						<i class="fa fa-search"></i>
+					</button>
+				</div>
+			</div>
+
+			<div class="d-flex tab-pane fade show active perfGrouping">
+				<!-- Degree Checkboxes -->
+				<div class="input-group pb-3">
+					<div class="label-group">
+						<label class="group-label">Abschluss</label>
+						<div id="perf-degree-checkbox" class="input-group">
+							<div class="form-check form-check-inline">
+								<input class="form-check-input" type="checkbox" name="perfDegreeCheckbox"
+									   id="inlineCheckbox1"
+									   value="Bachelor" checked>
+								<label class="form-check-label" for="inlineCheckbox1">Bachelor</label>
+							</div>
+							<div class="form-check form-check-inline">
+								<input class="form-check-input" type="checkbox" name="perfDegreeCheckbox"
+									   id="inlineCheckbox2"
+									   value=">Master" checked>
+								<label class="form-check-label" for="inlineCheckbox2">Master</label>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+
+		<div class="row">
+			<div class="col-12 tab-content">
+				{# Individual Tab#}
+			<div class="card mb-4 tab-pane fade individualPerf" role="tabpanel"
+				 aria-labelledby="individual-tab">
+				<div class="card-header pb-0">
+					<span class=" text-danger" id="ind-perf-error-msg"></span>
+				</div>
+				<div class="card-body px-0 pt-0 pb-2">
+					<div class="container" id="individual-perf">
+
+						<div class="d-flex justify-content-center align-items-center perfLoading fade">
+							<div class="spinner-border text-secondary" role="status">
+								<span class="sr-only">Loading...</span>
+							</div>
+						</div>
+
+
+						<div class="chart">
+							<canvas id="individual-perf-chart" class="chart-canvas" height="100px"></canvas>
+						</div>
+
+					</div>
+				</div>
+			</div>
+			{# Group Tab#}
+			<div class="card mb-4 tab-pane fade show active groupPerf" role="tabpanel" aria-labelledby="group-tab">
+				<div class="card-header pb-0">
+					<div class="card-header pb-0">
+					<span class=" text-danger" id="group-perf-error-msg"></span>
+				</div>
+				</div>
+				<div class="card-body px-0 pt-0 pb-2">
+					<div class="container" id="group-perf">
+						<div class="d-flex justify-content-center perfLoading">
+							<div class="spinner-border text-secondary" role="status">
+								<span class="sr-only">Loading...</span>
+							</div>
+						</div>
+						<div class="chart">
+							<canvas id="group-perf-chart" class="chart-canvas" height="100px"></canvas>
+						</div>
+					</div>
+				</div>
+			</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+        let element = document.getElementById("performanceLink");
+        element.classList.add("active");
+        element = document.getElementById("performanceLinkMobile");
+        element.classList.add("active");
+
+        // Performance Tabs
+        $('#performance-tabs a').on('click', function (e) {
+            e.preventDefault()
+            $(this).tab('show')
+        })
+
+        $('#performance-tabs a[data-toggle="tab"]').on('show.bs.tab', function (e) {
+            let target = $(e.target).data('target');
+            $('.tab-pane').not(target).removeClass('active show');
+            $(target)
+                .addClass('active show')
+        });
+
+        // Ajax Individual Performance
+        var chart = null;
+        var groupChart = null;
+
+        function fetchIndividualPerformance(studentId) {
+            const url = "/individual_performance/" + studentId;
+            const loadingDiv = $('.perfLoading');
+            $.ajax({
+                url: url,
+                method: "GET",
+                beforeSend: function () {
+                    // Remove the "fade" class to show the loading <div>
+                    loadingDiv.removeClass('fade');
+                    $('#ind-perf-error-msg').text(' ');
+                },
+                success: function (data) {
+                    // Parse the data received from the backend
+                    const jsonData = JSON.parse(data);
+
+                    // Extract the necessary columns from the data
+                    const numSemesterData = jsonData.all_students.map(function (item) {
+                        return item.Fachsemester;
+                    });
+                    const avgEcts = jsonData.all_students.map(function (item) {
+                        return item.ECTS;
+                    });
+                    const studentEcts = jsonData.single_student;
+                    const upperBound = jsonData.upper_int;
+                    const lowerBound = jsonData.lower_int;
+
+                    const studentMajor = jsonData.major;
+                    const studentDegree = jsonData.degree;
+
+
+                    // Check if the chart instance already exists
+                    if (chart) {
+                        // Update the chart's data
+                        chart.data.labels = numSemesterData;
+                        chart.data.datasets[0].data = studentEcts;
+                        chart.data.datasets[1].data = avgEcts;
+                        chart.data.datasets[2].data = upperBound;
+                        chart.data.datasets[3].data = lowerBound;
+
+                        chart.options.plugins.title.text = 'Matrikelnummer: ' + studentId;
+                        chart.options.plugins.subtitle.text = studentMajor + ' (' + studentDegree + ')';
+
+                        // Redraw the chart
+                        chart.update();
+                    } else {
+
+                        // Create the chart using Charts.js
+                        const ctx = document.getElementById('individual-perf-chart').getContext('2d');
+
+                        chart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: numSemesterData,
+                                datasets: [{
+                                    label: 'Student',
+                                    data: studentEcts,
+                                    borderColor: '#ff7f50',
+                                    backgroundColor: '#ff7f50',
+                                    borderWidth: 3,
+                                    fill: false,
+                                }, {
+                                    label: 'Average',
+                                    data: avgEcts,
+                                    borderColor: '#006ab3',
+                                    backgroundColor: '#006ab3',
+                                    borderWidth: 2,
+									pointRadius: 1,
+                                    fill: false,
+                                },
+                                    {
+                                        label: 'Average (Confidence Interval)',
+                                        data: upperBound,
+                                        borderColor: 'transparent',
+                                        backgroundColor: 'rgb(0, 106, 179, 0.3)',
+                                        pointRadius: 0,
+                                        fill: 2,
+                                        tension: 0,
+                                        legend: {
+                                            display: false,
+                                        },
+                                    },
+                                    {
+                                        label: 'None',
+                                        data: lowerBound,
+                                        borderColor: 'transparent',
+                                        backgroundColor: 'rgb(0, 106, 179, 0.3)',
+                                        pointRadius: 0,
+                                        fill: 2,
+                                        tension: 0,
+                                        legend: {
+                                            display: false,
+                                        },
+                                    }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'Cumulative ECTS'
+                                        }
+                                    },
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Semester'
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    title: {
+                                        display: true,
+                                        text: 'Matrikelnummer: ' + studentId
+                                    },
+                                    subtitle: {
+                                        display: true,
+                                        text: studentMajor + ' (' + studentDegree + ')'
+                                    },
+									legend: {
+                                        labels: {
+                                            filter: function (item, chart) {
+                                                if (item.text == 'None') {
+                                                    return false;
+                                                } else {
+                                                    return item;
+                                                }
+                                            }
+                                        }
+                                    },
+
+                                }
+
+                            }
+                        });
+                    }
+                    loadingDiv.addClass('fade');
+                },
+                error: function () {
+					$('#ind-perf-error-msg').text('No data available for the selected student. Is the Matrikelnummer correct?');
+                    console.error("Failed to fetch data from the backend.");
+                    loadingDiv.addClass('fade');
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            const studentId = $('#perf-studentId-input').val();
+            fetchIndividualPerformance(studentId);
+
+            $('#perf-studentId-btn').click(function () {
+
+                const studentId = $('#perf-studentId-input').val();
+
+                fetchIndividualPerformance(Number(studentId));
+            });
+        });
+
+        // Ajax Group Performance
+
+        function fetchGroupPerformance(majorId, degreeId) {
+
+            const url = "/group_performance/" + majorId + '/' + degreeId;
+            const loadingDiv = $('.perfLoading');
+            var labels = [];
+
+            $.ajax({
+                url: url,
+                method: "GET",
+                beforeSend: function () {
+                    $('#group-perf-error-msg').text('');
+                    // Remove the "fade" class to show the loading <div>
+                    loadingDiv.removeClass('fade');
+                },
+                success: function (data) {
+                    // Parse the data received from the backend
+                    const jsonData = JSON.parse(data);
+
+                    var masterData = jsonData.filter(function (item) {
+                        return item.Abschluss === 'Master';
+                    });
+
+                    // Extract the necessary columns for Master degree
+                    var masterNumSemesterData = masterData.map(function (item) {
+                        return item.Fachsemester;
+                    });
+                    var masterEctsData = masterData.map(function (item) {
+                        return item.ECTS;
+                    });
+
+                    // Filter the data for Bachelor degree
+                    const bachelorData = jsonData.filter(function (item) {
+                        return item.Abschluss === 'Bachelor';
+                    });
+
+                    // Extract the necessary columns for Bachelor degree
+                    const bachelorNumSemesterData = bachelorData.map(function (item) {
+                        return item.Fachsemester;
+                    });
+                    const bachelorEctsData = bachelorData.map(function (item) {
+                        return item.ECTS;
+                    });
+
+                    // Set labels to the longest array
+                    if (bachelorNumSemesterData > masterNumSemesterData) {
+                        labels = bachelorNumSemesterData;
+                    } else {
+                        labels = masterNumSemesterData;
+                    }
+
+                    // Check if the chart instance already exists
+                    if (groupChart) {
+                        // Update the chart's data
+                        groupChart.data.labels = labels;
+                        groupChart.data.datasets[0].data = masterEctsData;
+                        groupChart.data.datasets[1].data = bachelorEctsData;
+
+                        // Redraw the chart
+                        groupChart.update();
+                    } else {
+
+                        // Create the chart using Charts.js
+                        const ctx = document.getElementById('group-perf-chart').getContext('2d');
+                        groupChart = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                labels: labels,
+                                datasets: [{
+                                    label: 'Master',
+                                    data: masterEctsData,
+                                    borderColor: '#006ab3',
+                                    backgroundColor: '#006ab3',
+                                    borderWidth: 3,
+
+                                }, {
+                                    label: 'Bachelor',
+                                    data: bachelorEctsData,
+                                    borderColor: '#ff7f50',
+                                    backgroundColor: '#ff7f50',
+                                    borderWidth: 3,
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        title: {
+                                            display: true,
+                                            text: 'AVG. ECTS'
+                                        }
+                                    },
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: 'Semester'
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    loadingDiv.addClass('fade');
+                },
+                error: function () {
+                    $('#group-perf-error-msg').text('Keine Daten verfügbar für die ausgewählte Studiengruppe.');
+                    console.error("Failed to fetch data from the backend.");
+                    loadingDiv.addClass('fade');
+                }
+            });
+        }
+
+
+        $(document).ready(function () {
+                let degreeId = 'all';
+                let majorId = 'Alle';
+                fetchGroupPerformance(majorId, degreeId);
+
+                // Major dropdown
+                $('.major-link').click(function (event) {
+                    event.preventDefault(); // prevent the link from following the href
+                    majorId = $(this).text();
+
+                    // Update the feature button text
+                    let majorSelect = document.getElementById('perfMajorSelect');
+                    majorSelect.innerHTML = majorId;
+
+                    fetchGroupPerformance(majorId, degreeId);
+
+                });
+
+                // Degree checkbox
+                $('input[name="perfDegreeCheckbox"]').change(function () {
+                    const bachelorChecked = $('#inlineCheckbox1').is(':checked');
+                    const masterChecked = $('#inlineCheckbox2').is(':checked');
+
+                    if (bachelorChecked && masterChecked) {
+                        degreeId = 'all';
+                    } else if (bachelorChecked) {
+                        degreeId = 'Bachelor';
+                    } else if (masterChecked) {
+                        degreeId = 'Master';
+                    }
+
+                    fetchGroupPerformance(majorId, degreeId);
+                });
+            }
+        );
+
+        $(document).ready(function () {
+            const performanceTour = new Shepherd.Tour({
+				useModalOverlay: true,
+                defaultStepOptions: {
+                    cancelIcon: {
+                        enabled: true
+                    },
+                    classes: 'shadow-md bg-purple-dark',
+                    scrollTo: {behavior: 'smooth', block: 'center'},
+                }
+            });
+
+            performanceTour.addStep({
+                title: 'Leistungshistorie',
+                text: `Auf dieser Seite können Sie die Leistung von Studierenden in verschiedenen Studienfächern auf Gruppenebene betrachten.`,
+                buttons: [
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Weiter'
+                    },
+
+                ],
+				id : 'performanceTour'
+            });
+            
+            performanceTour.addStep({
+                title: 'Individuelle Leistung',
+                text: `Hier können Sie die Leistung einzelner Studierender im Vergleich zu anderen Studierenden einsehen.`,
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        text: 'Zurück'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Fertig'
+                    },
+
+                ],
+				attachTo :{
+                    element : "#ind-perf-tab",
+					on :"right"
+				},
+				id : 'performanceTour'
+            });
+
+            performanceTour.start();
+
+        });
+	</script>
+{% endblock %}

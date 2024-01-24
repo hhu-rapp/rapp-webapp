@@ -1,0 +1,358 @@
+{% extends 'base.html' %}
+
+{% block body %}
+	<!-- Filters -->
+	<div class="container-fluid py-2 ml-2">
+
+		<!-- Major Select -->
+		<div class="d-flex ">
+			<div class="dropdown me-auto ">
+				<button class="btn bg-gradient-secondary dropdown-toggle" type="button" id="majorSelectButton"
+						data-bs-toggle="dropdown" aria-expanded="false">
+					Studienfach
+				</button>
+				<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+					{% for major in majors %}
+						{% if loop.last %}
+							<hr class="dropdown-divider">
+						{% endif %}
+						<a class="dropdown-item major-link" href="#">{{ major }}</a>
+						
+					{% endfor %}
+				</div>
+			</div>
+
+
+			<!-- Degree Checkboxes -->
+			<div class="d-flex">
+				<div id="dashboard-degree-checkbox" class="input-group mb-1 mt-2">
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="checkbox" name="dashboardDegreeCheckbox"
+							   id="inlineCheckbox1"
+							   value="bachelor" checked>
+						<label class="form-check-label" for="inlineCheckbox1">Bachelor</label>
+					</div>
+					<div class="form-check form-check-inline">
+						<input class="form-check-input" type="checkbox" name="dashboardDegreeCheckbox"
+							   id="inlineCheckbox2"
+							   value="master" checked>
+						<label class="form-check-label" for="inlineCheckbox2">Master</label>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</div>
+
+
+
+	<!-- Top Numbers -->
+	<div class="container-fluid py-4 ml-2">
+	<span class=" text-danger" id="dashboard-error-msg"></span>
+	<div class="row">
+		<div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+			<div class="card">
+				<div class="card-body p-3">
+							<div class="numbers">
+								<div class="d-flex">
+									<i class="ni ni-hat-3 opacity-10" aria-hidden="true"></i>
+									<p class="text-sm mb-0 text-capitalize font-weight-bold">&nbsp;&nbsp; Gesamtzahl Studierende</p>
+								</div>
+								<h4 class="font-weight-bolder  mb-0" id="totalStudents">
+								</h4>
+							</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xl-4 col-sm-6 mb-xl-0 mb-4">
+			<div class="card">
+				<div class="card-body p-3">
+							<div class="numbers">
+								<div class="d-flex">
+									<i class="ni ni-watch-time opacity-10" aria-hidden="true"></i>
+								<p class="text-sm mb-0 text-capitalize font-weight-bold">&nbsp;&nbsp;Durchschn. Studiendauer B./M</p>
+								</div>
+									<h4 class="font-weight-bolder mb-0" id="avgEctsStudyLength">
+								</h4>
+							</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-xl-4 col-sm-6">
+			<div class="card">
+				<div class="card-body p-3">
+							<div class="numbers">
+								<div class="d-flex">
+									<i class="ni ni-paper-diploma opacity-10" aria-hidden="true"></i>
+								<p class="text-sm mb-0 text-capitalize font-weight-bold">&nbsp;&nbsp;Durchschn. ECTS/Semester</p>
+								</div>
+								<h4 class="font-weight-bolder mb-0" id="avgEctsPerSemester">
+								</h4>
+							</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="d-flex justify-content-center align-items-center dashboardLoading fade">
+		<div class="spinner-border text-secondary" role="status">
+			<span class="sr-only">Loading...</span>
+		</div>
+	</div>
+
+	<!-- Graphs -->
+	<div class="row mt-4">
+
+	<!-- Sex -->
+	<div class="col-lg-6 mb-lg-0 mb-4">
+		<div class="card">
+			<div class="card-body p-3">
+
+				<div class="d-flex flex-column h-100">
+					<p class="mb-1 pt-2 text-bold">Geschlechterverteilung</p>
+				</div>
+
+				<div class="chart mt-2">
+					<canvas id="dashboard-sex" class="chart-canvas" height="150"></canvas>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<!-- Nationality -->
+	<div class="col-lg-6 mb-lg-0 mb-4">
+		<div class="card">
+			<div class="card-body p-3">
+
+				<div class="d-flex flex-column h-100">
+					<p class="mb-1 pt-2 text-bold">Nationalitätenverteilung</p>
+				</div>
+
+				<div class="chart mt-2">
+					<canvas id="dashboard-nationality" class="chart-canvas" height="150"></canvas>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+
+	<script>
+        let element = document.getElementById("dashboardLink");
+        element.classList.add("active");
+        element = document.getElementById("dashboardLinkMobile");
+        element.classList.add("active");
+
+        var sexChart = null;
+        var natChart = null;
+
+        $(document).ready(function () {
+            var degreeId = 'all';
+            var majorId = 'Alle';
+
+            fetchDashboardData(majorId, degreeId);
+
+            $('input[name="dashboardDegreeCheckbox"]').change(function () {
+                const bachelorChecked = $('#inlineCheckbox1').is(':checked');
+                const masterChecked = $('#inlineCheckbox2').is(':checked');
+
+                if (bachelorChecked && masterChecked) {
+                    degreeId = 'all';
+                } else if (bachelorChecked) {
+                    degreeId = 'bachelor';
+                } else if (masterChecked) {
+                    degreeId = 'master';
+                } else {
+                    // TODO: handle this case
+                    degreeId = 'all';
+                }
+
+                fetchDashboardData(majorId, degreeId);
+            });
+            
+			$('.major-link').click(function (event) {
+				event.preventDefault(); // prevent the link from following the href
+				majorId = $(this).text();
+
+				// Update the feature button text
+				var majorSelect = document.getElementById('majorSelectButton');
+				majorSelect.innerHTML = majorId;
+
+				fetchDashboardData(majorId, degreeId);
+
+			});
+
+        });
+
+            
+            function fetchDashboardData(majorId, degreeId) {
+                const url = "/dashboard-data/" + majorId + "/" + degreeId;
+                const loadingDiv = $('.dashboardLoading');
+
+                $.ajax({
+                    url: url,
+                    method: "GET",
+                    beforeSend: function () {
+                        $('#dashboard-error-msg').text('');
+                        // Remove the "fade" class to show the loading <div>
+                        loadingDiv.removeClass('fade');
+                    },
+                    success: function (data) {
+                        // Parse the data received from the backend
+                        const jsonData = JSON.parse(data);
+
+                        const totalStudents = jsonData.totalStudents;
+                        const avgBachelorSemesters = jsonData.avgBachelorSemesters;
+                        const avgMasterSemesters = jsonData.avgMasterSemesters;
+                        const avgEctsPerSemester = jsonData.avgEctsPerSemester;
+
+                        const sexData = jsonData.sexPlot;
+                        const natData = jsonData.natPlot;
+
+                        populateStatistics(totalStudents, avgBachelorSemesters, avgMasterSemesters, avgEctsPerSemester);
+
+                        const sexCtx = document.getElementById('dashboard-sex').getContext('2d');
+                        sexChart = populateChart(sexChart, sexCtx, sexData);
+
+                        const natCtx = document.getElementById('dashboard-nationality').getContext('2d');
+                        natChart = populateChart(natChart, natCtx, natData);
+
+                        loadingDiv.addClass('fade');
+                    },
+                    error: function () {
+						$('#dashboard-error-msg').text('Keine Daten verfügbar für die ausgewählte Studiengruppe.');
+                        console.error("Failed to fetch data from the backend.");
+                        loadingDiv.addClass('fade');
+                    }
+                });
+            }
+
+            function populateChart(chart, ctx, plotData) {
+                const parsedData = JSON.parse(plotData);
+				
+                // Check if the chart instance already exists
+                if (chart) {
+                    // Update the chart's data
+                    chart.data.labels = parsedData.labels;
+                    chart.data.datasets[0].data = parsedData.data;
+
+                    // Redraw the chart
+                    chart.update();
+                } else {
+                    // Create the chart using Charts.js
+                    chart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: parsedData.labels,
+                            datasets: [{
+                                label: 'Students',
+                                data: parsedData.data,
+                                borderColor: '#015f9f',
+                                backgroundColor: '#006ab3',
+                                borderWidth: 1,
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                },
+                            }
+
+                        }
+                    });
+                }
+
+                return chart;
+            }
+
+        function populateStatistics(totalStudents, avgBachelorSemesters, avgMasterSemesters, avgEctsPerSemester) {
+            $('#totalStudents').text(totalStudents);
+            $('#avgEctsStudyLength').text(avgBachelorSemesters + '/' + avgMasterSemesters + ' semesters');
+            $('#avgEctsPerSemester').text(avgEctsPerSemester + ' ECTS');
+        }
+
+        $(document).ready(function () {
+            const dashboardTour = new Shepherd.Tour({
+                useModalOverlay: true,
+                defaultStepOptions: {
+                    cancelIcon: {
+                        enabled: true
+                    },
+                    classes: 'shadow-md bg-purple-dark',
+                }
+            });
+
+            dashboardTour.addStep({
+                title: {{ page_title | tojson }},
+                text: `Hier finden Sie allgemeine Daten zu den Studierenden, wie die Gesamtzahl, 
+  		durchschnittliche Studiendauer, und durchschnittliche ECTS pro Semester. 
+  		Außerdem sehen Sie Verteilungsdiagramme zu sensiblen Attributen wie Geschlecht und Nationalität.`,
+                buttons: [
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Weiter'
+                    }
+                ],
+                id: 'dashboardTour'
+            });
+            
+            dashboardTour.addStep({
+                title: 'Fachrichtung auswählen',
+                text: `Hier können Sie die Daten filtern, um nur Studentendaten aus den relevanten Fachrichtungen anzuzeigen.`,
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        text: 'Zurück'
+                    },
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Weiter'
+                    },
+
+                ],
+				attachTo :{
+                    element : "#majorSelectButton",
+					on :"right"
+				},
+				id : 'dashboardTour'
+            });
+            
+            dashboardTour.addStep({
+                title: 'Abschluss auswählen',
+                text: `Hier können Sie die Daten filtern, um nur Studenten aus den relevanten Studiengängen anzuzeigen.`,
+                buttons: [
+                    {
+                        action() {
+                            return this.back();
+                        },
+                        text: 'Zurück'
+                    },
+                    {
+                        action() {
+                            return this.complete();
+                        },
+                        text: 'Fertig'
+                    },
+
+                ],
+				attachTo :{
+                    element : "#dashboard-degree-checkbox",
+					on :"left"
+				},
+				id : 'dashboardTour'
+            });
+
+            dashboardTour.start();
+
+        });
+
+	</script>
+{% endblock %}

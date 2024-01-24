@@ -1,11 +1,33 @@
 {% extends "base.html" %}
 
 {% block body %}
-    <a href= {{ url_for('main.add_model') }}>add Model</a>
-    <br>
-    {% for model in models %}
-        {{ model.name }}
-    {% endfor %}
-    <br>
-    <a href={{ url_for('main.admin') }}>back</a>
+<div class="container-fluid py-4">
+	<div class="row">
+		<div class="col-12">
+			<div class="card mb-4">
+				<div class="card-header pb-0">
+					<h6>Models</h6>
+				</div>
+				<div class="card-body px-0 pt-0 pb-2">
+					<div class="container">
+						<a href= {{ url_for('main.add_model') }}>add Model</a>
+						<br>
+						{% for model in models %}
+							{{ model.name }}
+						{% endfor %}
+						<br>
+						<a href={{ url_for('main.admin') }}>back</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	let element = document.getElementById("adminLink");
+	element.classList.add("active");
+    element = document.getElementById("adminLinkMobile");
+	element.classList.add("active");
+</script>
 {% endblock %}

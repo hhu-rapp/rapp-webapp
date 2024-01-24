@@ -1,0 +1,131 @@
+div.dataTables_wrapper {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.bg-hhu-gradient {
+  background-image: linear-gradient(to right, rgba(0,106,179,1) 0%, rgba(0,54,99,1) 100%);
+}
+
+.text-hhu-gradient {
+    background-color: #006AB3FF;
+    background-image: linear-gradient(to right, rgba(0, 106, 179, 1) 0%, rgba(0, 54, 99, 1) 100%) !important;
+    background-size: 100%;
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -moz-text-fill-color: transparent;
+}
+
+.login-form {
+  opacity: 0 !important;
+  transform: translateY(50px) !important;
+  transition: opacity 1s ease, transform 1s ease !important;
+}
+
+.login-form.show {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.dash-content {
+  opacity: 0;
+  transform: translateX(100%) !important;
+  transition: opacity 0.5s ease, transform 0.5s ease !important;
+}
+
+.dash-content.show {
+  opacity: 1;
+  transform: translateX(0) !important;
+}
+
+.navbar-brand-img{
+    min-height: 5em;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2))!important;
+}
+
+.nav-link.active .icon{
+    /*background-image: linear-gradient(to right, rgba(0, 106, 179, 1) 0%, rgba(0, 54, 99, 1) 100%) !important;*/
+    background-image: linear-gradient(to right, rgba(0, 106, 179, 1) 0%, rgba(0, 106, 179, 1) 100%) !important;
+}
+
+.navbar-nav .nav-link {
+    font-size: 0.8rem; /* reduce the font size */
+    padding: 0.2rem 0.5rem; /* adjust the padding */
+    margin: 0.1rem 0; /* adjust the margin */
+}
+
+.modal-backdrop.show {
+    z-index: 1040 !important;
+}
+.modal.show {
+    z-index: 1050 !important;
+    overflow: inherit;
+}
+
+.modal-open .dash-content {
+    z-index: 1050;
+}
+
+.modal-open .card {
+    background: #979797;
+}
+.modal-open .card-header {
+    background: #979797;
+}
+
+.nav-pills .nav-link {
+  transition: background-color 0.2s ease;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+    
+  /*color: var(--bs-nav-pills-link-active-color);*/
+  background-color: var(--bs-nav-pills-link-active-bg);
+  box-shadow: 0 0 0 0.1rem rgba(0, 0, 0, 0.25);
+}
+
+.nav-link:not(.active):hover .icon-shape{
+    transform: scale(1.1);
+    transition: transform 150ms ease-in-out;
+}
+
+.nav-link:not(.active):hover .nav-link-text{
+    transform: translateX(10px) scale(1.1);
+    transition: transform 150ms ease-in-out;
+    font-weight: bold;
+}
+
+.perfLoading, .riskLoading{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.card-body.container:not(.fade){
+    opacity: 0.5;
+}
+
+.log-out-link:hover i{
+    transform: translate(10%);
+    transition: transform 150ms ease-in-out;
+}
+.log-out-link:hover{
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+}
+
+.notification-icon:hover i {
+    scale: 1.2;
+    transition: transform 150ms ease-in-out;
+}
+.dataTables_wrapper th {
+    font-size: 80%;
+}

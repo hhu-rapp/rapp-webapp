@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+import os
+
 from flask import Flask
 from os import environ
 from pathlib import Path
@@ -68,7 +72,7 @@ class Config:
 class DevConfig(Config):
     DEBUG: bool = True
     SQLALCHEMY_DATABASE_URI: str = environ.get('DATABASE_URL_DEV') or \
-        'sqlite:///' + str(base_dir / 'data' / 'database-dev.sqlite')
+        'sqlite:///' + os.path.join(base_dir, 'data', 'database-dev.sqlite')
     MAIL_SUPPRESS_SEND: bool = False
 
 

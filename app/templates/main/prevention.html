@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% from 'components/flagged_student_card.html' import flagged_student_card %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block body %}
+	<div class="container-fluid">
+	
+		<h6 class="m-2"> Gefährdete Studenten </h6>
+			<div class="d-flex flex-wrap">
+				{% for pseudonym in flagged_students %}
+					{{ flagged_student_card(pseudonym, flagged_students[pseudonym], loop.index) }}
+				{% endfor %}
+			</div>
+
+		<div class="row mx-2">
+			<div class="col-12">
+				<a href="{{ url_for('main.delete_flags') }}" type="button"
+				   class="btn btn-danger {{ 'disabled' if flagged_students|length == 0 }}">
+					Delete Flagged Students
+				</a>
+			</div>
+		</div>
+	</div>
+
+	<script>
+        let element = document.getElementById("preventionLink");
+        element.classList.add("active");
+        element = document.getElementById("preventionLinkMobile");
+        element.classList.add("active");
+
+        $(document).ready(function () {
+            const preventionTour = new Shepherd.Tour({
+				useModalOverlay: true,
+                defaultStepOptions: {
+                    cancelIcon: {
+                        enabled: true
+                    },
+                    classes: 'shadow-md bg-purple-dark',
+                    scrollTo: {behavior: 'smooth', block: 'center'},
+                }
+            });
+
+            preventionTour.addStep({
+                title: 'Prävention',
+                text: `Auf dieser Seite werden alle von Menschen markierten Studierenden angezeigt, zusammen mit dem Grund der Markierung. 
+  		Sie haben die Möglichkeit, die markierten Studierenden direkt zu kontaktieren und Maßnahmen zur Prävention zu ergreifen.`,
+                buttons: [
+                    {
+                        action() {
+                            return this.next();
+                        },
+                        text: 'Fertig'
+                    }
+
+                ],
+				id: 'preventionTour'
+            });
+
+            preventionTour.start();
+
+        });
+	</script>
+{% endblock %}

@@ -1,11 +1,272 @@
 {% extends "base.html" %}
+{% from 'components/query_card.html' import query_card %}
 
 {% block body %}
-    <h1>Prediction</h1>
-    MachineLearning Statistics (best model? all models?, to be implemented)
-    <br>
-    <a href="">Statistics/Images</a> (to be implemented)
-    <br>
-    <a href="">Fairness</a> (to be implemented)
-    {{ df.to_html(table_id='query-results', classes='display') | safe}}
+	<div class="container-fluid py-4">
+	<h4><a href="{{ url_for('main.select_prediction_query', db_id=1) }}"><i class="ni ni-bold-left"> </i></a> </h4>
+	
+	<div class="row">
+	{{ query_card(query, clickable=False) }}
+	</div>
+
+		<div class="d-flex ">
+			<ul class="me-auto nav nav-pills m-2" id="prediction-tabs" role="tablist">
+				<li class="nav-item pill">
+					<a class="nav-link active" id="individual-tab" href="#" data-toggle="tab"
+					   data-target=".individualPred">Einzelniveau</a>
+				</li>
+				<li class="nav-item pill">
+					<a class="nav-link" id="group-pill" href="#group-level" data-toggle="tab"
+					   data-target=".aggregationSelect, .featureSelect, .groupPred">Gruppenniveau</a>
+				</li>
+			</ul>
+
+			<div class=" d-flex tab-content">
+				<div class="p-2 dropdown tab-pane fade featureSelect" role="tabpanel">
+					<button class="btn bg-gradient-primary dropdown-toggle" type="button" id="featureSelectButton"
+							data-bs-toggle="dropdown" aria-expanded="false">
+						Feature
+					</button>
+					<div class="dropdown-menu dropdown-menu" aria-labelledby="dropdownMenuButton">
+    {% for feature in features %}
+	  <a class="dropdown-item feature-link" href="#">{{ feature }}</a>
+    {% endfor %}
+  </div>
+	</div>
+
+	<div class="p-2 dropdown tab-pane fade aggregationSelect" role="tabpanel">
+  <button class="btn bg-gradient-secondary dropdown-toggle" type="button" id="aggregationSelectButton" data-bs-toggle="dropdown" aria-expanded="false">
+    Percentile
+  </button>
+  <div class="dropdown-menu dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <a class="dropdown-item aggregation-link" href="#">25%</a>
+    <a class="dropdown-item aggregation-link" href="#">50%</a>
+    <a class="dropdown-item aggregation-link" href="#">75%</a>
+  </div>
+	</div>
+</div>
+</div>
+
+	<div class="row">
+		<div class="col-12 tab-content">
+			{# Individual Tab#}
+			<div class="card mb-4 tab-pane fade show active individualPred" role="tabpanel" aria-labelledby="individual-tab" id="individual-card">
+				<div class="card-header pb-0">
+
+				</div>
+				<div class="card-body px-0 pt-0 pb-2 ">
+					<div class="container table-responsive" id="pred-table">
+						{{ styled_df.to_html(table_uuid="prediction", table_attributes='class="w-100"', escape=False) |
+						safe}}
+					</div>
+				</div>
+			</div>
+			{# Group Tab#}
+			<div class="card mb-4 tab-pane fade groupPred" role="tabpanel" aria-labelledby="group-tab">
+				<div class="card-header pb-0">
+
+				</div>
+				<div class="card-body px-0 pt-0 pb-2">
+					<div class="container table-responsive" id="group-pred-table">
+						<p style="text-align: center">
+						Um die Gruppenprognose zu sehen, wählen Sie bitte ein Feature und eine Aggregation aus.
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+	
+<script>
+    let element = document.getElementById("predictionLink");
+    element.classList.add("active");
+    element = document.getElementById("predictionLinkMobile");
+    element.classList.add("active");
+
+    var pathArray = window.location.pathname.split('/');
+    var db_id = pathArray[2];
+    var query_id = pathArray[3];
+    var model_id = pathArray[4];
+    $SCRIPT_PARAMS = '/' + db_id + '/' + query_id + '/' + model_id;
+
+    $(function () {
+        let indexLastColumn = $("#T_prediction").find('tr')[0].cells.length - 1;
+        $('#T_prediction').DataTable({
+            "scrollX": true,
+            "classes": {
+                "table": "pred_table",
+            },
+            "order": [[indexLastColumn, "desc"]],
+
+        });
+
+        // Prediction Tabs
+        $('#prediction-tabs a').on('click', function (e) {
+            e.preventDefault()
+            $(this).tab('show')
+        })
+
+        $('#prediction-tabs a[data-toggle="tab"]').on('show.bs.tab', function (e) {
+            let target = $(e.target).data('target');
+            $('.tab-pane').not(target).removeClass('active show');
+            $(target)
+                .addClass('active show')
+        });
+    });
+
+
+    // Group-level Prediction
+    $(function () {
+        $('.feature-link').click(function (event) {
+            event.preventDefault(); // prevent the link from following the href
+
+            const selectedFeature = $(this).text();
+
+            // Update the feature button text
+            var featureSelect = document.getElementById('featureSelectButton');
+            featureSelect.innerHTML = selectedFeature;
+            // Get the current aggregation
+            var aggSelect = document.getElementById('aggregationSelectButton');
+            var currentAgg = aggSelect.textContent;
+
+            // Get the data
+            $.getJSON(/group_level_prediction/ + $SCRIPT_PARAMS, {
+                feature: selectedFeature,
+                aggregation: currentAgg,
+            }, function (data) {
+                $('#T_group_prediction').DataTable().destroy();
+                $('#group-pred-table').html(data.styled_df);
+                $('#T_group_prediction').DataTable({
+                    "scrollX": true
+                });
+
+            });
+
+            return false;
+        });
+
+        $('.aggregation-link').click(function (event) {
+            event.preventDefault(); // prevent the link from following the href
+
+            const selectedAgg = $(this).text();
+            // Update the aggregation button text
+            var aggSelect = document.getElementById('aggregationSelectButton');
+            aggSelect.innerHTML = selectedAgg;
+            // Get the current feature
+            var featureSelect = document.getElementById('featureSelectButton');
+            var currentFeature = featureSelect.textContent;
+            // Get the data
+            $.getJSON(/group_level_prediction/ + $SCRIPT_PARAMS, {
+                feature: currentFeature,
+                aggregation: selectedAgg,
+            }, function (data) {
+                $('#T_group_prediction').DataTable().destroy();
+                $('#group-pred-table').html(data.styled_df);
+                $('#T_group_prediction').DataTable({
+                    "scrollX": true
+                });
+
+            });
+
+            return false;
+        });
+    });
+
+    $(document).ready(function () {
+        const predictionTour = new Shepherd.Tour({
+            useModalOverlay: true,
+            defaultStepOptions: {
+                cancelIcon: {
+                    enabled: true
+                },
+                classes: 'shadow-md bg-purple-dark',
+            }
+        });
+
+        predictionTour.addStep({
+            title: 'Zieleinstellungen',
+            text: `Wählen Sie zwischen "Einzelniveau" und "Gruppenniveau", 
+                um entweder die Vorhersagen für einzelne Studierende oder aggregierte Vorhersagenergebnisse auf der 
+                Grundlage eines Merkmals (Spalte) und eines Perzentils anzuzeigen.`,
+            buttons: [
+                {
+                    action() {
+                        return this.next();
+                    },
+                    text: 'Weiter'
+                }
+            ],
+			attachTo: {
+				element: '#prediction-tabs',
+				on: 'right'
+
+			}
+        });
+
+        predictionTour.addStep({
+            title: 'Studierendenliste',
+            text: `Hier werden die Studierenden angezeigt, die nach einem "Risk Score" farblich sortiert ist, 
+                wobei die gefährdeten Studierenden zuerst angezeigt werden. 
+                Die Tabelle kann nach Spalten sortiert werden und enthält eine Suchleiste.`,
+            buttons: [
+                {
+                    action() {
+                        return this.back()
+                    },
+                    text: 'Zurück',
+                },
+                {
+                    action() {
+                        return this.next();
+                    },
+                    text: 'Weiter'
+                }
+            ],
+            attachTo: {
+                element: '#individual-card',
+                on: 'top'
+
+            }
+        });
+        
+        predictionTour.addStep({
+            title: 'Überprüfung',
+            text: `Jede Zeile enthält eine Schaltfläche "Überprüfen", mit der Sie zu einer Seite gelangen,
+             auf der die Details des Studienfortschritts des Studierenden angezeigt werden (zur manuellen Überprüfung der Studierenden).`,
+            buttons: [
+                {
+                    action() {
+                        return this.back()
+                    },
+                    text: 'Zurück',
+                },
+                {
+                    action() {
+                        return this.complete();
+                    },
+                    text: 'Fertig'
+                },
+            ],
+            attachTo: {
+                element: '#tour-button',
+                on: 'right'
+
+            }
+        });
+        
+         function startTour() {
+                // waiting for the page to load
+                setTimeout(function () {
+                    predictionTour.start();
+                }, 500);
+            }
+
+		if (!localStorage.getItem('prediction-tour')) {
+				startTour();
+			}
+ 
+
+    });
+</script>
 {% endblock %}

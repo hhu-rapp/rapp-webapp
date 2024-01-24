@@ -25,6 +25,7 @@ class MLDatabase(db.Model):     # type: ignore
             f"{self.owner.email}, {self.timestamp}"
 
     __tablename__: str = 'ml_databases'
+    __allow_unmapped__ = True
 
     id: db.Column = db.Column(db.Integer(), primary_key=True)
     name: db.Column = db.Column(db.String(255))
@@ -34,8 +35,7 @@ class MLDatabase(db.Model):     # type: ignore
     queries: relationship = db.relationship(
         'Query',
         secondary=queried_by,
-        backref=db.backref('databases', lazy='dynamic'),
-        lazy='dynamic'
+        backref=db.backref('databases'),
     )
 
     def delete(self):
@@ -58,7 +58,7 @@ class Model(db.Model):      # type: ignore
 
     id: db.Column = db.Column(db.Integer(), primary_key=True)
     name: db.Column = db.Column(db.String(255))
-    model: db.Column = db.Column(db.String(4095))
+    filename: db.Column = db.Column(db.String(4095))
     timestamp: db.Column = db.Column(db.DateTime(), default=datetime.utcnow)
     query_id: db.Column = db.Column(db.Integer(), db.ForeignKey('queries.id'))
 
@@ -184,15 +184,17 @@ class Query(db.Model):      # type: ignore
         return f"Query ID:{self.id}, {self.name}"
 
     __tablename__ = 'queries'
+    __allow_unmapped__ = True
 
     id: db.Column = db.Column(db.Integer(), primary_key=True)
     name: db.Column = db.Column(db.String(255))
+    description: db.Column = db.Column(db.Text())
     query_string: db.Column = db.Column(db.Text())
     timestamp: db.Column = db.Column(db.DateTime(), default=datetime.utcnow)
+    is_target: db.Column = db.Column(db.Boolean(), default=True)
     model_id: relationship = db.relationship(
         'Model',
         backref='models',
-        lazy='dynamic'
     )
 
     def delete(self) -> None:

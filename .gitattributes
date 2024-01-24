@@ -1,0 +1,4 @@
+*.joblib filter=lfs diff=lfs merge=lfs -text
+*.db filter=lfs diff=lfs merge=lfs -text
+rapp filter=lfs diff=lfs merge=lfs -text
+rapp.exe filter=lfs diff=lfs merge=lfs -text

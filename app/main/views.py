@@ -1,374 +1,131 @@
-import pandas as pd
-import sqlalchemy
+import numpy as np
+import json
 
-from flask import abort, current_app, flash, redirect, render_template, url_for
+from flask import render_template, jsonify, abort
 from flask_login import current_user, login_required
-from pathlib import Path
-from uuid import uuid4
-from werkzeug.utils import secure_filename
-
 
 from . import main
-from .forms import (DatabaseForm, NewsForm, PasswordChangeForm, RegisterForm,
-                    QueryForm, UserEditAdminForm, ModelForm)
-from ..decorators import admin_required
-from ..email import send_email
-from ..models import MLDatabase, Model, News, Query, User
+from ..ml_backend import query_database
+from ..models import News, Query, MLDatabase
+
+from . import views_predictions, views_admin, views_historical_data, views_account
 
 
 @main.route('/')
+@login_required
 def index():
+    page_title = "Übersicht"
     news: News = News.query.order_by(News.timestamp.desc()).all()
-    return render_template('main/index.html', news=news)
+
+    notifications = [{"link": '/prediction/1/1/1', "title": 'New Prediction', "mins_ago": 10},
+                     {"link": '/performance_history', "title": 'New Performance History', "mins_ago": 15}]
+    majors = ['Informatik', 'Sozialwissenschaften', 'Alle']
+    return render_template('main/dashboard.html', news=news, notifications=notifications, page_title=page_title,
+                           majors=majors)
 
 
-@main.route('/admin/news')
-@admin_required
-def news():
-    news: News = News.query.order_by(News.timestamp.desc()).all()
-    return render_template('main/news.html', news=news)
-
-
-@main.route('/news/add', methods=['GET', 'POST'])
-@admin_required
-def add_news():
-    form: NewsForm = NewsForm()
-    if form.validate_on_submit():
-        news_post = News(
-            title=form.title.data,
-            text=form.text.data,
-            author_id=current_user.id       # type: ignore
-        )
-        news_post.save()
-        flash('New post has been added.')
-        return redirect(url_for('main.news'))
-    return render_template('main/add_news.html', form=form)
-
-
-@main.route('/news/edit/<int:news_id>', methods=['GET', 'POST'])
-@admin_required
-def edit_news(news_id: int):
-    news_post: News = News.query.get_or_404(news_id)
-    form: NewsForm = NewsForm()
-
-    if form.validate_on_submit():
-        news_post.title = form.title.data
-        news_post.text = form.text.data
-
-        news_post.save()
-        flash('News Post has been updated.')
-        return redirect(url_for('main.edit_news', news_id=news_id))
-    form.title.data = news_post.title
-    form.text.data = news_post.text
-
-    return render_template('main/edit_news.html', form=form)
-
-
-@main.route('/news/delete/<int:news_id>')
-@admin_required
-def delete_news(news_id: int):
-    news_post: News = News.query.get_or_404(news_id)
-    news_post.delete()
-    return redirect(url_for('main.news'))
-
-
-@main.route('/ml_database/<int:id>')
+# Ajax call for the dashboard
+@main.route('/dashboard-data/<string:major_id>/<string:degree_id>')
 @login_required
-def ml_database(id: int):
-    ml_database: MLDatabase = MLDatabase.query.get_or_404(id)
+def dashboard_data(major_id, degree_id):
+    db_id = 1
+    db = MLDatabase.query.get_or_404(db_id)
+    query_name = "performance_history"
+    query_string = Query.query.filter_by(name=query_name).first_or_404()
+    performance_df = query_database(db, query_string)
 
-    if ml_database.user_id != current_user.id:      # type: ignore
-        abort(403)
+    # get total number of students
+    query_string = """
+        Select E.Pseudonym, E.Abschluss, E.Studienfach
+        FROM Einschreibung E
+        Where Exmatrikulationsdatum is ''
+        """
+    registered_students_df = query_database(db, query_string)
 
-    return render_template(
-        'main/ml_database.html',
-        queries=ml_database.queries
-    )
+    avg_bachelor_semesters = '-'
+    avg_master_semesters = '-'
 
+    if major_id != 'Alle':
+        performance_df = performance_df[performance_df['Studienfach'] == major_id]
+        registered_students_df = registered_students_df[registered_students_df['Studienfach'] == major_id]
 
-@main.route('/ml_database/add', methods=['GET', 'POST'])
-@login_required
-def add_ml_database():
-    form: DatabaseForm = DatabaseForm()
-    if form.validate_on_submit():
-        name: str = form.name.data
-        user_id: int = current_user.id      # type: ignore
+    if degree_id == 'bachelor':
+        performance_df = performance_df[performance_df['Abschluss'] == 'Bachelor']
+        registered_students_df = registered_students_df[registered_students_df['Abschluss'] == 'Bachelor']
 
-        filename = secure_filename(form.file.data.filename or '')
-        if not filename:
-            abort(500)
-        unique_filename: str = uuid4().__str__() + filename
-        form.file.data.save(
-            Path(current_app.config['UPLOAD_FOLDER']) / unique_filename)
+    elif degree_id == 'master':
+        performance_df = performance_df[performance_df['Abschluss'] == 'Master']
+        registered_students_df = registered_students_df[registered_students_df['Abschluss'] == 'Master']
 
-        ml_database: MLDatabase = MLDatabase(
-            name=name,
-            filename=unique_filename,
-            user_id=user_id
-        )
-        ml_database.save()
-        flash('ML-Database has been uploaded.')
-        return redirect(url_for('main.manage_ml_databases'))
-    return render_template('main/add_ml_database.html', form=form)
+    if performance_df.empty or registered_students_df.empty:
+        abort(404)
 
+    total_students = registered_students_df['Pseudonym'].nunique()
 
-@main.route('/ml_database/delete/<int:id>')
-@login_required
-def delete_ml_database(id: int):
-    ml_database: MLDatabase = MLDatabase.query.get_or_404(id)
+    # avg number of semesters for all students
+    # group by student id and get sum of ECTS, max number of semesters and degree
+    group_performance = performance_df.groupby('Pseudonym').agg(
+        {'ECTS': 'sum', 'Fachsemester': 'max', 'Abschluss': 'max'}).reset_index()
 
-    if ml_database.user_id != current_user.id or not current_user.is_admin:   # type: ignore
-        abort(403)
+    if degree_id != 'master':
+        # get students that have 180 ECTS and are in bachelor
+        bachelor_students = group_performance[
+            (group_performance['ECTS'] >= 180) & (group_performance['Abschluss'] == 'Bachelor')]
+        # get avg number of semesters for bachelor students
+        avg_bachelor_semesters = round(bachelor_students['Fachsemester'].mean(), 0)
 
-    ml_database.delete()
-    flash('ML-Database has been deleted.')
-    return redirect(url_for('main.manage_ml_databases'))
+        if np.isnan(avg_bachelor_semesters):
+            avg_bachelor_semesters = 6
 
+    if degree_id != 'bachelor':
+        # get students that have 120 ECTS and are in master
+        master_students = group_performance[
+            (group_performance['ECTS'] >= 120) & (group_performance['Abschluss'] == 'Master')]
+        # get avg number of semesters for master students
+        avg_master_semesters = round(master_students['Fachsemester'].mean(), 0)
 
-@main.route('/admin')
-@admin_required
-def admin():
-    return render_template('main/admin.html')
+        if np.isnan(avg_master_semesters):
+            avg_master_semesters = 4
 
+    # avg ects per semester
+    group_performance = performance_df.groupby(['Pseudonym', 'Sommersemester', 'Semesterjahr']).agg(
+        {'ECTS': 'sum'}).reset_index()
+    avg_ects_per_semester = round(group_performance['ECTS'].mean(), 0)
 
-@main.route('/users')
-@admin_required
-def manage_users():
-    users = User.query.order_by(User.id.asc()).all()
-    return render_template('main/manage_users.html', users=users)
+    # get data for plots get only unique Matrikel_Nummer
+    group_performance = performance_df.groupby('Pseudonym').agg(
+        {'Geschlecht': 'max', 'Deutsch': 'max'}).reset_index()
 
+    sex_plot = group_performance['Geschlecht'].value_counts().reset_index().sort_values(by='Geschlecht',
+                                                                                        ascending=False).rename(
+        columns={'Geschlecht': 'labels', 'count': 'data'})
 
-@main.route('/add_user', methods=['GET', 'POST'])
-@admin_required
-def add_user():
-    form = RegisterForm()
+    # replace binary labels with actual values
+    group_performance['Deutsch'] = group_performance['Deutsch'].replace(
+        {0: 'Nicht-Deutsch', 1: 'Deutsch'})
 
-    if form.validate_on_submit():
-        password = User.generate_password()
-        user = User(
-            email=form.email.data,
-            password=password
-        )       # type: ignore
-        user.save()
+    nat_plot = group_performance['Deutsch'].value_counts().reset_index().sort_values(by='Deutsch',
+                                                                                     ascending=False).rename(
+        columns={'Deutsch': 'labels', 'count': 'data'})
 
-        send_email(
-            to=user.email,
-            subject='Registration Confirmation',
-            template='main/email/registration',
-            email=user.email,
-            password=password
-        )
-        flash(f'{user.email} has been added as a User.')
+    # add all values to response
+    response = {'totalStudents': total_students,
+                'avgBachelorSemesters': avg_bachelor_semesters,
+                'avgMasterSemesters': avg_master_semesters,
+                'avgEctsPerSemester': avg_ects_per_semester,
+                'sexPlot': json.dumps(sex_plot.to_dict('list')),
+                'natPlot': json.dumps(nat_plot.to_dict('list'))}
 
-        return redirect(url_for('main.manage_users'))
-    return render_template('main/add_user.html', form=form)
+    response = json.dumps(response, default=str)
 
-
-@main.route('/user/<int:id>')
-@admin_required
-def show_user(id: int):
-    user = User.query.filter_by(id=id).first_or_404()
-    return render_template('main/show_user.html', user=user)
-
-
-@main.route('/user/edit/<int:id>', methods=['GET', 'POST'])
-@admin_required
-def edit_user(id: int):
-    user = User.query.get_or_404(id)
-    form = UserEditAdminForm(user=user)
-    if form.validate_on_submit():
-        user.email = form.email.data
-        print(form.email.data)
-        print(user.email)
-        user.save()
-        flash(f'User ID:{user.id} has been updated.')
-        return redirect(url_for('main.show_user', id=user.id))
-    form.email.data = user.email
-    return render_template('main/edit_user.html', form=form, user=user)
-
-
-@main.route('/user/delete/<int:id>')
-@admin_required
-def delete_user(id: int):
-    user = User.query.get_or_404(id)
-
-    if user.is_admin:
-        abort(403)
-
-    user.delete()
-    return redirect(url_for('main.manage_users'))
+    return jsonify(response)
 
 
 @main.route('/home')
 @login_required
 def home():
-    ml_databases = current_user.ml_databases    # type: ignore
+    ml_databases = current_user.ml_databases  # type: ignore
     return render_template(
         'main/home.html',
-        ml_databases=ml_databases
-    )
-
-
-@main.route('/machine-learning/<int:db_id>')
-@login_required
-def select_prediction_query(db_id):
-    queries = Query.query.all()
-    return render_template(
-        'main/machine_learning_query_selection.html',
-        queries=queries,
-        db_id=db_id
-    )
-
-
-@main.route('/machine-learning/<int:db_id>/<int:query_id>')
-@login_required
-def prediction(db_id, query_id):
-    db = MLDatabase.query.get_or_404(db_id)
-    query = Query.query.get_or_404(query_id)
-
-    if db.user_id != current_user.id or not current_user.is_admin:
-        abort(403)
-
-    # TODO remove hardcoded sqlite
-    db_uri = 'sqlite:///' + current_app.config['UPLOAD_FOLDER'] + '/' + db.filename
-    engine = sqlalchemy.create_engine(db_uri)
-    with engine.connect() as conn:
-        query_string = sqlalchemy.text(query.query_string)
-        df = pd.DataFrame(conn.execute(query_string).fetchall())
-
-    return render_template('main/machine-learning.html', df=df)
-
-
-@main.route('/reset_password/<int:id>')
-@login_required
-def reset_password(id):
-    user = User.query.get_or_404(id)
-    password = User.generate_password()
-    user.password = password
-    user.save()
-    send_email(
-        to=user.email,
-        subject='Password Reset',
-        template='main/email/registration',
-        email=user.email,
-        password=password
-    )
-    flash('Password has been changed.')
-    return redirect(url_for('main.edit_user', id=id))
-
-
-@main.route('/profile')
-@login_required
-def profile():
-    return render_template('main/profile.html')
-
-
-@main.route('/change_password', methods=['GET', 'POST'])
-@login_required
-def change_password():
-    form = PasswordChangeForm()
-    if form.validate_on_submit():
-        if current_user.verify_password(form.old_password.data):
-            current_user.password = form.new_password.data
-            current_user.save()     # type: ignore
-            flash('Password has been updated.')
-            return redirect(url_for('main.profile'))
-        flash('Wrong password.')
-    return render_template('main/change_password.html', form=form)
-
-
-@main.route('/queries')
-@admin_required
-def manage_queries():
-    queries = Query.query.order_by(Query.id.asc()).all()
-    return render_template('main/manage_queries.html', queries=queries)
-
-
-@main.route('/query/add', methods=['GET', 'POST'])
-@admin_required
-def add_query():
-    form = QueryForm()
-    if form.validate_on_submit():
-        query = Query(
-            name=form.name.data,
-            query_string=form.query_string.data
-        )
-        query.save()
-        flash("New query has been added.")
-        return redirect(url_for('main.manage_queries'))
-    return render_template('main/add_query.html', form=form)
-
-
-@main.route('/query/delete/<int:id>')
-@admin_required
-def delete_query(id):
-    query = Query.query.get_or_404(id)
-    query.delete()
-    return redirect(url_for('main.manage_queries'))
-
-
-@main.route('/query/<int:id>')
-@admin_required
-def show_query(id):
-    query = Query.query.get_or_404(id)
-    return render_template('main/show_query.html', query=query)
-
-
-@main.route("/query/edit/<int:id>", methods=['GET', 'POST'])
-@admin_required
-def edit_query(id):
-    form = QueryForm()
-    query = Query.query.get_or_404(id)
-
-    if form.validate_on_submit():
-        query.name = form.name.data
-        query.query_string = form.query_string.data
-        query.save()
-        flash('Query has been updated.')
-        return redirect(url_for('main.edit_query', id=id))
-
-    form.name.data = query.name
-    form.query_string.data = query.query_string
-
-    return render_template('main/edit_query.html', form=form)
-
-
-@main.route('/models/')
-@admin_required
-def manage_models():
-    models = Model.query.all()
-    return render_template('main/manage_models.html', models=models)
-
-
-@main.route('/model/add', methods=['GET', 'POST'])
-@admin_required
-def add_model():
-    # TODO: DELETE FOR PRODUCTION
-    # including Form + Template + Link in manage_models.html
-    form = ModelForm()
-    if form.validate_on_submit():
-        filename = secure_filename(form.model_file.data.filename or '')
-        if not filename:
-            abort(500)
-        unique_filename: str = uuid4().__str__() + filename
-        form.model_file.data.save(
-            Path(current_app.config['UPLOAD_FOLDER']) / unique_filename)
-
-        model = Model(        # type: ignore
-            name=form.name.data,
-            model=unique_filename
-        )
-        model.save()
-        flash('Model added.')
-        return redirect(url_for('main.manage_models'))
-    return render_template('main/add_model.html', form=form)
-
-
-@main.route('/ml_databases')
-@login_required
-def manage_ml_databases():
-    ml_databases = current_user.ml_databases    # type: ignore
-    return render_template(
-        'main/manage_ml_databases.html',
         ml_databases=ml_databases
     )
