@@ -35,8 +35,7 @@ class MLDatabase(db.Model):     # type: ignore
     queries: relationship = db.relationship(
         'Query',
         secondary=queried_by,
-        backref=db.backref('databases', lazy='dynamic'),
-        lazy='dynamic'
+        backref=db.backref('databases'),
     )
 
     def delete(self):
@@ -196,7 +195,6 @@ class Query(db.Model):      # type: ignore
     model_id: relationship = db.relationship(
         'Model',
         backref='models',
-        lazy='dynamic'
     )
 
     def delete(self) -> None:
