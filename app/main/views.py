@@ -98,7 +98,7 @@ def dashboard_data(major_id, degree_id):
 
     sex_plot = group_performance['Geschlecht'].value_counts().reset_index().sort_values(by='Geschlecht',
                                                                                         ascending=False).rename(
-        columns={'index': 'labels', 'Geschlecht': 'data'})
+        columns={'Geschlecht': 'labels', 'count': 'data'})
 
     # replace binary labels with actual values
     group_performance['Deutsch'] = group_performance['Deutsch'].replace(
@@ -106,7 +106,7 @@ def dashboard_data(major_id, degree_id):
 
     nat_plot = group_performance['Deutsch'].value_counts().reset_index().sort_values(by='Deutsch',
                                                                                      ascending=False).rename(
-        columns={'index': 'labels', 'Deutsch': 'data'})
+        columns={'Deutsch': 'labels', 'count': 'data'})
 
     # add all values to response
     response = {'totalStudents': total_students,
