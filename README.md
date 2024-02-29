@@ -78,6 +78,8 @@ pip install -r requirements.txt
 
     For more information about the script and its functionality, please refer to the [documentation](../..//blob/main/docs/Dev%20Setup.md).
 
+`optional_database_name.db` is the database of the students' performances. It is located in `uploads/`
+
 3. After running the script, the first admin user will be created with the following credentials:
 
     - Email: admin@admin.com
