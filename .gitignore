@@ -35,6 +35,7 @@ uploads/*
 # Virtual Environment
 .venv/
 venv/
+env/
 
 # VsCode
 .vscode/
